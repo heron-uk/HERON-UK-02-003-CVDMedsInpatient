@@ -1,31 +1,18 @@
 # parametrisation
-drugs_cl <- importCodelist(here("Cohorts", "Hospital", "drugs"), type = "csv")
+drugs_cl <- importCodelist(here("Cohorts", "drugs"), type = "csv")
 drugs_tromb <- drugs_cl[grepl("thrombolytics", names(drugs_cl))]
 drugs_rest <- drugs_cl[!grepl("thrombolytics", names(drugs_cl))]
-mi_proc <- importCodelist(here("Cohorts", "Hospital", "miProcedures"), type = "csv")
-stroke_proc <- importCodelist(here("Cohorts", "Hospital", "strokeProcedures"), type = "csv")
+mi_proc <- importCodelist(here("Cohorts", "miProcedures"), type = "csv")
+stroke_proc <- importCodelist(here("Cohorts", "strokeProcedures"), type = "csv")
 comorb <- importCodelist(here("Cohorts", "comorbidities"), type = "csv")
-miTypes <- importCodelist(here("Cohorts", "Hospital", "miTypes"), type = "csv")
+miTypes <- importCodelist(here("Cohorts", "miTypes"), type = "csv")
 
 ageGroupStrata <- list("age_range" = list(c(18, 64), c(65, 84), c(85, Inf)))
 ageGroupChar <- list(c(18, 39), c(40, 49), c(50, 59), c(60, 69), c(70, 79), c(80, 89), c(90, Inf))
 
-cdm$ckd_any <- cdm$ckd_stage |>
-  dplyr::group_by(subject_id) |>
-  dplyr::summarise(cohort_start_date = min(cohort_start_date, na.rm = TRUE)) |>
-  dplyr::compute(name = "ckd_any") |>
-  dplyr::mutate(
-    cohort_definition_id = 1L,
-    cohort_end_date = cohort_start_date
-  ) |>
-  dplyr::compute(name = "ckd_any") |>
-  omopgenerics::newCohortTable(
-    cohortSetRef = dplyr::tibble(cohort_definition_id = 1L, cohort_name = "ckd"),
-    cohortAttritionRef = NULL, 
-    cohortCodelistRef = NULL
-  )
-
 # Cohort Counts + Attrition
+
+logMessage("Extract counts")
 
 results[["cohort_count_mi"]] <- cdm$mi_inpatient_first |>
   summariseCohortCount()
@@ -33,19 +20,13 @@ results[["cohort_count_mi"]] <- cdm$mi_inpatient_first |>
 results[["cohort_count_stroke"]] <- cdm$stroke_inpatient_first|>
   summariseCohortCount()
 
+logMessage("Cohort code use")
+
 results[["cohort_code_use_mi"]] <- summariseCohortCodeUse(
   cohortTable = "mi_inpatient_first",
   cdm = cdm,
   timing = "entry", 
   x = acute_mi_cl
-)
-
-results[["cohort_code_use_stroke"]] <-summariseCohortCodeUse(
-  cohortTable = "stroke_inpatient_first",
-  cdm = cdm,
-  timing = "entry",
-  x = stroke_cl, 
-  cohortId = "ischemic_stroke"
 )
 
 results[["cohort_code_use_stroke_broad"]] <-summariseCohortCodeUse(
@@ -56,13 +37,16 @@ results[["cohort_code_use_stroke_broad"]] <-summariseCohortCodeUse(
   cohortId = "stroke_broad"
 )
 
+logMessage("Extract attrition")
+
 results[["cohort_attrition_mi"]] <- cdm$mi_inpatient_first |>
   summariseCohortAttrition()
 
 results[["cohort_attrition_stroke"]] <- cdm$stroke_inpatient_first |>
   summariseCohortAttrition()
   
-# Cohort Characteristics - MI
+logMessage("Characterise MI")
+
 cdm$mi_inpatient_chars <- cdm$mi_inpatient_first |>
   addDemographics(
     sex = TRUE,
@@ -144,7 +128,8 @@ char_mi <- cdm$mi_inpatient_chars |>
 
 results[["summmarise_characteristics_mi"]] <- char_mi
 
-# Cohort Characteristics - Stroke
+logMessage("Characterise Stroke")
+
 cdm$stroke_inpatient_chars <- cdm$stroke_inpatient_first |>
   addDemographics(
     sex = TRUE,
@@ -156,8 +141,6 @@ cdm$stroke_inpatient_chars <- cdm$stroke_inpatient_first |>
   ) |>
   addEthnicity() |>
   addSES()
-
-# Stroke Procedures
 
 char_stroke <- cdm$stroke_inpatient_chars |>
   summariseCharacteristics(
@@ -209,6 +192,8 @@ char_stroke <- cdm$stroke_inpatient_chars |>
   )
 
 results[["summmarise_characteristics_stroke"]] <- char_stroke
+
+logMessage("Summarise timming using datetime")
 
 if (omopgenerics::cdmVersion(cdm) == "5.3") {
   colsAD <- c("admit" = "admitting_source_concept_id", "discharge" = "discharge_to_concept_id")
