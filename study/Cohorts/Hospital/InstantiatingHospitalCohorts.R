@@ -1,4 +1,4 @@
-info(logger, "GET INPATIENT COHORT")
+logMessage("GET INPATIENT COHORT")
 
 stroke_broad <- importCodelist(path = here("Cohorts", "Hospital"), type = "csv")
 cdm$stroke_broad <- conceptCohort(
@@ -18,8 +18,8 @@ cdm$inpatient_visit <- conceptCohort(
   name = "inpatient_visit"
 ) 
 
-info(logger, "GOT INPATIENT COHORT")
-info(logger, "INSTANTIATING HOSPITAL MI COHORT")
+logMessage("GOT INPATIENT COHORT")
+logMessage("INSTANTIATING HOSPITAL MI COHORT")
 
 cdm$hospital_mi_first <- cdm$acute_mi |>
   requireInDateRange(
@@ -38,9 +38,9 @@ cdm$mi_inpatient_first <- cdm$hospital_mi_first |>
     name = "mi_inpatient_first"
   )
 
-info(logger, "INSTANTIATED HOSPITAL MI COHORT")
+logMessage("INSTANTIATED HOSPITAL MI COHORT")
 
-info(logger, "INSTANTIATING HOSPITAL STROKE COHORT")
+logMessage("INSTANTIATING HOSPITAL STROKE COHORT")
 
 cdm$hospital_stroke_first <- cdm$stroke |>
   requireInDateRange(
@@ -65,4 +65,4 @@ cdm$stroke_inpatient_first <- cdm$hospital_stroke_first |>
     window = c(0, 0)
   )
 
-info(logger, "INSTANTIATED HOSPITAL STROKE COHORT")
+logMessage("INSTANTIATED HOSPITAL STROKE COHORT")

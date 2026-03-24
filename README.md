@@ -14,10 +14,10 @@
 
 This repo is organised as follows:
 
-- [Diagnostics Code](https://github.com/heron-uk/HERON-UK-02-003-CVDMeds-Inpatient/blob/main/diagnostics_code/): please find here the relevant code to run diagnostics for the phenotyping of the conditions and medications used throughout the study.
-- [Diagnostics Shiny App](https://github.com/heron-uk/HERON-UK-02-003-CVDMeds-Inpatient/blob/main/diagnostics_shiny/): please find here the relevant code to visualise the diagnostics results and review the phenotyping of the conditions and medications used throughout the study.
-- [Study Code](https://github.com/heron-uk/HERON-UK-02-003-CVDMeds-Inpatient/blob/main/study/): please find here the relevant code to run the study and obtain the results.
-- [Study Report](https://github.com/heron-uk/HERON-UK-02-003-CVDMeds-Inpatient/blob/main/report/): please find here the relevant code to visualise the study results in a Shiny App and generate the Quarto document from the study results.
+- [Diagnostics Code](https://github.com/heron-uk/HERON-UK-02-003-CVDMedsInpatient/blob/main/diagnostics_code/): please find here the relevant code to run diagnostics for the phenotyping of the conditions and medications used throughout the study.
+- [Diagnostics Shiny App](https://github.com/heron-uk/HERON-UK-02-003-CVDMedsInpatient/blob/main/diagnostics_shiny/): please find here the relevant code to visualise the diagnostics results and review the phenotyping of the conditions and medications used throughout the study.
+- [Study Code](https://github.com/heron-uk/HERON-UK-02-003-CVDMedsInpatient/blob/main/study/): please find here the relevant code to run the study and obtain the results.
+- [Study Report](https://github.com/heron-uk/HERON-UK-02-003-CVDMedsInpatient/blob/main/report/): please find here the relevant code to visualise the study results in a Shiny App and generate the Quarto document from the study results.
 
 ### Run Code
 

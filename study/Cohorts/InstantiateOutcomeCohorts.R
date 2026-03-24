@@ -1,5 +1,5 @@
 # Create outcome cohorts
-info(logger, "INSTANTIATING MI COHORT")
+logMessage("INSTANTIATING MI COHORT")
 
 acute_mi_cl <- CodelistGenerator::importCodelist(
   path = here::here("Cohorts", "conditions", "acute_mi.csv"),
@@ -25,9 +25,9 @@ cdm$acute_mi_second <- cdm$acute_mi |>
     name = "acute_mi_second"
   )
 
-info(logger, "INSTANTIATED MI COHORT")
+logMessage("INSTANTIATED MI COHORT")
 
-info(logger, "INSTANTIATING STROKE COHORT")
+logMessage("INSTANTIATING STROKE COHORT")
 stroke_cl <- CodelistGenerator::importCodelist(
   path = here::here("Cohorts", "conditions", "ischemic_stroke.csv"),
   type = "csv"
@@ -52,9 +52,9 @@ cdm$stroke_second<- cdm$stroke |>
     name = "stroke_second"
   )
 
-info(logger, "INSTANTIATED STROKE COHORT")
+logMessage("INSTANTIATED STROKE COHORT")
 
-info(logger, "INSTANTIATING HEART FAILURE COHORT")
+logMessage("INSTANTIATING HEART FAILURE COHORT")
 hf_cl <- CodelistGenerator::importCodelist(
   path = here::here("Cohorts", "conditions", "heart_failure.csv"),
   type = "csv"
@@ -69,9 +69,9 @@ cdm$heart_failure <- conceptCohort(
 cdm$heart_failure <- cdm$heart_failure |>
   requireIsFirstEntry() # first ever HF
 
-info(logger, "INSTANTIATED HEART FAILURE COHORT")
+logMessage("INSTANTIATED HEART FAILURE COHORT")
 
-info(logger, "INSTANTIATING ATRIAL FIBRILLATION COHORT")
+logMessage("INSTANTIATING ATRIAL FIBRILLATION COHORT")
 af_cl <- CodelistGenerator::importCodelist(
   path = here::here("Cohorts", "conditions", "atrial_fibrillation.csv"),
   type = "csv"
@@ -86,9 +86,9 @@ cdm$atrial_fibrillation <- conceptCohort(
 cdm$atrial_fibrillation <- cdm$atrial_fibrillation |>
   requireIsFirstEntry() # first ever AF
 
-info(logger, "INSTANTIATED ATRIAL FIBRILLATION COHORT")
+logMessage("INSTANTIATED ATRIAL FIBRILLATION COHORT")
 
-info(logger, "INSTANTIATE OBESITY COHORTS")
+logMessage("INSTANTIATE OBESITY COHORTS")
 
 obesity_diag <- list(obesity = c(
   604591, 4271317, 4171972,  4270189, 4079899,  4235799,
@@ -130,9 +130,9 @@ cdm$obesity <- cdm$obesity |>
   unionCohorts(cohortName = "obesity") |> 
   exitAtObservationEnd()
 
-info(logger, "INSTANTIATED OBESITY COHORTS")
+logMessage("INSTANTIATED OBESITY COHORTS")
 
-info(logger, "INSTANTIATE CKD COHORTS")
+logMessage("INSTANTIATE CKD COHORTS")
 ## CKD stage from measurements
 egfr_codes <- c(
   1619025,  1619026, 3029829,  3029859, 3030104,  3045262,
@@ -215,4 +215,4 @@ cdm$ckd_stage <- cdm$ckd_stage |>
                              "ckd_stage_4","ckd_stage_5"), 
                 name = "ckd_stage")
 
-info(logger, "INSTANTIATED CKD COHORTS")
+logMessage("INSTANTIATED CKD COHORTS")
