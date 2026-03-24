@@ -1,4 +1,3 @@
----
 <img src="https://img.shields.io/badge/Study%20Status-Started-blue.svg" alt="Study Status: Started">
 
 - **Study title**: Acute Stroke Infarct and Acute Myocardial Infarction Characterisation in Outpatient Settings
@@ -9,9 +8,9 @@
 - **Report**:
 - **Publications**:
 
----
+----
 
-#### Repo Structure
+### Repo Structure
 
 This repo is organised as follows:
 
@@ -20,6 +19,6 @@ This repo is organised as follows:
 - [Study Code](https://github.com/heron-uk/HERON-UK-02-003-CVDMeds-Inpatient/blob/main/study/): please find here the relevant code to run the study and obtain the results.
 - [Study Report](https://github.com/heron-uk/HERON-UK-02-003-CVDMeds-Inpatient/blob/main/report/): please find here the relevant code to visualise the study results in a Shiny App and generate the Quarto document from the study results.
 
-#### Run Code
+### Run Code
 
 Each folder is an R project with its own instructions. Please refer to the relevant folder.
