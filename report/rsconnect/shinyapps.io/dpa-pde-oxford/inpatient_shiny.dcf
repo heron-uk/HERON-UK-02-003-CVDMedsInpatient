@@ -1,0 +1,12 @@
+name: inpatient_shiny
+title: inpatient_shiny
+username: dpa-pde-oxford
+account: dpa-pde-oxford
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 16892849
+bundleId: 11704165
+url: https://dpa-pde-oxford.shinyapps.io/inpatient_shiny/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
