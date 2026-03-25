@@ -1,8 +1,8 @@
 <img src="https://img.shields.io/badge/Study%20Status-Started-blue.svg" alt="Study Status: Started">
 
-- **Study title**: Acute Stroke Infarct and Acute Myocardial Infarction Characterisation in Outpatient Settings
+- **Study title**: Acute Stroke Infarct and Acute Myocardial Infarction Characterisation in Inpatient Settings
 - **Study start date**: 1st February 2026
-- **Study leads**: @elinrow
+- **Study leads**: @elinrow @aballvemartin-art @catalamarti
 - **Study end date**: Ongoing
 - **ShinyApp**: 
 - **Report**:
