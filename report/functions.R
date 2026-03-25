@@ -447,3 +447,7 @@ updateMessage <- shiny::div(
   shiny::icon("circle-exclamation"),
   "Filters have changed please consider to use the update content button!"
 )
+stylePlot <- function(gg) {
+  theme <- visOmopResults::themeVisOmop(style = "_brand.yml")
+
+}

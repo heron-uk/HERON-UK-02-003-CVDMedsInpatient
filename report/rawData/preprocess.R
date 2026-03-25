@@ -1,3 +1,11 @@
+# pak::pkg_install("oxford-pharmacoepi/AthenaR")
+# vocabPath <- file.path(omopgenerics::omopDataFolder(), "AthenaR")
+# dir.create(vocabPath, showWarnings = FALSE)
+# AthenaR::downloadVocabulary("v20260227", path = vocabPath)
+# zip::unzip(zipfile = "/Users/martics/Documents//AthenaR/v20260227/raw.zip", exdir = file.path(vocabPath, "v20260227"))
+concepts <- readr::read_delim(file.path(vocabPath, "v20260227", "raw", "CONCEPT.csv"), delim = "\t") |>
+  dplyr::select("concept_id", "concept_name", "concept_code", "vocabulary_id")
+
 # shiny is prepared to work with this resultList:
 resultList <- list(
   summarise_omop_snapshot = list(result_type = "summarise_omop_snapshot"),
@@ -5,7 +13,7 @@ resultList <- list(
   cohort_code_use = list(result_type = "cohort_code_use"),
   summarise_cohort_count = list(result_type = "summarise_cohort_count"),
   summarise_cohort_attrition = list(result_type = "summarise_cohort_attrition"),
-  summarise_demographics = list(result_type = "summarise_characteristics", variable_name = c("Number records", "Number subjects", "Cohort start date", "Ses", "Ethnicity", "Age", "Age group", "Sex", "Prior observation", "Future observation", "Mi type", "Prior comorbidities (-inf to 0)")),
+  summarise_demographics = list(result_type = "summarise_characteristics", variable_name = c("Number records", "Number subjects", "Cohort start date", "Socio-economic status", "Ethnicity", "Ethnicity group", "Age", "Age group", "Sex", "Prior observation", "Future observation", "Mi type", "Prior comorbidities (-inf to 0)")),
   summarise_death = list(result_type = "summarise_characteristics", variable_name = c("28-day mortality")),
   summarise_treatments = list(result_type = "summarise_characteristics", variable_name = c("Drugs [0, 14]", "Drugs [-28, 28]")),
   summarise_procedures = list(result_type = "summarise_characteristics", variable_name = "Procedures [-28, 28]"),
@@ -58,12 +66,79 @@ resultChar <- result |>
   omopgenerics::filterSettings(result_type == "summarise_characteristics") |>
   dplyr::filter(!variable_name %in% c(
     "Cohort end date", "Days in cohort", "Days to next record"
-  )) |>
+  ))
+
+resultEth <- resultChar |>
+  dplyr::filter(.data$variable_name == "Ethnicity") |>
+  dplyr::left_join(
+    concepts |>
+      dplyr::filter(.data$vocabulary_id == "NHS Ethnic Category") |>
+      dplyr::select("variable_level" = "concept_code", "new" = "concept_name"),
+    by = "variable_level"
+  ) |>
+  dplyr::mutate(variable_level = dplyr::coalesce(.data$new, .data$variable_level)) |>
+  dplyr::select(!"new") |>
+  dplyr::left_join(
+    concepts |>
+      dplyr::mutate(concept_id = sprintf("%i", concept_id)) |>
+      dplyr::select("variable_level" = "concept_id", "new" = "concept_name"),
+    by = "variable_level"
+  ) |>
+  dplyr::mutate(
+    variable_level = dplyr::coalesce(.data$new, .data$variable_level)
+  ) |>
+  dplyr::select(!"new")
+
+ethnicity <- readr::read_csv(file = here::here("rawData", "ethnicity", "ethnicity.csv"), show_col_types = FALSE) |>
+  dplyr::mutate(correct = dplyr::coalesce(.data$correct, .data$variable_level))
+
+resultEth <- resultEth |>
+  dplyr::left_join(ethnicity, by = "variable_level")
+
+if (any(is.na(resultEth$correct))) {
+  cli::cli_abort(c(x = "New missing ethnicities"))
+}
+
+resultEth <- resultEth |>
+  dplyr::select(!c("variable_level", "broad")) |>
+  dplyr::rename("variable_level" = "correct") |>
+  dplyr::union_all(
+    resultEth |>
+      dplyr::mutate(variable_name = "Ethnicity group") |>
+      dplyr::select(!c("variable_level", "correct")) |>
+      dplyr::rename("variable_level" = "broad")
+  ) |>
+  dplyr::mutate(id = dplyr::row_number()) |>
+  dplyr::select(!"estimate_type") |>
+  tidyr::pivot_wider(names_from = "estimate_name", values_from = "estimate_value") |>
+  dplyr::group_by(dplyr::across(!c("count", "percentage", "id"))) |>
+  dplyr::summarise(
+    count = sum(as.numeric(.data$count), na.rm = TRUE),
+    percentage = sum(as.numeric(.data$percentage), na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  tidyr::pivot_longer(
+    c("count", "percentage"),
+    names_to = "estimate_name",
+    values_to = "estimate_value"
+  ) |>
+  dplyr::mutate(
+    estimate_type = dplyr::if_else(.data$estimate_name == "count", "integer", "percentage"),
+    estimate_value = dplyr::if_else(
+      .data$estimate_name == "count",
+      sprintf("%.0f", .data$estimate_value),
+      sprintf("%.2f", .data$estimate_value)
+    )
+  )
+
+resultChar <- resultChar |>
+  dplyr::filter(.data$variable_name != "Ethnicity") |>
+  dplyr::union_all(resultEth) |>
   dplyr::mutate(
     variable_name = stringr::str_replace_all(
       string = variable_name,
       pattern = "Ses",
-      replacement = "SES"
+      replacement = "Socio-economic status"
     ),
     variable_name = stringr::str_replace_all(
       string = variable_name,
@@ -92,7 +167,7 @@ resultChar <- result |>
       sex != "overall" ~ 4L,
       .default = 1L
     ),
-    variable_id = match(variable_name, c("Number records", "Number subjects", "Cohort start date", "SES", "Ethnicity", "Age", "Age group", "Sex", "Prior observation", "Future observation", "MI type", "Prior comorbidities (-inf to 0)"))
+    variable_id = match(variable_name, c("Number records", "Number subjects", "Cohort start date", "Socio-economic status", "Ethnicity group", "Ethnicity", "Age", "Age group", "Sex", "Prior observation", "Future observation", "MI type", "Prior comorbidities (-inf to 0)"))
   ) |>
   dplyr::arrange(cdm_name, cohort_name, strata_id, strata, variable_id) |>
   dplyr::select(!c("strata_id", "sex", "age_range", "ses", "mi_type", "variable_id")) |>
@@ -146,21 +221,13 @@ resAdDis <- result |>
   ) |>
   omopgenerics::uniteGroup("cohort_name") |>
   omopgenerics::uniteStrata() |>
-  dplyr::select(!"mi_type")
-concepts <- sort(as.integer(unique(resAdDis$variable_level)))
-cdm <- omock::mockCdmFromDataset("empty_cdm")
-eq <- cdm$concept |>
-  dplyr::filter(.data$concept_id %in% .env$concepts) |>
-  dplyr::select("concept_id", "concept_name") |>
-  dplyr::collect() |>
-  dplyr::mutate(
-    variable_level = sprintf("%i", concept_id),
-    new_variable_level = paste0(concept_name, " (", variable_level, ")")
+  dplyr::select(!"mi_type") |>
+  dplyr::left_join(
+    concepts |>
+      dplyr::mutate(concept_id = sprintf("%i", concept_id)) |>
+      dplyr::select("variable_level" = "concept_id", "new_variable_level" = "concept_name"),
+    by = "variable_level"
   ) |>
-  dplyr::select("variable_level", "new_variable_level")
-rm(cdm)
-resAdDis <- resAdDis |>
-  dplyr::left_join(eq, by = "variable_level") |>
   dplyr::mutate(variable_level = dplyr::coalesce(.data$new_variable_level, .data$variable_level)) |>
   dplyr::select(!"new_variable_level")
 
@@ -180,6 +247,7 @@ values <- getValues(result, resultList)
 choices <- values
 selected <- getSelected(values)
 
+selected$summarise_demographics_variable_name <- selected$summarise_demographics_variable_name[selected$summarise_demographics_variable_name != "Ethnicity"]
 selected$summarise_demographics_strata <- "overall"
 selected$summarise_death_strata <- "overall"
 selected$summarise_treatments_strata <- "overall"
