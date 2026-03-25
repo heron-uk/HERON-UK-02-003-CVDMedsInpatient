@@ -428,14 +428,6 @@ ui <- bslib::page_navbar(
             multiple = TRUE,
             options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
           ),
-          shinyWidgets::pickerInput(
-            inputId = "summarise_cohort_attrition_variable_name",
-            label = "Variable name",
-            choices = choices$summarise_cohort_attrition_variable_name,
-            selected = selected$summarise_cohort_attrition_variable_name,
-            multiple = TRUE,
-            options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
-          ),
           position = "left"
         ),
         bslib::navset_card_tab(
@@ -578,17 +570,17 @@ ui <- bslib::page_navbar(
                     ),
                     sortable::add_rank_list(
                       text = "Header",
-                      labels = c("cdm_name", "cohort_name"),
+                      labels = c("cdm_name"),
                       input_id = "summarise_demographics_table_header"
                     ),
                     sortable::add_rank_list(
                       text = "Group columns",
-                      labels = character(),
+                      labels = c("cohort_name"),
                       input_id = "summarise_demographics_table_group_column"
                     ),
                     sortable::add_rank_list(
                       text = "Hide",
-                      labels = "table_name",
+                      labels = character(),
                       input_id = "summarise_demographics_table_hide"
                     )
                   ),
@@ -675,6 +667,158 @@ ui <- bslib::page_navbar(
       )
     ),
 
+    ### mortality ----
+    bslib::nav_panel(
+      title = "Summarise 28-day mortality",
+      icon = shiny::icon("users-gear"),
+      bslib::layout_sidebar(
+        sidebar = bslib::sidebar(
+          shinyWidgets::pickerInput(
+            inputId = "summarise_death_cdm_name",
+            label = "CDM name",
+            choices = choices$summarise_death_cdm_name,
+            selected = selected$summarise_death_cdm_name,
+            multiple = TRUE,
+            options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
+          ),
+          shinyWidgets::pickerInput(
+            inputId = "summarise_death_cohort_name",
+            label = "Cohort name",
+            choices = choices$summarise_death_cohort_name,
+            selected = selected$summarise_death_cohort_name,
+            multiple = TRUE,
+            options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
+          ),
+          shinyWidgets::pickerInput(
+            inputId = "summarise_death_strata",
+            label = "Strata",
+            choices = choices$summarise_death_strata,
+            selected = selected$summarise_death_strata,
+            multiple = TRUE,
+            options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
+          ),
+          position = "left"
+        ),
+        bslib::navset_card_tab(
+          bslib::nav_panel(
+            title = "Table Mortality",
+            bslib::card(
+              full_screen = TRUE,
+              bslib::card_header(
+                bslib::popover(
+                  shiny::icon("download"),
+                  shinyWidgets::pickerInput(
+                    inputId = "summarise_death_table_format",
+                    label = "Format",
+                    choices = c("docx", "png", "pdf", "html"),
+                    selected = "docx",
+                    multiple = FALSE,
+                    options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
+                  ),
+                  shiny::downloadButton(outputId = "summarise_death_table_download", label = "Download table")
+                ),
+                class = "text-end"
+              ),
+              bslib::layout_sidebar(
+                sidebar = bslib::sidebar(
+                  sortable::bucket_list(
+                    header = NULL,
+                    sortable::add_rank_list(
+                      text = "None",
+                      labels = c("cdm_name", "cohort_name", "strata", "variable_name", "variable_level", "estimate_name"),
+                      input_id = "summarise_death_table_none"
+                    ),
+                    sortable::add_rank_list(
+                      text = "Header",
+                      labels = c("cdm_name"),
+                      input_id = "summarise_death_table_header"
+                    ),
+                    sortable::add_rank_list(
+                      text = "Group columns",
+                      labels = c("cohort_name"),
+                      input_id = "summarise_death_table_group_column"
+                    ),
+                    sortable::add_rank_list(
+                      text = "Hide",
+                      labels = character(),
+                      input_id = "summarise_death_table_hide"
+                    )
+                  ),
+                  position = "right"
+                ),
+                gt::gt_output("summarise_death_table") |>
+                  shinycssloaders::withSpinner()
+              )
+            )
+          ),
+          bslib::nav_panel(
+            title = "Plot Mortality",
+            bslib::card(
+              full_screen = TRUE,
+              bslib::card_header(
+                bslib::popover(
+                  shiny::icon("download"),
+                  shiny::numericInput(
+                    inputId = "summarise_death_plot_width",
+                    label = "Width",
+                    value = 15
+                  ),
+                  shiny::numericInput(
+                    inputId = "summarise_death_plot_height",
+                    label = "Height",
+                    value = 15
+                  ),
+                  shinyWidgets::pickerInput(
+                    inputId = "summarise_death_plot_units",
+                    label = "Units",
+                    choices = c("px", "cm", "inch"),
+                    selected = "cm",
+                    multiple = FALSE,
+                    options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
+                  ),
+                  shiny::numericInput(
+                    inputId = "summarise_death_plot_dpi",
+                    label = "DPI",
+                    value = 300
+                  ),
+                  shiny::downloadButton(outputId = "summarise_death_plot_download", label = "Download plot")
+                ),
+                class = "text-end"
+              ),
+              bslib::layout_sidebar(
+                sidebar = bslib::sidebar(
+                  shinyWidgets::materialSwitch(
+                    inputId = "summarise_death_plot_interactive",
+                    label = "Interactive",
+                    value = TRUE
+                  ),
+                  shinyWidgets::pickerInput(
+                    inputId = "summarise_death_plot_facet",
+                    label = "Facet",
+                    choices = c("cdm_name", "cohort_name", "strata"),
+                    selected = "cdm_name",
+                    multiple = TRUE,
+                    options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
+                  ),
+                  shinyWidgets::pickerInput(
+                    inputId = "summarise_death_plot_colour",
+                    label = "Colour",
+                    choices = c("cdm_name", "cohort_name", "strata"),
+                    selected = "cohort_name",
+                    multiple = TRUE,
+                    options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
+                  ),
+                  position = "right"
+                ),
+                shiny::uiOutput("summarise_death_plot") |>
+                  shinycssloaders::withSpinner()
+              )
+            )
+          )
+        )
+      )
+    ),
+
     ### treatments ----
     bslib::nav_panel(
       title = "Summarise treatments",
@@ -700,8 +844,8 @@ ui <- bslib::page_navbar(
           shinyWidgets::pickerInput(
             inputId = "summarise_treatments_strata",
             label = "Strata",
-            choices = c("overall", "age_group", "ses", "sex"),
-            selected = "overall",
+            choices = choices$summarise_treatments_strata,
+            selected = selected$summarise_treatments_strata,
             multiple = TRUE,
             options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
           ),
@@ -754,17 +898,17 @@ ui <- bslib::page_navbar(
                     ),
                     sortable::add_rank_list(
                       text = "Header",
-                      labels = c("cdm_name", "cohort_name"),
+                      labels = c("cdm_name"),
                       input_id = "summarise_treatments_table_header"
                     ),
                     sortable::add_rank_list(
                       text = "Group columns",
-                      labels = character(),
+                      labels = c("cohort_name"),
                       input_id = "summarise_treatments_table_group_column"
                     ),
                     sortable::add_rank_list(
                       text = "Hide",
-                      labels = "table_name",
+                      labels = character(),
                       input_id = "summarise_treatments_table_hide"
                     )
                   ),
@@ -868,8 +1012,8 @@ ui <- bslib::page_navbar(
           shinyWidgets::pickerInput(
             inputId = "summarise_procedures_strata",
             label = "Strata",
-            choices = c("overall", "age_group", "ses", "sex"),
-            selected = "overall",
+            choices = choices$summarise_procedures_strata,
+            selected = selected$summarise_procedures_strata,
             multiple = TRUE,
             options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
           ),
@@ -922,17 +1066,17 @@ ui <- bslib::page_navbar(
                     ),
                     sortable::add_rank_list(
                       text = "Header",
-                      labels = c("cdm_name", "cohort_name"),
+                      labels = c("cdm_name"),
                       input_id = "summarise_procedures_table_header"
                     ),
                     sortable::add_rank_list(
                       text = "Group columns",
-                      labels = character(),
+                      labels = c("cohort_name"),
                       input_id = "summarise_procedures_table_group_column"
                     ),
                     sortable::add_rank_list(
                       text = "Hide",
-                      labels = "table_name",
+                      labels = character(),
                       input_id = "summarise_procedures_table_hide"
                     )
                   ),
@@ -1009,7 +1153,98 @@ ui <- bslib::page_navbar(
           )
         )
       )
+    ),
+
+    ### timing ----
+    bslib::nav_panel(
+      title = "Summarise time to intervention",
+      icon = shiny::icon("users-gear"),
+      bslib::layout_sidebar(
+        sidebar = bslib::sidebar(
+          shinyWidgets::pickerInput(
+            inputId = "timings_cdm_name",
+            label = "CDM name",
+            choices = choices$timings_cdm_name,
+            selected = selected$timings_cdm_name,
+            multiple = TRUE,
+            options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
+          ),
+          shinyWidgets::pickerInput(
+            inputId = "timings_cohort_name",
+            label = "Cohort name",
+            choices = choices$timings_cohort_name,
+            selected = selected$timings_cohort_name,
+            multiple = TRUE,
+            options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
+          ),
+          position = "left"
+        ),
+        bslib::navset_card_tab(
+          bslib::nav_panel(
+            title = "Time to procedure",
+            bslib::card(
+              full_screen = TRUE,
+              gt::gt_output("timings_proc_table") |>
+                shinycssloaders::withSpinner()
+            )
+          ),
+          bslib::nav_panel(
+            title = "Time to medication",
+            bslib::card(
+              full_screen = TRUE,
+              gt::gt_output("timings_med_table") |>
+                shinycssloaders::withSpinner()
+            )
+          )
+        )
+      )
+    ),
+
+    ### Admission and discharge ----
+    bslib::nav_panel(
+      title = "Admision and discharge",
+      icon = shiny::icon("users-gear"),
+      bslib::layout_sidebar(
+        sidebar = bslib::sidebar(
+          shinyWidgets::pickerInput(
+            inputId = "admit_discharge_cdm_name",
+            label = "CDM name",
+            choices = choices$admit_discharge_cdm_name,
+            selected = selected$admit_discharge_cdm_name,
+            multiple = TRUE,
+            options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
+          ),
+          shinyWidgets::pickerInput(
+            inputId = "admit_discharge_cohort_name",
+            label = "Cohort name",
+            choices = choices$admit_discharge_cohort_name,
+            selected = selected$admit_discharge_cohort_name,
+            multiple = TRUE,
+            options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
+          ),
+          position = "left"
+        ),
+        bslib::navset_card_tab(
+          bslib::nav_panel(
+            title = "Admit",
+            bslib::card(
+              full_screen = TRUE,
+              gt::gt_output("admit_table") |>
+                shinycssloaders::withSpinner()
+            )
+          ),
+          bslib::nav_panel(
+            title = "Discharge",
+            bslib::card(
+              full_screen = TRUE,
+              gt::gt_output("discharge_table") |>
+                shinycssloaders::withSpinner()
+            )
+          )
+        )
+      )
     )
+
   ),
 
   ## download ----

@@ -5,9 +5,12 @@ resultList <- list(
   cohort_code_use = list(result_type = "cohort_code_use"),
   summarise_cohort_count = list(result_type = "summarise_cohort_count"),
   summarise_cohort_attrition = list(result_type = "summarise_cohort_attrition"),
-  summarise_demographics = list(result_type = "summarise_characteristics", variable_name = c("Number records", "Number subjects", "Cohort start date", "Cohort end date", "Ses", "Ethnicity", "Age", "Age group", "Sex", "Prior observation", "Future observation", "Days in cohort", "Days to next record", "Mi type", "28-day mortality", "Prior comorbidities (-inf to 0)")),
+  summarise_demographics = list(result_type = "summarise_characteristics", variable_name = c("Number records", "Number subjects", "Cohort start date", "Ses", "Ethnicity", "Age", "Age group", "Sex", "Prior observation", "Future observation", "Mi type", "Prior comorbidities (-inf to 0)")),
+  summarise_death = list(result_type = "summarise_characteristics", variable_name = c("28-day mortality")),
   summarise_treatments = list(result_type = "summarise_characteristics", variable_name = c("Drugs [0, 14]", "Drugs [-28, 28]")),
-  summarise_procedures = list(result_type = "summarise_characteristics", variable_name = "Procedures [-28, 28]")
+  summarise_procedures = list(result_type = "summarise_characteristics", variable_name = "Procedures [-28, 28]"),
+  admit_discharge = list(result_type = "summarise_table", variable_name = c("number records", "number subjects", "admit", "discharge")),
+  timings = list(result_type = "summarise_table", variable_name = c("number records", "number subjects", "Days to treatment", "Days to procedure"))
 )
 
 source(file.path(getwd(), "functions.R"))
@@ -18,15 +21,38 @@ list.files(file.path(getwd(), "rawData"), pattern = ".csv$", full.names = TRUE) 
     res <- readr::read_csv(x, show_col_types = FALSE)
     cn <- unique(res$cdm_name)
     cn <- cn[!is.na(cn) & cn != "unknown"]
-    res |>
+    res <- res |>
       dplyr::mutate(cdm_name = dplyr::if_else(
         .data$cdm_name == "unknown", .env$cn, .data$cdm_name
       )) |>
+      dplyr::filter(variable_name != "settings" | .data$estimate_name != "table_name")
+    # same settings
+    set <- res |>
+      dplyr::filter(.data$variable_name == "settings") |>
+      dplyr::select("result_id", "estimate_name", "estimate_value") |>
+      dplyr::distinct() |>
+      tidyr::pivot_wider(names_from = "estimate_name", values_from = "estimate_value") |>
+      dplyr::group_by(dplyr::across(!"result_id")) |>
+      dplyr::mutate(new_id = dplyr::cur_group_id()) |>
+      dplyr::ungroup() |>
+      dplyr::select("result_id", "new_id") |>
+      dplyr::distinct()
+    res |>
+      dplyr::left_join(set, by = "result_id") |>
+      dplyr::select(!"result_id") |>
+      dplyr::rename(result_id = new_id) |>
+      dplyr::distinct() |>
       readr::write_csv(file = x)
   }) |>
   invisible()
 
 result <- omopgenerics::importSummarisedResult(file.path(getwd(), "rawData"))
+
+result <- result |>
+  omopgenerics::filterGroup(cohort_name != "ischemic_stroke")
+
+result$group_level <- stringr::str_replace_all(result$group_level, "stroke_broad", "Acute Ischemic Stroke")
+result$group_level <- stringr::str_replace_all(result$group_level, "acute_mi", "Acute Myocardial Infarction")
 
 resultChar <- result |>
   omopgenerics::filterSettings(result_type == "summarise_characteristics") |>
@@ -45,36 +71,106 @@ resultChar <- result |>
       replacement = "MI type"
     )
   ) |>
+  omopgenerics::splitGroup() |>
   omopgenerics::splitStrata() |>
+  dplyr::filter(mi_type %in% c("overall", "STEMI", "not STEMI")) |>
   dplyr::mutate(
+    cohort_name = dplyr::if_else(
+      mi_type != "overall",
+      paste0(cohort_name, " (", mi_type, ")"),
+      cohort_name
+    ),
     strata = dplyr::case_when(
       age_range != "overall" ~ paste0("Age group: ", age_range),
       ses != "overall" ~ paste0("SES: ", ses),
       sex != "overall" ~ paste0("Sex: ", sex),
-      mi_type != "overall" ~ paste0("MI type: ", mi_type),
       .default = "overall"
     ),
     strata_id = dplyr::case_when(
       age_range != "overall" ~ 2L,
       ses != "overall" ~ 3L,
       sex != "overall" ~ 4L,
-      mi_type != "overall" ~ 5L,
       .default = 1L
+    ),
+    variable_id = match(variable_name, c("Number records", "Number subjects", "Cohort start date", "SES", "Ethnicity", "Age", "Age group", "Sex", "Prior observation", "Future observation", "MI type", "Prior comorbidities (-inf to 0)"))
+  ) |>
+  dplyr::arrange(cdm_name, cohort_name, strata_id, strata, variable_id) |>
+  dplyr::select(!c("strata_id", "sex", "age_range", "ses", "mi_type", "variable_id")) |>
+  omopgenerics::uniteGroup(c("cohort_name")) |>
+  omopgenerics::uniteStrata(c("strata"))
+
+resTiming <- result |>
+  omopgenerics::filterSettings(result_type == "summarise_table") |>
+  dplyr::filter(variable_name %in% c(
+    "number records", "number subjects",
+    "thrombolytics_alteplase", "thrombolytics_tenecteplase",
+    "stroke_rx_procedures", "thromboendarterectomy",
+    "coronary_artery_bypass_graft", "percutaneous_coronary_intervention"
+  )) |>
+  omopgenerics::splitGroup() |>
+  omopgenerics::splitStrata() |>
+  dplyr::filter(mi_type %in% c("overall", "STEMI", "not STEMI")) |>
+  dplyr::mutate(
+    cohort_name = dplyr::if_else(
+      mi_type != "overall",
+      paste0(cohort_name, " (", mi_type, ")"),
+      cohort_name
+    ),
+    variable_level = dplyr::if_else(
+      variable_name %in% c("thrombolytics_alteplase", "thrombolytics_tenecteplase", "stroke_rx_procedures", "thromboendarterectomy", "coronary_artery_bypass_graft", "percutaneous_coronary_intervention"),
+      variable_name,
+      variable_level
+    ),
+    variable_name = dplyr::case_when(
+      variable_name %in% c("thrombolytics_alteplase", "thrombolytics_tenecteplase") ~ "Days to treatment",
+      variable_name %in% c("stroke_rx_procedures", "thromboendarterectomy", "coronary_artery_bypass_graft", "percutaneous_coronary_intervention") ~ "Days to procedure",
+      .default = variable_name
     )
   ) |>
-  dplyr::arrange(cdm_name, group_level, strata_id, strata) |>
-  dplyr::select(!c("strata_id")) |>
-  omopgenerics::uniteStrata(c("strata", "age_range", "ses", "sex", "mi_type"))
+  omopgenerics::uniteGroup("cohort_name") |>
+  omopgenerics::uniteStrata() |>
+  dplyr::select(!"mi_type")
+
+resAdDis <- result |>
+  omopgenerics::filterSettings(result_type == "summarise_table") |>
+  dplyr::filter(variable_name %in% c("admit", "discharge")) |>
+  omopgenerics::splitGroup() |>
+  omopgenerics::splitStrata() |>
+  dplyr::filter(mi_type %in% c("overall", "STEMI", "not STEMI")) |>
+  dplyr::mutate(
+    cohort_name = dplyr::if_else(
+      mi_type != "overall",
+      paste0(cohort_name, " (", mi_type, ")"),
+      cohort_name
+    )
+  ) |>
+  omopgenerics::uniteGroup("cohort_name") |>
+  omopgenerics::uniteStrata() |>
+  dplyr::select(!"mi_type")
+concepts <- sort(as.integer(unique(resAdDis$variable_level)))
+cdm <- omock::mockCdmFromDataset("empty_cdm")
+eq <- cdm$concept |>
+  dplyr::filter(.data$concept_id %in% .env$concepts) |>
+  dplyr::select("concept_id", "concept_name") |>
+  dplyr::collect() |>
+  dplyr::mutate(
+    variable_level = sprintf("%i", concept_id),
+    new_variable_level = paste0(concept_name, " (", variable_level, ")")
+  ) |>
+  dplyr::select("variable_level", "new_variable_level")
+rm(cdm)
+resAdDis <- resAdDis |>
+  dplyr::left_join(eq, by = "variable_level") |>
+  dplyr::mutate(variable_level = dplyr::coalesce(.data$new_variable_level, .data$variable_level)) |>
+  dplyr::select(!"new_variable_level")
 
 result <- omopgenerics::bind(
   result |>
-    omopgenerics::filterSettings(result_type != "summarise_characteristics"),
-  resultChar
+    omopgenerics::filterSettings(!result_type %in% c("summarise_characteristics", "summarise_table")),
+  resultChar,
+  resTiming,
+  resAdDis
 )
-
-result$group_level <- stringr::str_replace_all(result$group_level, "ischemic_stroke", "AIS_narrow")
-result$group_level <- stringr::str_replace_all(result$group_level, "stroke_broad", "AIS_broad")
-result$group_level <- stringr::str_replace_all(result$group_level, "acute_mi", "AMI")
 
 data <- prepareResult(result, resultList)
 
@@ -83,6 +179,11 @@ values <- getValues(result, resultList)
 # edit choices and values of interest
 choices <- values
 selected <- getSelected(values)
+
+selected$summarise_demographics_strata <- "overall"
+selected$summarise_death_strata <- "overall"
+selected$summarise_treatments_strata <- "overall"
+selected$summarise_procedures_strata <- "overall"
 
 save(data, choices, selected, values, file = file.path(getwd(), "data", "studyData.RData"))
 

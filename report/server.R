@@ -2,6 +2,7 @@
 # Be careful editing this file
 
 server <- function(input, output, session) {
+
   # download raw data -----
   output$download_raw <- shiny::downloadHandler(
     filename = "results.csv",
@@ -132,11 +133,11 @@ server <- function(input, output, session) {
       dplyr::filter(
         .data$cdm_name %in% input$summarise_cohort_count_cdm_name
       ) |>
-      omopgenerics::filterGroup(.data$cohort_name %in% input$summarise_cohort_count_cohort_name)
+      omopgenerics::filterGroup(.data$cohort_name %in% input$summarise_cohort_count_cohort_name) |>
+      dplyr::filter(variable_name == "Number subjects")
   })
   getSummariseCohortCountTable <- shiny::reactive({
     getSummariseCohortCountData() |>
-      dplyr::filter(variable_name == "Number subjects") |>
       CohortCharacteristics::tableCohortCount(
         header = "cdm_name",
         groupColumn = c("cohort_name"),
@@ -182,8 +183,7 @@ server <- function(input, output, session) {
   getSummariseCohortAttritionData <- shiny::reactive({
     data[["summarise_cohort_attrition"]] |>
       dplyr::filter(
-        .data$cdm_name %in% input$summarise_cohort_attrition_cdm_name,
-        .data$variable_name %in% input$summarise_cohort_attrition_variable_name
+        .data$cdm_name %in% input$summarise_cohort_attrition_cdm_name
       ) |>
       omopgenerics::filterGroup(.data$cohort_name %in% input$summarise_cohort_attrition_cohort_name)
   })
@@ -274,34 +274,75 @@ server <- function(input, output, session) {
     }
   )
 
+  # summarise_death -----
+  ## get summarise_death data
+  getSummariseDeathData <- shiny::reactive({
+    data[["summarise_death"]] |>
+      dplyr::filter(
+        .data$cdm_name %in% input$summarise_death_cdm_name
+      ) |>
+      omopgenerics::filterGroup(.data$cohort_name %in% input$summarise_death_cohort_name) |>
+      omopgenerics::filterStrata(
+        .data$strata %in% input$summarise_death_strata
+      )
+  })
+  getSummariseDeathTable <- shiny::reactive({
+    getSummariseDeathData() |>
+      CohortCharacteristics::tableCharacteristics(
+        header = input$summarise_death_table_header,
+        groupColumn = input$summarise_death_table_group_column,
+        hide = input$summarise_death_table_hide
+      )
+  })
+  output$summarise_death_table <- gt::render_gt({
+    getSummariseDeathTable()
+  })
+  output$summarise_death_table_download <- shiny::downloadHandler(
+    filename = paste0("table_characteristics.", input$summarise_death_table_format),
+    content = function(file) {
+      gt::gtsave(getSummariseDeathTable(), file)
+    }
+  )
+  getSummariseDeathPlot <- shiny::reactive({
+    getSummariseDeathData() |>
+      dplyr::filter(.data$estimate_name == "percentage") |>
+      CohortCharacteristics::plotCharacteristics(
+        plotType = "barplot",
+        facet = input$summarise_death_plot_facet,
+        colour = input$summarise_death_plot_colour
+      )
+  })
+  output$summarise_death_plot <- shiny::renderUI({
+    x <- getSummariseDeathPlot()
+    renderInteractivePlot(x, input$summarise_death_plot_interactive)
+  })
+  output$summarise_death_plot_download <- shiny::downloadHandler(
+    filename = "plot_characteristics.png",
+    content = function(file) {
+      ggplot2::ggsave(
+        filename = file,
+        plot = getSummariseDeathPlot(),
+        width = as.numeric(input$summarise_death_plot_width),
+        height = as.numeric(input$summarise_death_plot_height),
+        units = input$summarise_death_plot_units,
+        dpi = as.numeric(input$summarise_death_plot_dpi)
+      )
+    }
+  )
+
   # summarise_treatments -----
   ## get summarise_treatments data
   getSummariseTreatmentsData <- shiny::reactive({
-    x <- data[["summarise_treatments"]] |>
+    data[["summarise_treatments"]] |>
       dplyr::filter(
         .data$cdm_name %in% input$summarise_treatments_cdm_name,
         .data$variable_name %in% input$summarise_treatments_variable_name,
         .data$variable_level %in% input$summarise_treatments_variable_level
       ) |>
-      omopgenerics::filterGroup(.data$cohort_name %in% input$summarise_treatments_cohort_name)
-    inx <- input$summarise_treatments_strata
-    if (!"overall" %in% inx) {
-      x <- x |>
-        omopgenerics::filterStrata(strata != "overall")
-    }
-    if (!"age_group" %in% inx) {
-      x <- x |>
-        omopgenerics::filterStrata(!grepl("Age", strata))
-    }
-    if (!"sex" %in% inx) {
-      x <- x |>
-        omopgenerics::filterStrata(!grepl("SES", strata))
-    }
-    if (!"ses" %in% inx) {
-      x <- x |>
-        omopgenerics::filterStrata(!grepl("Sex", strata))
-    }
-    x
+      omopgenerics::filterGroup(.data$cohort_name %in% input$summarise_treatments_cohort_name) |>
+      omopgenerics::filterStrata(
+        .data$strata %in% input$summarise_treatments_strata
+      )
   })
   getSummariseTreatmentsTable <- shiny::reactive({
     getSummariseTreatmentsData() |>
@@ -353,31 +394,14 @@ server <- function(input, output, session) {
   # summarise_procedures -----
   ## get summarise_procedures data
   getSummariseProceduresData <- shiny::reactive({
-    x <- data[["summarise_procedures"]] |>
+    data[["summarise_procedures"]] |>
       dplyr::filter(
         .data$cdm_name %in% input$summarise_procedures_cdm_name,
         .data$variable_name %in% input$summarise_procedures_variable_name,
         .data$estimate_name %in% input$summarise_procedures_estimate_name
       ) |>
-      omopgenerics::filterGroup(.data$cohort_name %in% input$summarise_procedures_cohort_name)
-    inx <- input$summarise_treatments_strata
-    if (!"overall" %in% inx) {
-      x <- x |>
-        omopgenerics::filterStrata(strata != "overall")
-    }
-    if (!"age_group" %in% inx) {
-      x <- x |>
-        omopgenerics::filterStrata(!grepl("Age", strata))
-    }
-    if (!"sex" %in% inx) {
-      x <- x |>
-        omopgenerics::filterStrata(!grepl("SES", strata))
-    }
-    if (!"ses" %in% inx) {
-      x <- x |>
-        omopgenerics::filterStrata(!grepl("Sex", strata))
-    }
-    x
+      omopgenerics::filterGroup(.data$cohort_name %in% input$summarise_procedures_cohort_name) |>
+      omopgenerics::filterStrata(.data$strata %in% input$summarise_procedures_strata)
   })
   getSummariseProceduresTable <- shiny::reactive({
     getSummariseProceduresData() |>
@@ -425,4 +449,64 @@ server <- function(input, output, session) {
       )
     }
   )
+
+  # timings -----
+  getTimingsData <- shiny::reactive({
+    data[["timings"]] |>
+      dplyr::filter(
+        .data$cdm_name %in% input$timings_cdm_name
+      ) |>
+      omopgenerics::filterGroup(.data$cohort_name %in% input$timings_cohort_name)
+  })
+  output$timings_proc_table <- gt::render_gt({
+    getTimingsData() |>
+      dplyr::filter(is.na(variable_level) | variable_level %in% c(
+        "coronary_artery_bypass_graft", "percutaneous_coronary_intervention",
+        "stroke_rx_procedures", "thromboendarterectomy"
+      )) |>
+      visOmopResults::visOmopTable(
+        estimateName = c("missing N(%)" = "<count_missing> (<percentage_missing>%)"),
+        header = "cdm_name",
+        groupColumn = "cohort_name",
+      )
+  })
+  output$timings_med_table <- gt::render_gt({
+    getTimingsData() |>
+      dplyr::filter(is.na(variable_level) | variable_level %in% c(
+        "thrombolytics_alteplase", "thrombolytics_tenecteplase"
+      )) |>
+      visOmopResults::visOmopTable(
+        estimateName = c("missing N(%)" = "<count_missing> (<percentage_missing>%)"),
+        header = "cdm_name",
+        groupColumn = "cohort_name",
+      )
+  })
+
+  # admit -----
+  getAdDisData <- shiny::reactive({
+    data[["admit_discharge"]] |>
+      dplyr::filter(
+        .data$cdm_name %in% input$admit_discharge_cdm_name
+      ) |>
+      omopgenerics::filterGroup(.data$cohort_name %in% input$admit_discharge_cohort_name)
+  })
+  output$admit_table <- gt::render_gt({
+    getAdDisData() |>
+      dplyr::filter(variable_name != "discharge") |>
+      visOmopResults::visOmopTable(
+        header = "cdm_name",
+        groupColumn = "cohort_name",
+        estimateName = c("N(%)" = "<count> (<percentage>%)")
+      )
+  })
+  output$discharge_table <- gt::render_gt({
+    getAdDisData() |>
+      dplyr::filter(variable_name != "admit") |>
+      visOmopResults::visOmopTable(
+        header = "cdm_name",
+        groupColumn = "cohort_name",
+        estimateName = c("N(%)" = "<count> (<percentage>%)")
+      )
+  })
+
 }
