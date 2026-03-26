@@ -447,7 +447,44 @@ updateMessage <- shiny::div(
   shiny::icon("circle-exclamation"),
   "Filters have changed please consider to use the update content button!"
 )
-stylePlot <- function(gg) {
+stylePlot <- function(plot) {
   theme <- visOmopResults::themeVisOmop(style = "_brand.yml")
+  brand <- brand.yml::read_brand_yml("_brand.yml")
 
+  colours <- plotColours(plot)
+}
+plotColours <- function(plot) {
+
+  # Build the plot so scales are fully trained (limits, labels, etc.)
+  built <- ggplot2::ggplot_build(plot)
+
+  # ── Colour scale ────────────────────────────────────────────────────────────
+  colour_scale <- built$plot$scales$get_scales("colour")
+
+  colour_info <- if (!is.null(colour_scale)) {
+    labels <- colour_scale$get_labels()
+    list(
+      n_colours = length(labels),
+      labels    = labels,
+      values    = colour_scale$palette(length(labels))  # actual hex values
+    )
+  } else {
+    list(n_colours = 0, labels = NULL, values = NULL)
+  }
+
+  # ── Fill scale ───────────────────────────────────────────────────────────────
+  fill_scale <- built$plot$scales$get_scales("fill")
+
+  fill_info <- if (!is.null(fill_scale)) {
+    labels <- fill_scale$get_labels()
+    list(
+      n_fills = length(labels),
+      labels  = labels,
+      values  = fill_scale$palette(length(labels))
+    )
+  } else {
+    list(n_fills = 0, labels = NULL, values = NULL)
+  }
+
+  list(colour = colour_info, fill = fill_info)
 }
