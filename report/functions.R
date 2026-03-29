@@ -488,3 +488,85 @@ plotColours <- function(plot) {
 
   list(colour = colour_info, fill = fill_info)
 }
+
+stylePlot <- function(plot, style = "_brand.yml") {
+  theme  <- visOmopResults::themeVisOmop(style = style)
+  brand  <- brand.yml::read_brand_yml(path = style)
+
+  # new colours
+  newColors <- visOmopPlotPalette(brand = brand)
+
+  # colours in use
+  currentColors <- plotColours(plot = plot)
+
+  # edit color
+  if (currentColors$colour$n_colours > 0 && !is.null(newColors$colour_palette)) {
+    colors <- getPalette(colors = newColors$colour_palette, n = currentColors$colour$n_colours)
+    plot <- plot +
+      ggplot2::scale_colour_manual(values = colors)
+  }
+
+  # edit fill
+  if (currentColors$colour$n_colours > 0 && !is.null(newColors$colour_palette)) {
+    colors <- getPalette(colors = newColors$colour_palette, n = currentColors$colour$n_colours)
+    plot <- plot +
+      ggplot2::scale_colour_manual(values = colors)
+  }
+
+  plot +
+    theme
+}
+visOmopPlotPalette <- function(brand) {
+  colourPalette <- brand$defaults$visOmopResults$colour_palette
+  fillPalette <- brand$defaults$visOmopResults$fill_palette
+
+  # get names from palette if needed
+  if (!is.null(colourPalette)) {
+    colourPalette <- colourPalette |>
+      purrr::map_chr(\(x) brand.yml::brand_color_pluck(brand, x))
+  }
+
+  if (!is.null(fillPalette)) {
+    fillPalette <- fillPalette |>
+      purrr::map_chr(\(x) brand.yml::brand_color_pluck(brand, x))
+  } else {
+    fillPalette <- colourPalette
+  }
+
+  list(colour_palette = colourPalette, fill_palette = fillPalette)
+}
+hex2hue <- function(h) {
+  r <- strtoi(substr(h, 2, 3), 16) / 255
+  g <- strtoi(substr(h, 4, 5), 16) / 255
+  b <- strtoi(substr(h, 6, 7), 16) / 255
+  max_c <- max(r, g, b)
+  min_c <- min(r, g, b)
+  if (max_c == min_c) {
+    return(0)
+  }
+  d <- max_c - min_c
+  hue <- switch(which.max(c(r, g, b)),
+                `1` = (g - b) / d + ifelse(g < b, 6, 0),
+                `2` = (b - r) / d + 2,
+                `3` = (r - g) / d + 4)
+  (hue / 6) * 360
+}
+sortHue <- function(hex, ref) {
+  l <- length(hex)
+  if (l > 2) {
+    hue <- purrr::map_dbl(hex, hex2hue)
+    hex <- hex[order(hue)]
+  }
+  id <- which(hex == ref)
+  hex[c(id:l, seq_len(id-1))]
+}
+getPalette <- function(colors, n) {
+  if (n <= length(colors)) {
+    colors <- sortHue(colors[1:n], colors[1])
+  } else {
+    ramp <- colorRampPalette(c(sortHue(colors, colors[1]), colors[1]))
+    colors <- ramp(n = n + 1)[1:n]
+  }
+  return(colors)
+}
+colors <- c("#3db28c", "#a84c6f", "#29235c", "#7db356", "#f98e2b", "#475da7", "#addad9")
