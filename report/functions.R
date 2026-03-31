@@ -436,6 +436,7 @@ getSelected <- function(choices) {
   })
 }
 renderInteractivePlot <- function(plt, interactive) {
+  plt <- stylePlot(plt)
   if (interactive) {
     plotly::renderPlotly(plt)
   } else {
@@ -447,12 +448,6 @@ updateMessage <- shiny::div(
   shiny::icon("circle-exclamation"),
   "Filters have changed please consider to use the update content button!"
 )
-stylePlot <- function(plot) {
-  theme <- visOmopResults::themeVisOmop(style = "_brand.yml")
-  brand <- brand.yml::read_brand_yml("_brand.yml")
-
-  colours <- plotColours(plot)
-}
 plotColours <- function(plot) {
 
   # Build the plot so scales are fully trained (limits, labels, etc.)
@@ -488,7 +483,6 @@ plotColours <- function(plot) {
 
   list(colour = colour_info, fill = fill_info)
 }
-
 stylePlot <- function(plot, style = "_brand.yml") {
   theme  <- visOmopResults::themeVisOmop(style = style)
   brand  <- brand.yml::read_brand_yml(path = style)
@@ -501,24 +495,26 @@ stylePlot <- function(plot, style = "_brand.yml") {
 
   # edit color
   if (currentColors$colour$n_colours > 0 && !is.null(newColors$colour_palette)) {
-    colors <- getPalette(colors = newColors$colour_palette, n = currentColors$colour$n_colours)
+    colors <- getPalette(colors = newColors$colour_palette, n = currentColors$colour$n_colours) |>
+      rlang::set_names(currentColors$colour$labels)
     plot <- plot +
       ggplot2::scale_colour_manual(values = colors)
   }
 
   # edit fill
-  if (currentColors$colour$n_colours > 0 && !is.null(newColors$colour_palette)) {
-    colors <- getPalette(colors = newColors$colour_palette, n = currentColors$colour$n_colours)
+  if (currentColors$fill$n_fills > 0 && !is.null(newColors$fill_palette)) {
+    colors <- getPalette(colors = newColors$fill_palette, n = currentColors$fill$n_fills) |>
+      rlang::set_names(currentColors$fill$labels)
     plot <- plot +
-      ggplot2::scale_colour_manual(values = colors)
+      ggplot2::scale_fill_manual(values = colors)
   }
 
   plot +
     theme
 }
 visOmopPlotPalette <- function(brand) {
-  colourPalette <- brand$defaults$visOmopResults$colour_palette
-  fillPalette <- brand$defaults$visOmopResults$fill_palette
+  colourPalette <- brand$defaults$visOmopResults$plot$colour_palette
+  fillPalette <- brand$defaults$visOmopResults$plot$fill_palette
 
   # get names from palette if needed
   if (!is.null(colourPalette)) {
@@ -569,4 +565,3 @@ getPalette <- function(colors, n) {
   }
   return(colors)
 }
-colors <- c("#3db28c", "#a84c6f", "#29235c", "#7db356", "#f98e2b", "#475da7", "#addad9")

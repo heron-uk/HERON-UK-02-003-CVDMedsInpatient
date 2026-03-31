@@ -21,6 +21,7 @@ defaults:
       preset: flatly
   visOmopResults:
     plot:
+      colour_palette: ['#3db28c', '#a84c6f', '#29235c', '#7db356', '#f98e2b', '#475da7', '#addad9']
       font_family: sans
       font_size: '11'
       background_color: white
