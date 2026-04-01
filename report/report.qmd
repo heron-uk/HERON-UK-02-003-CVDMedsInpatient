@@ -14,6 +14,10 @@ lof: true
 # Load necessary packages ----
 library(OmopSketch)
 library(visOmopResults)
+library(dplyr)
+library(omopgenerics)
+library(flextable)
+library(ggplot2)
 
 # Load results stored in the package ----
 fileData <- file.path(getwd(), "data", "studyData.RData")
@@ -45,8 +49,6 @@ setGlobalTableOptions(type = "flextable")
 tt <- "flextable"
 ```
 
-## Database metadata
-
 :::{custom-style="Caption"}
 **Table 1:** Database metadata.
 :::
@@ -54,8 +56,6 @@ tt <- "flextable"
 ```{r}
 OmopSketch::tableOmopSnapshot(data[["summarise_omop_snapshot"]], type = tt)
 ```
-
-## Demographics characterisation MI
 
 :::{custom-style="Caption"}
 **Table 2:** Demographics characterisation at first record of Myocardial infarction.
@@ -67,174 +67,183 @@ arrangeCharacteristics <- function(x) {
     dplyr::mutate(order_id = dplyr::case_when(
       variable_name == "Number records" ~ 1L,
       variable_name == "Number subjects" ~ 2L,
-      variable_name == "Cohort start date" ~ 3L,
       variable_name == "Sex" ~ 5L,
       variable_name == "Age" ~ 6L,
       variable_name == "Age group" ~ 7L,
-      variable_name == "Ethnicity" ~ 8L,
+      variable_name == "Ethnicity group" ~ 8L,
       variable_name == "SES" ~ 9L,
-      variable_name == "Prior observation" ~ 10L,
-      variable_name == "Future observation" ~ 11L,
-      variable_name == "MI type" ~ 12L,
-      variable_name == "28-day mortality" ~ 13L,
-      variable_name == "Prior comorbidities (-inf to 0)" ~ 14L
+      variable_name == "MI type" ~ 12L
     )) |>
     dplyr::arrange(order_id, variable_level) |>
     dplyr::select(!"order_id")
 }
 data$summarise_demographics |>
-  arrangeCharacteristics() |>
-  omopgenerics::filterGroup(cohort_name == "AMI") |>
-  omopgenerics::filterStrata(strata == "overall") |>
-  CohortCharacteristics::tableCharacteristics(
-    hide = c("strata", "cohort_name", "table_name", "age_range", "ses", "sex", "mi_type"),
-    header = c("cdm_name"),
-    type = tt
-  )
-```
-
-### AMI by type
-
-```{r}
-data$summarise_demographics |>
-  arrangeCharacteristics() |>
-  omopgenerics::filterGroup(cohort_name == "AMI") |>
-  omopgenerics::filterStrata(mi_type != "overall") |>
-  CohortCharacteristics::tableCharacteristics(
-    hide = c("strata", "cohort_name", "table_name", "age_range", "ses", "sex"),
-    header = c("cdm_name", "mi_type"),
-    type = tt
-  )
-```
-
-### Compare sex MI
-
-```{r, results='asis'}
-data$summarise_demographics |>
-  arrangeCharacteristics() |>
-  omopgenerics::filterGroup(cohort_name == "AMI") |>
-  omopgenerics::filterStrata(sex != "overall") |>
-  CohortCharacteristics::tableCharacteristics(
-    hide = c("strata", "cohort_name", "table_name", "age_range", "ses", "mi_type"),
-    header = c("cdm_name", "sex"),
-    type = tt
-  )
-```
-
-## Stroke
-
-```{r}
-data$summarise_demographics |>
-  arrangeCharacteristics() |>
-  omopgenerics::filterGroup(grepl("AIS", cohort_name)) |>
-  omopgenerics::filterStrata(strata == "overall") |>
-  CohortCharacteristics::tableCharacteristics(
-    hide = c("strata", "table_name", "age_range", "ses", "sex", "mi_type"),
-    header = c("cdm_name", "cohort_name"),
-    type = tt
-  )
-```
-
-
-### RESULTS (ABM)
-
-##Supplementary Table 1: Features of each hospital 
-
-##Table 1: General description of the populations: AIS and AMI counts and sociodemographic and comorbidities (for AIS and AMI)
-
-
-##Table 2: the pattern of use of medications (antiplatelets, anticoagulants, statins, thrombolytics) (for AIS and AMI)across centres
-
-```{r, fig.height=10}
-x <- data$summarise_treatments |>
-  omopgenerics::tidy() |>
-  dplyr::filter(
-    !grepl("Beta blocker ", variable_level),
-    !grepl("Acei arbs ", variable_level),
-    !grepl("Calcium channel blocker ", variable_level),
-    !grepl("Thrombin inhibitors ", variable_level),
-    !grepl("Thiazide ", variable_level),
-    !grepl("Pcsk9", variable_level)
+  filter(
+    variable_name %in% c(
+      "Number records", "Number subjects", "Sex", "Age", "Age group",
+      "Ethnicity group", "SES", "MI type", "Socio-economic status"
+    ),
+    variable_level != "Male" | is.na(variable_level),
+    !estimate_name %in% c("median", "q25", "q75", "min", "max"),
+    group_level %in% c(
+      "Acute Ischemic Stroke", "Acute Myocardial Infarction"
+    ),
+    strata_level == "overall"
   ) |>
-  dplyr::arrange(variable_level)
-ggplot2::ggplot(data = x, mapping = ggplot2::aes(x = variable_level, y = percentage, fill = variable_level)) +
-  ggplot2::geom_col() +
-  ggplot2::coord_flip() +
-  ggplot2::facet_grid(cohort_name ~ cdm_name) +
-  ggplot2::theme(legend.position = "none")
-```
-
-
-	MI and AIS: statins use
-	AIS-AF: DOAC, warfarin 
-
-
-### Table 3: the patterns of use of procedures (PCI, storke_procedures_rx (EVT, intra and extracranial stenting))
-
-##Table 4: timing to reperfussion treatment (admission>>thrombolytics, admission>PCI/stroke_procedures_rx) (Lancshire). 
-#Figure 1: differences for age
-#Figure 2: differences for SES
-
-##Figure 3 and 4: statins use (for AIS and AMI): differences for sex and age
-
-## Statin
-
-```{r, fig.height=10}
-xs <- x |>
-  dplyr::filter(variable_level == "Statin") |>
-  dplyr::mutate(
-    strata_group = stringr::str_extract(strata, "^[^:]+")
+  arrange(group_level, cdm_name) |>
+  arrangeCharacteristics() |>
+  mutate(
+    variable_level = coalesce(variable_level, variable_name),
+    variable_name = case_when(
+      variable_name == "Age group" ~ "Age group — N(%)",
+      variable_name == "Ethnicity group" ~ "Ethnicity — N(%)",
+      variable_name == "Socio-economic status" ~ "Socio-economic status — N(%)",
+      .default = "Demographics"
+    ),
+    variable_level = if_else(
+      variable_name == "Demographics",
+      case_when(
+        variable_level == "Number records" ~ "Number records — N",
+        variable_level == "Number subjects" ~ "Number subjects — N",
+        variable_level == "Female" ~ "Female — N (%)",
+        variable_level == "Age" ~ "Age — Mean (SD)",
+        .default = variable_level
+      ),
+      variable_level
+    )
+  ) |>
+  CohortCharacteristics::tableCharacteristics(
+    hide = c("strata", "table_name", "age_range", "ses", "sex", "mi_type", "estimate_name"),
+    header = c("cohort_name", "cdm_name"),
+    groupColumn = "variable_name",
+    type = tt
   )
-ggplot2::ggplot(data = xs, mapping = ggplot2::aes(x = strata, y = percentage, fill = strata_group)) +
-  ggplot2::geom_col() +
-  ggplot2::coord_flip() +
-  ggplot2::facet_grid(cohort_name ~ cdm_name) +
-  ggplot2::theme(legend.position = "none")
 ```
 
-## P2y12 inhibitors ticagrelor
-
-```{r, fig.height=10}
-xs <- x |>
-  dplyr::filter(variable_level == "P2y12 inhibitors ticagrelor") |>
-  dplyr::mutate(
-    strata_group = stringr::str_extract(strata, "^[^:]+")
-  )
-ggplot2::ggplot(data = xs, mapping = ggplot2::aes(x = strata, y = percentage, fill = strata_group)) +
-  ggplot2::geom_col() +
-  ggplot2::coord_flip() +
-  ggplot2::facet_grid(cohort_name ~ cdm_name) +
-  ggplot2::theme(legend.position = "none")
-```
-##Figure 5 and 6: Ticagrelor vs clopidogrel (for AIS and AMI): differences for sex and age
-
-# ```{r, fig.height=10}
-# xs <- x |>
-#   dplyr::filter(variable_level %in% c("P2y12 inhibitors ticagrelor", "P2y12 inhibitors clopidogrel")) |>
-#   dplyr::mutate(
-#     strata_group = stringr::str_extract(strata, "^[^:]+")
-#   )
-# ggplot2::ggplot(data = xs, mapping = ggplot2::aes(x = strata, y = percentage, fill = strata_group)) +
-#   ggplot2::geom_col() +
-#   ggplot2::coord_flip() +
-#   ggplot2::facet_grid(cohort_name ~ cdm_name) +
-#   ggplot2::theme(legend.position = "none")
-# ```
+:::{custom-style="Caption"}
+**Table 3:** Medications.
+:::
 
 ```{r}
-x <- data$summarise_procedures |>
-  omopgenerics::tidy() |>
-  dplyr::filter(strata == "overall") |>
-  dplyr::arrange(variable_level)
-ggplot2::ggplot(data = x, mapping = ggplot2::aes(x = variable_level, y = percentage, fill = variable_level)) +
-  ggplot2::geom_col() +
-  ggplot2::coord_flip() +
-  ggplot2::facet_grid(cohort_name ~ cdm_name) +
-  ggplot2::theme(legend.position = "none")
+data$summarise_treatments |>
+  filter(
+    group_level %in% c(
+      "Acute Ischemic Stroke", "Acute Myocardial Infarction"
+    ),
+    strata_level == "overall"
+  ) |>
+  arrange(group_level, cdm_name) |>
+  arrangeCharacteristics() |>
+  CohortCharacteristics::tableCharacteristics(
+    hide = c("variable_name", "strata", "table_name", "age_range", "ses", "sex", "mi_type", "estimate_name"),
+    header = c("cohort_name", "cdm_name"),
+    type = tt
+  )
 ```
 
+```{r}
+x <- data$summarise_treatments |>
+  tidy() |>
+  filter(
+    cohort_name == "Acute Myocardial Infarction",
+    !grepl("cangrelor", variable_level),
+    grepl("P2y12", variable_level),
+    grepl("Sex", strata),
+    !grepl("STEMI", cohort_name)
+  ) |>
+  mutate(
+    drug = if_else(
+      variable_level == "P2y12 inhibitors",
+      "overall",
+      gsub("P2y12 inhibitors ", "", variable_level)
+    ) |>
+      factor(c("overall", "clopidogrel", "prasugrel", "ticagrelor")),
+    sex = gsub("Sex: ", "", strata)
+  )
+p <- ggplot(data = x, mapping = aes(x = drug, y = percentage, fill = sex)) +
+  geom_col(position = "dodge") +
+  facet_grid(. ~ cdm_name) +
+  labs(fill = "", y = "Percentage (%)", x = "") +
+  theme_bw()
+stylePlot(p) +
+  theme(legend.position = "top")
+```
+
+:::{custom-style="Caption"}
+**Figure 1:** P2Y12 inhibitors for AMI.
+:::
+
+```{r}
+x <- data$summarise_treatments |>
+  tidy() |>
+  filter(
+    cohort_name == "Acute Ischemic Stroke",
+    variable_level %in% c("Doacs", "Warfarin"),
+    grepl("Age", strata)
+  ) |>
+  mutate(
+    drug = if_else(
+      variable_level == "Doacs",
+      "DOACs",
+      "Warfarin"
+    ),
+    age = gsub("Age group: ", "", strata)
+  )
+p <- ggplot(data = x, mapping = aes(x = drug, y = percentage, fill = age)) +
+  geom_col(position = "dodge") +
+  facet_grid(. ~ cdm_name) +
+  labs(fill = "Age group", y = "Percentage (%)", x = "") +
+  theme_bw()
+stylePlot(p) +
+  theme(legend.position = "top")
+```
+
+:::{custom-style="Caption"}
+**Figure 2:** Warfarin and DOACS for Stroke.
+:::
+
+```{r}
+x <- data$summarise_treatments |>
+  tidy() |>
+  filter(
+    variable_level == "Statin",
+    !grepl("STEMI", cohort_name),
+    grepl("Sex", strata)
+  ) |>
+  mutate(sex = gsub("Sex: ", "", strata), variable_level = "")
+p <- ggplot(data = x, mapping = aes(x = variable_level, y = percentage, fill = sex)) +
+  geom_col(position = "dodge") +
+  facet_grid(cohort_name ~ cdm_name) +
+  labs(fill = "Sex", y = "Percentage (%)", x = "") +
+  theme_bw()
+stylePlot(p) +
+  theme(legend.position = "top", strip.text.y.right = element_text(angle = -90))
+```
+
+:::{custom-style="Caption"}
+**Figure 3:** Statins by sex.
+:::
+
+:::{custom-style="Caption"}
+**Table 4:** Procedures.
+:::
+
+```{r}
+data$summarise_procedures |>
+  filter(
+    strata_level == "overall",
+    grepl("Procedures", variable_name),
+    !grepl("IDRIL", cdm_name)
+  ) |>
+  arrange(group_level, cdm_name) |>
+  CohortCharacteristics::tableCharacteristics(
+    hide = c("variable_name", "strata", "table_name", "age_range", "ses", "sex", "mi_type", "estimate_name"),
+    header = c("cdm_name"),
+    groupColumn = "cohort_name",
+    type = tt
+  )
+```
+
+# radial plots
 
 
-##Figure 7 and 8 (AIS-AF): Anticoagulants use (DOAC vs warfarin): differences for sex and age
-
-##Table 5: Outcomes (for AIS and AMI)>> discharge destination and death

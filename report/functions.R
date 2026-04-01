@@ -449,39 +449,23 @@ updateMessage <- shiny::div(
   "Filters have changed please consider to use the update content button!"
 )
 plotColours <- function(plot) {
-
-  # Build the plot so scales are fully trained (limits, labels, etc.)
   built <- ggplot2::ggplot_build(plot)
 
-  # ── Colour scale ────────────────────────────────────────────────────────────
   colour_scale <- built$plot$scales$get_scales("colour")
-
-  colour_info <- if (!is.null(colour_scale)) {
-    labels <- colour_scale$get_labels()
-    list(
-      n_colours = length(labels),
-      labels    = labels,
-      values    = colour_scale$palette(length(labels))  # actual hex values
-    )
+  if (!is.null(colour_scale)) {
+    colorLabels <- colour_scale$get_labels()
   } else {
-    list(n_colours = 0, labels = NULL, values = NULL)
+    colorLabels <- character()
   }
 
-  # ── Fill scale ───────────────────────────────────────────────────────────────
   fill_scale <- built$plot$scales$get_scales("fill")
-
-  fill_info <- if (!is.null(fill_scale)) {
-    labels <- fill_scale$get_labels()
-    list(
-      n_fills = length(labels),
-      labels  = labels,
-      values  = fill_scale$palette(length(labels))
-    )
+  if (!is.null(fill_scale)) {
+    fillLabels <- fill_scale$get_labels()
   } else {
-    list(n_fills = 0, labels = NULL, values = NULL)
+    fillLabels <- character()
   }
 
-  list(colour = colour_info, fill = fill_info)
+  list(color = colorLabels, fill = fillLabels)
 }
 stylePlot <- function(plot, style = "_brand.yml") {
   theme  <- visOmopResults::themeVisOmop(style = style)
@@ -494,19 +478,19 @@ stylePlot <- function(plot, style = "_brand.yml") {
   currentColors <- plotColours(plot = plot)
 
   # edit color
-  if (currentColors$colour$n_colours > 0 && !is.null(newColors$colour_palette)) {
-    colors <- getPalette(colors = newColors$colour_palette, n = currentColors$colour$n_colours) |>
-      rlang::set_names(currentColors$colour$labels)
+  if (length(currentColors$color) > 0 && !is.null(newColors$color)) {
+    values <- getPalette(colors = newColors$color, n = length(currentColors$color)) |>
+      rlang::set_names(currentColors$color)
     plot <- plot +
-      ggplot2::scale_colour_manual(values = colors)
+      ggplot2::scale_colour_manual(values = values)
   }
 
   # edit fill
-  if (currentColors$fill$n_fills > 0 && !is.null(newColors$fill_palette)) {
-    colors <- getPalette(colors = newColors$fill_palette, n = currentColors$fill$n_fills) |>
-      rlang::set_names(currentColors$fill$labels)
+  if (length(currentColors$fill) > 0 && !is.null(newColors$fill)) {
+    values <- getPalette(colors = newColors$fill, n = length(currentColors$fill)) |>
+      rlang::set_names(currentColors$fill)
     plot <- plot +
-      ggplot2::scale_fill_manual(values = colors)
+      ggplot2::scale_fill_manual(values = values)
   }
 
   plot +
@@ -529,7 +513,7 @@ visOmopPlotPalette <- function(brand) {
     fillPalette <- colourPalette
   }
 
-  list(colour_palette = colourPalette, fill_palette = fillPalette)
+  list(color = colourPalette, fill = fillPalette)
 }
 hex2hue <- function(h) {
   r <- strtoi(substr(h, 2, 3), 16) / 255
