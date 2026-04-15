@@ -1,8 +1,8 @@
 ---
 title: "MI/Stroke Inpatient"
-format: html
-  # docx:
-  #   fig-cap-location: top
+format:
+  docx:
+    fig-cap-location: top
 execute:
   echo: false
   message: false
@@ -246,4 +246,73 @@ data$summarise_procedures |>
 
 # radial plots
 
+```{r}
+library(ggplot2)
+library(dplyr)
+
+data <- tribble(
+  ~group, ~variable, ~value,
+  "Sex", "Female", 50,
+  "SES", "Q1", 20,
+  "SES", "Q2", 20,
+  "SES", "Q3", 20,
+  "SES", "Q4", 20,
+  "SES", "Q5", 20,
+  "Age group", "10-20", 10,
+  "Age group", "20-30", 10,
+  "Age group", "30-40", 10,
+  "Age group", "40-50", 10,
+  "Age group", "50-60", 10,
+  "Age group", "60-70", 10
+)
+
+# Add gap rows between groups and order variables
+data_plot <- data |>
+  mutate(variable = paste0(group, ": ", variable)) |>
+  bind_rows(
+    tibble(group = "gap", variable = c("gap0", "gap1", "gap2", "gap3"), value = 0)
+  ) |>
+  mutate(
+    variable = factor(variable, levels = c(
+      "gap0",
+      "Sex: Female",
+      "gap1",
+      "SES: Q1", "SES: Q2", "SES: Q3", "SES: Q4", "SES: Q5",
+      "gap2",
+      "Age group: 10-20", "Age group: 20-30", "Age group: 30-40",
+      "Age group: 40-50", "Age group: 50-60", "Age group: 60-70",
+      "gap3"
+    ))
+  )
+
+ggplot(data_plot, aes(x = variable, y = value, fill = group)) +
+  geom_col(width = 0.8) +
+  coord_radial(
+    inner.radius = 0.3,      # donut hole — avoids crowding in centre
+    rotate_angle = TRUE,     # rotates axis text to follow the circle
+    expand = FALSE,
+    r_axis_inside = TRUE
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Sex"       = "#E69F00",
+      "SES"       = "#56B4E9",
+      "Age group" = "#009E73",
+      "gap"       = "transparent"
+    )
+  ) +
+  scale_x_discrete(
+    labels = function(x) ifelse(grepl("gap", x), "", gsub(".*: ", "", x))
+  ) +
+  guides(
+    theta = guide_axis_theta(angle = 0)  # keeps theta labels horizontal
+  ) +
+  labs(x = "", y = "", fill = "") +
+  theme_bw() +
+  theme(
+    panel.grid      = element_blank(),
+    legend.position = "top",
+    strip.text      = element_text(face = "bold")
+  )
+```
 
