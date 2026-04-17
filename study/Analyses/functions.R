@@ -126,8 +126,16 @@ cdm$ethnicity_table <- cdm$person |>
 
 omopgenerics::dropSourceTable(cdm = cdm, name = c("eth_val", "eth_con"))
 
-# summarise ethnicity values
-results[["ethncity"]] <- cdm$person |>
+## Add ethnicity
+addEthnicity <- function(cohort) {
+  cdm <- omopgenerics::cdmReference(cohort)
+  cohort |>
+    dplyr::left_join(cdm$ethnicity_table, by = "subject_id") |>
+    dplyr::compute(name = omopgenerics::tableName(cohort))
+}
+
+# summarise values
+results[["summary"]] <- cdm$person |>
   group_by(variable_level = race_source_concept_id) |>
   tally(name = "count") |>
   collect() |>
@@ -167,11 +175,3 @@ results[["ethncity"]] <- cdm$person |>
     estimates = c("count"),
     settings = "result_type"
   )
-
-## Add ethnicity
-addEthnicity <- function(cohort) {
-  cdm <- omopgenerics::cdmReference(cohort)
-  cohort |>
-    dplyr::left_join(cdm$ethnicity_table, by = "subject_id") |>
-    dplyr::compute(name = omopgenerics::tableName(cohort))
-}
