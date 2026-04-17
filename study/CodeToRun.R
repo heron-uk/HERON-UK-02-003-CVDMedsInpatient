@@ -68,7 +68,7 @@ cdm <- CDMConnector::cdmFromCon(
 
 
 # Hospital databases should set the start date as "2022-01-01". 
-study_start <- "2012-01-01"
+study_start <- "2022-01-01"
 
 min_cell_count <- 5
 
