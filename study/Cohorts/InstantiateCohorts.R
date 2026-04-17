@@ -1,5 +1,5 @@
 logMessage("GET INPATIENT COHORT")
-inpatientCodes <- c(9201, 262, 9203)
+inpatientCodes <- c(9201L, 262L, 9203L)
 cdm$inpatient_visit <- conceptCohort(
   cdm = cdm,
   conceptSet = list(inpatient = inpatientCodes),
@@ -113,7 +113,7 @@ if (n > 1) {
     defaultNames <- c(defaultNames, paste0(all, "_", k))
   }
   for (k in seq_len(n)) {
-    newNames <- c(newNames, paste0(newNames, "_", cohorts[k]))
+    newNames <- c(newNames, paste0(all, "_", cohorts[k]))
   } 
   cdm$drug_initiators <- cdm$drug_initiators |>
     copyCohorts(name = "drug_initiators", n = n) |>

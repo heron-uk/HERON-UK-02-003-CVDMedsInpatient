@@ -112,7 +112,7 @@ ethConcepts <- tibble(
     "Black", "Mix", "Mix", "Mix", "White", "Asian", "Black"
   )
 )
-cdm <- insertTable(cdm = cdm, name = "eth_con", table = eth)
+cdm <- insertTable(cdm = cdm, name = "eth_con", table = ethConcepts)
 ethValue <- read_csv(here::here("Analyses", "ethnicity.csv"), show_col_types = FALSE) |>
   mutate(
     race_source_value = tolower(.data$variable_level),
@@ -120,7 +120,7 @@ ethValue <- read_csv(here::here("Analyses", "ethnicity.csv"), show_col_types = F
   ) |>
   select("race_source_value", "ethnicity_value") |>
   distinct()
-cdm <- insertTable(cdm = cdm, name = "eth_val", table = eth)
+cdm <- insertTable(cdm = cdm, name = "eth_val", table = ethValue)
 cdm$ethnicity_table <- cdm$person |>
   select("person_id", "race_source_concept_id", "race_source_value") |>
   mutate(race_source_value = tolower(.data$race_source_value)) |>
@@ -134,6 +134,41 @@ cdm$ethnicity_table <- cdm$person |>
   compute(name = "ethnicity_table")
 
 omopgenerics::dropSourceTable(cdm = cdm, name = c("eth_val", "eth_con"))
+
+# summarise ethnicity values
+results[["ethncity"]] <- cdm$person |>
+  group_by(variable_level = race_source_concept_id) |>
+  tally(name = "count") |>
+  collect() |>
+  mutate(
+    variable_name = "race_source_concept_id",
+    variable_level = as.character(variable_level)
+  ) |>
+  union_all(
+    cdm$person |>
+      group_by(variable_level = race_source_value) |>
+      tally(name = "count") |>
+      collect() |>
+      mutate(
+        variable_name = "race_source_value",
+        variable_level = as.character(variable_level)
+      )
+  ) |>
+  bind_rows(
+    cdm$ethnicity_table |>
+      group_by(variable_level = ethnicity) |>
+      tally(name = "count") |>
+      collect() |>
+      mutate(variable_name = "ethnicity")
+  ) |>
+  mutate(
+    result_type = "ethnicity_summary",
+    cdm_name = cdmName(cdm)
+  ) |>
+  transformToSummarisedResult(
+    estimates = c("count"),
+    settings = "result_type"
+  )
 
 ## Add ethnicity
 addEthnicity <- function(cohort) {

@@ -13,6 +13,7 @@ results[["cohort_code_use_mi"]] <- summariseCohortCodeUse(
 )
 results[["cohort_code_use_stroke"]] <-summariseCohortCodeUse(
   cohortTable = "index_cohorts",
+  cohortId = "stroke",
   cdm = cdm,
   timing = "entry",
   x = conditions["stroke"]
@@ -81,7 +82,6 @@ results[["characterisation"]] <- cdm$index_cohorts |>
   )
 
 logMessage("Characterise drug initiatiors")
-
 results[["characterisation_drug_initiators"]] <- cdm$drug_initiators |>
   addEthnicity() |>
   addSES() |>
@@ -92,6 +92,7 @@ results[["characterisation_drug_initiators"]] <- cdm$drug_initiators |>
 
 logMessage("Drug initiators MI")
 x <- cdm$index_cohorts |>
+  addAge(ageGroup = ageGroupChar, name = uniqueTableName()) |>
   addConceptIntersectFlag(
     conceptSet = drugs[nms], 
     indexDate = "cohort_start_date",
@@ -106,19 +107,19 @@ x <- cdm$index_cohorts |>
   ) |>
   addCohortName() |>
   select(
-    "cohort_name", "age_range", "sex", "ses", "ethnicity", "mi_type", 
+    "cohort_name", "age_group", "sex", "ses", "ethnicity", "mi_type", 
     starts_with("drug_")
   ) |>
   collect()
 
 x <- x |>
   mutate(
-    age_range = factor(age_range, levels = c(
+    age_group = factor(age_group, levels = c(
       "60 to 69", "18 to 39", "40 to 49", "50 to 59", "70 to 79", "80 to 89", 
       "90 or above"
     )),
     sex = factor(sex, levels = c("Female", "Male")),
-    ethnicity = factor(ethnicity, levels = unique(c("White", x$ethnicity))),
+    ethnicity = factor(ethnicity, levels = unique(c("White", "Asian", "Black", "Mix", "Other", "Unknown"))),
     ses = factor(ses, c("1", "2", "3", "4", "5", "Missing")),
     mi_type = factor(mi_type, c("not STEMI", "STEMI", "Both", "None"))
   )
@@ -130,17 +131,17 @@ for (drug in drugs) {
   for (cohort in cohorts) {
     xx <- x |>
       filter(cohort_name == cohort) |>
-      select("age_range", "sex", "ses", "ethnicity", "mi_type", initiate = all_of(drug))
+      select("age_group", "sex", "ses", "ethnicity", "mi_type", initiate = all_of(drug))
     vars <- xx |>
-      select("age_range", "sex", "ses", "ethnicity", "mi_type") |>
+      select("age_group", "sex", "ses", "ethnicity", "mi_type") |>
       as.list() |>
       keep(\(x) length(unique(x)) > 1) |>
       names()
-    if (vars > 0 & length(unique(xx$initiate)) > 1) {
+    if (length(vars) > 0 & length(unique(xx$initiate)) > 1) {
       formula <- paste0("initiate ~ ", paste0(vars, collapse = " + ")) |>
         as.formula()
       models[[paste0(drug, "_", cohort)]] <- tryCatch({
-        reg <- glm(formula = formula, data = xx, family = binomial)
+        reg <- glm(formula = formula, data = xx, family = "binomial")
         tidy(reg) |>
           filter(term != "(Intercept)") |>
           select(variable_name = "term", coef = "estimate", se_coef = "std.error") |>

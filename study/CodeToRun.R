@@ -22,6 +22,7 @@ library(PatientProfiles)
 library(clock)
 library(OmopConstructor)
 library(purrr)
+library(broom)
 
 #database metadata and connection details
 #The name/ acronym for the database

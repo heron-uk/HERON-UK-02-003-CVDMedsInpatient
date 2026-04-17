@@ -6,15 +6,15 @@ results <- list()
 createLogFile(logFile = file.path(results_folder, "log_{date}_{time}"))
 
 maxObsEnd <- cdm$observation_period |>
-  summarise(maxObsEnd = max(observation_period_end_date, na.rm = TRUE)) |>
+  summarise(max_obs_end = max(observation_period_end_date, na.rm = TRUE)) |>
   dplyr::pull()
 
 study_period <- c(as.Date(study_start), as.Date(maxObsEnd))
 
 # parametrisation
 drugs <- importCodelist(here("Cohorts", "drugs"), type = "csv")
-drugs_tromb <- drugs[grepl("thrombolytics", names(drugs_cl))]
-drugs_rest <- drugs[!grepl("thrombolytics", names(drugs_cl))]
+drugs_tromb <- drugs[grepl("thrombolytics", names(drugs))]
+drugs_rest <- drugs[!grepl("thrombolytics", names(drugs))]
 mi_proc <- importCodelist(here("Cohorts", "miProcedures"), type = "csv")
 stroke_proc <- importCodelist(here("Cohorts", "strokeProcedures"), type = "csv")
 conditions <- importCodelist(here("Cohorts", "comorbidities"), type = "csv")
