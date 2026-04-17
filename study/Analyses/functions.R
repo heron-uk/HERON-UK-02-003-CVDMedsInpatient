@@ -1,103 +1,91 @@
+# prepare ses
+n_imd <- cdm$observation |> 
+  dplyr::filter(.data$observation_source_concept_id == 35812882L) |> 
+  dplyr::tally() |>
+  dplyr::pull()
+n_townsend <- cdm$measurement |> 
+  dplyr::filter(.data$measurement_concept_id == 715996L) |> 
+  dplyr::tally() |>
+  dplyr::pull() 
+
+if (n_imd > 0) {
+  
+  logMessage("Extracting SES from IMD")
+  cdm$ses_table <- cdm$observation |> 
+    dplyr::filter(.data$observation_source_concept_id == 35812882L) |>
+    dplyr::select("person_id", "observation_date", "ses" = "value_as_number") |>
+    dplyr::compute(name = "ses_table") |>
+    dplyr::filter(!is.na(.data$ses)) |>
+    dplyr::compute(name = "ses_table") |>
+    dplyr::group_by(.data$person_id) |>
+    dplyr::filter(.data$observation_date == max(.data$observation_date, na.rm = TRUE)) |>
+    dplyr::select("person_id", "ses") |>
+    dplyr::distinct() |>
+    dplyr::compute(name = "ses_table")
+  
+} else if (n_townsend > 0) {
+  
+  logMessage("Extracting SES from townsend")
+  cdm$ses_table <- cdm$measurement |> 
+    dplyr::filter(.data$measurement_concept_id == 715996L) |>
+    dplyr::select("person_id", "measurement_date", "ses" = "value_as_number") |>
+    dplyr::compute(name = "ses_table") |>
+    dplyr::filter(!is.na(.data$ses)) |>
+    dplyr::compute(name = "ses_table") |>
+    dplyr::group_by(.data$person_id) |>
+    dplyr::filter(.data$measurement_date == max(.data$measurement_date, na.rm = TRUE)) |>
+    dplyr::select("person_id", "ses") |>
+    dplyr::mutate(ses = dplyr::case_when(
+      .data$ses %in% c(1, 2)  ~ 1L,
+      .data$ses %in% c(3, 4)  ~ 2L,
+      .data$ses %in% c(5, 6)  ~ 3L,
+      .data$ses %in% c(7, 8)  ~ 4L,
+      .data$ses %in% c(9, 10) ~ 5L,
+      TRUE ~ NA_real_
+    )) |>
+    dplyr::distinct() |>
+    dplyr::compute(name = "ses_table")
+  
+} else {
+  
+  logMessage("No SES found")
+  cdm$ses_table <- cdm$person |>
+    dplyr::select("person_id") |>
+    dplyr::mutate(ses = "Missing") |>
+    dplyr::compute(name = "ses_table")
+}
+
+# search duplicated
+exclude <- cdm$ses_table |>
+  dplyr::group_by(.data$person_id) |>
+  dplyr::filter(dplyr::n() > 1) |>
+  dplyr::ungroup() |>
+  dplyr::select("person_id")
+n <- exclude |>
+  dplyr::tally() |>
+  dplyr::pull()
+
+if (n > 0) {
+  logMessage(paste0(n, " persons have duplicated SES records and have been assigned to Missing"))
+  cdm$ses_table <- cdm$ses_table |>
+    dplyr::anti_join(exclude, by = "person_id") |>
+    dplyr::compute(name = "ses_table")
+}
+
+# add to person
+cdm$ses_table <- cdm$person |>
+  dplyr::select("person_id") |>
+  dplyr::left_join(cdm$ses_table, by = "person_id") |>
+  dplyr::mutate(ses = dplyr::coalesce(as.character(ses), "Missing")) |>
+  dplyr::rename("subject_id" = "person_id") |>
+  dplyr::compute(name = "ses_table")
+
 ## Add socio-economic status
 addSES <- function(cohort) {
-  
   cdm <- omopgenerics::cdmReference(cohort)
-  
-  n_imd <- cdm$observation |> 
-    dplyr::filter(.data$observation_source_concept_id == 35812882L) |> 
-    dplyr::tally() |>
-    dplyr::pull()
-  n_townsend <- cdm$measurement |> 
-    dplyr::filter(.data$measurement_concept_id == 715996L) |> 
-    dplyr::tally() |>
-    dplyr::pull() 
-  
-  nm <- omopgenerics::uniqueTableName()
-  
-  if (n_imd > 0) {
-    
-    logMessage("Extracting SES from IMD")
-    sesRecords <- cdm$observation |> 
-      dplyr::filter(.data$observation_source_concept_id == 35812882L) |>
-      dplyr::select("subject_id" = "person_id", "observation_date", "ses" = "value_as_number") |>
-      dplyr::compute(name = nm) |>
-      dplyr::group_by(.data$person_id) |>
-      dplyr::filter(.data$observation_date == max(.data$observation_date, na.rm = TRUE)) |>
-      dplyr::select("person_id", "ses") |>
-      dplyr::distinct() |>
-      dplyr::compute(name = nm) |>
-      dplyr::inner_join(
-        cohort |>
-          dplyr::distinct(.data$subject_id),
-        by = "subject_id"
-      ) |>
-      dplyr::compute(name = nm)
-    
-  } else if (n_townsend > 0) {
-    
-    logMessage("Extracting SES from townsend")
-    sesRecords <- cdm$measurement |> 
-      dplyr::filter(.data$measurement_concept_id == 715996L) |>
-      dplyr::select(
-        "subject_id" = "person_id", 
-        "townsend_date" = "measurement_date",
-        "ses" = "value_as_number"
-      ) |>
-      dplyr::compute(name = nm) |>
-      dplyr::group_by(.data$subject_id) |>
-      dplyr::filter(.data$townsend_date == max(.data$townsend_date, na.rm = TRUE)) |>
-      dplyr::select("subject_id", "ses") |>
-      dplyr::mutate(ses = dplyr::case_when(
-        .data$ses %in% c(1, 2)  ~ 1L,
-        .data$ses %in% c(3, 4)  ~ 2L,
-        .data$ses %in% c(5, 6)  ~ 3L,
-        .data$ses %in% c(7, 8)  ~ 4L,
-        .data$ses %in% c(9, 10) ~ 5L,
-        TRUE ~ NA_real_
-      )) |>
-      dplyr::distinct() |>
-      dplyr::compute(name = nm) |>
-      dplyr::inner_join(
-        cohort |>
-          dplyr::distinct(.data$subject_id),
-        by = "subject_id"
-      ) |>
-      dplyr::compute(name = nm)
-    
-  } else {
-    
-    logMessage("No SES found")
-    sesRecords <- cdm$person |>
-      dplyr::select("subject_id" = "person_id") |>
-      dplyr::mutate(ses = "Missing") |>
-      dplyr::compute(name = nm)
-  }
-  
-  # search duplicated
-  exclude <- sesRecords |>
-    dplyr::group_by(.data$subject_id) |>
-    dplyr::filter(dplyr::n() > 1) |>
-    dplyr::ungroup() |>
-    dplyr::select("subject_id")
-  n <- exclude |>
-    dplyr::tally() |>
-    dplyr::pull()
-  
-  if (n > 0) {
-    logMessage(paste0(n, " persons have duplicated SES records and have been assigned to Missing"))
-    sesRecords <- sesRecords |>
-      dplyr::anti_join(exclude, by = "subject_id") |>
-      dplyr::compute(name = nm)
-  }
-  
-  cohort <- cohort |>
-    dplyr::left_join(sesRecords, by = "subject_id") |>
-    dplyr::mutate(ses = dplyr::coalesce(as.character(ses), "Missing")) |>
+  cohort |>
+    dplyr::left_join(cdm$ses_table, by = "subject_id") |>
     dplyr::compute(name = omopgenerics::tableName(cohort))
-  
-  omopgenerics::dropSourceTable(cdm = cdm, name = nm)
-  
-  return(cohort)
 }
 
 # prepare ethnicity
@@ -161,8 +149,15 @@ results[["ethncity"]] <- cdm$person |>
       collect() |>
       mutate(variable_name = "ethnicity")
   ) |>
+  bind_rows(
+    cdm$ses_table |>
+      group_by(variable_level = ses) |>
+      tally(name = "count") |>
+      collect() |>
+      mutate(variable_name = "ses")
+  ) |>
   mutate(
-    result_type = "ethnicity_summary",
+    result_type = "summary",
     cdm_name = cdmName(cdm)
   ) |>
   transformToSummarisedResult(
