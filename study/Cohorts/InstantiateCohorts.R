@@ -80,14 +80,22 @@ cdm$stroke <- conceptCohort(
   ) |>
   requireIsFirstEntry() |>
   mutate(mi_type = "None") |>
-  compute(name = "stroke")
+  compute(name = "stroke") |>
+  copyCohorts(name = "stroke", n = 2) |>
+  renameCohort(newCohortName = "stroke_no_valve", cohortId = "stroke_1") |>
+  requireConceptIntersect(
+    cohortId = "stroke_no_valve",
+    conceptSet = conditions["valve_disorders_broad"], 
+    window = c(-Inf, 0),
+    intersections = 0
+  )
 
 logMessage("BIND STUDY COHORTS")
 cdm <- bind(cdm$stroke, cdm$acute_mi, name = "index_cohorts")
 
 logMessage("INSTANTIATE DRUG INITIATORS COHORTS")
 
-nms <- c("antihypertensives", "beta_blockers", "anticoagulants", "antiplatelets")
+nms <- c("antihypertensives", "beta_blockers", "anticoagulants", "antiplatelets", "lipid_lowering_drugs")
 all <- c(nms, "thrombolytics")
 cdm$drug_initiators <- conceptCohort(
   cdm = cdm,
@@ -133,13 +141,6 @@ for (cohort in cohorts) {
 
 cdm$drug_initiators <- cdm$drug_initiators |>
   requireIsFirstEntry()
-
-logMessage("INSTANTIATING CONDITIONS COHORT")
-cdm$conditions <- conceptCohort(
-  cdm = cdm,
-  conceptSet = conditions,
-  name = "conditions"
-)
 
 logMessage("INSTANTIATE OBESITY COHORTS")
 obesity_diag <- list(obesity = c(

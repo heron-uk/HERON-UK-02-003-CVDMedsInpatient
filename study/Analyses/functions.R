@@ -100,37 +100,45 @@ addSES <- function(cohort) {
   return(cohort)
 }
 
+# prepare ethnicity
+logMessage("prepare ethnicity table")
+ethConcepts <- tibble(
+  race_source_concept_id = c(
+    700385L, 700386L, 700390L, 700369L, 700364L, 700362L, 700363L, 700367L,
+    700366L, 700391L, 700389L, 700388L, 700387L, 700365L, 700368L
+  ),
+  ethnicity_concept = c(
+    "White", "White", "Mix", "Other", "Asian", "Asian", "Asian", "Black", 
+    "Black", "Mix", "Mix", "Mix", "White", "Asian", "Black"
+  )
+)
+cdm <- insertTable(cdm = cdm, name = "eth_con", table = eth)
+ethValue <- read_csv(here::here("Analyses", "ethnicity.csv"), show_col_types = FALSE) |>
+  mutate(
+    race_source_value = tolower(.data$variable_level),
+    ethnicity_value = .data$broad
+  ) |>
+  select("race_source_value", "ethnicity_value") |>
+  distinct()
+cdm <- insertTable(cdm = cdm, name = "eth_val", table = eth)
+cdm$ethnicity_table <- cdm$person |>
+  select("person_id", "race_source_concept_id", "race_source_value") |>
+  mutate(race_source_value = tolower(.data$race_source_value)) |>
+  left_join(cdm$eth_val, by = "race_source_value") |>
+  left_join(cdm$eth_con, by = "race_source_concept_id") |>
+  compute(name = "ethnicity_table") |>
+  mutate(ethnicity = coalesce(
+    .data$ethnicity_concept, .data$ethnicity_value, "Unknown"
+  )) |>
+  select(subject_id = "person_id", "ethnicity") |>
+  compute(name = "ethnicity_table")
+
+omopgenerics::dropSourceTable(cdm = cdm, name = c("eth_val", "eth_con"))
+
 ## Add ethnicity
 addEthnicity <- function(cohort) {
-  
   cdm <- omopgenerics::cdmReference(cohort)
-  
-  # check if they have the race_source_concept_id mapped
-  nConcepts <- cdm$person |>
-    dplyr::distinct(.data$race_source_concept_id) |>
-    dplyr::pull() |>
-    purrr::keep(\(x) !is.na(x)) |>
-    purrr::keep(\(x) x != 0) |>
-    length()
-  
-  if (nConcepts > 0) {
-    logMessage("Adding the ehnicity from race_source_concept_id")
-    eth <- cdm$person |>
-      dplyr::select(subject_id = "person_id", concept_id = "race_source_concept_id") |>
-      dplyr::inner_join(
-        cdm$concept |>
-          dplyr::select("concept_id", ethnicity = "concept_name"),
-        by = "concept_id"
-      ) |>
-      dplyr::select("subject_id", "ethnicity")
-  } else {
-    logMessage("Adding the ehnicity from race_source_value")
-    eth <- cdm$person |>
-      dplyr::select(subject_id = "person_id", ethnicity = "race_source_value")
-  }
-  
   cohort |>
-    dplyr::left_join(eth, by = "subject_id") |>
-    dplyr::mutate(ethnicity = dplyr::coalesce(as.character(ethnicity), "Unknown")) |>
+    dplyr::left_join(cdm$ethnicity_table, by = "subject_id") |>
     dplyr::compute(name = omopgenerics::tableName(cohort))
 }

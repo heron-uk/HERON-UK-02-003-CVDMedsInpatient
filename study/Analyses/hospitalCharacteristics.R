@@ -54,6 +54,10 @@ results[["characterisation"]] <- cdm$index_cohorts |>
       "Prior Comorbidities (-Inf to 0]" = list(
         conceptSet = conditions,
         window = c(-Inf, 0)
+      ),
+      "Prior MI/Stroke (-Inf to -1]" = list(
+        conceptSet = conditions[c("stroke", "acute_mi")],
+        window = c(-Inf, -1)
       )
     ),
     
@@ -64,7 +68,6 @@ results[["characterisation"]] <- cdm$index_cohorts |>
       )
     ),
     
-    # Q TO DECIDE
     tableIntersectFlag = list(
       "28-day mortality" = list(
         tableName = "death",
@@ -72,7 +75,6 @@ results[["characterisation"]] <- cdm$index_cohorts |>
       )
     ),
     
-    # Q strata
     strata = list(c("age_range"), c("sex"), c("ses")),
     
     otherVariables = c("ses", "ethnicity", "mi_type")
@@ -116,9 +118,9 @@ x <- x |>
       "90 or above"
     )),
     sex = factor(sex, levels = c("Female", "Male")),
-    ethnicity = factor(ethnicity, levels = unique(c("White", x$ethnicity, "Missing"))),
+    ethnicity = factor(ethnicity, levels = unique(c("White", x$ethnicity))),
     ses = factor(ses, c("1", "2", "3", "4", "5", "Missing")),
-    mi_type = factor(mi_type, c("STEMI", "not STEMI", "Both", "None"))
+    mi_type = factor(mi_type, c("not STEMI", "STEMI", "Both", "None"))
   )
 drugs <- colnames(x)[startsWith(colnames(x), "drug_")]
 cohorts <- unique(x$cohort_name)
