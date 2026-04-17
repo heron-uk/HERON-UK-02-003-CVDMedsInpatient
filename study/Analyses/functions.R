@@ -60,11 +60,11 @@ exclude <- cdm$ses_table |>
   dplyr::group_by(.data$person_id) |>
   dplyr::filter(dplyr::n() > 1) |>
   dplyr::ungroup() |>
-  dplyr::select("person_id")
+  dplyr::select("person_id") |>
+  dplyr::compute()
 n <- exclude |>
   dplyr::tally() |>
   dplyr::pull()
-
 if (n > 0) {
   logMessage(paste0(n, " persons have duplicated SES records and have been assigned to Missing"))
   cdm$ses_table <- cdm$ses_table |>
@@ -73,9 +73,12 @@ if (n > 0) {
 }
 
 # add to person
-cdm$ses_table <- cdm$person |>
-  dplyr::select("person_id") |>
-  dplyr::left_join(cdm$ses_table, by = "person_id") |>
+cdm$ses_table <- cdm$ses_table |>
+  dplyr::left_join(
+    cdm$person |>
+      dplyr::select("person_id"), 
+    by = "person_id"
+  ) |>
   dplyr::mutate(ses = dplyr::coalesce(as.character(ses), "Missing")) |>
   dplyr::rename("subject_id" = "person_id") |>
   dplyr::compute(name = "ses_table")
