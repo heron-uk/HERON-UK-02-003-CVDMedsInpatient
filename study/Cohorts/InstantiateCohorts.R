@@ -85,7 +85,7 @@ cdm$stroke <- conceptCohort(
   renameCohort(newCohortName = "stroke_no_valve", cohortId = "stroke_1") |>
   requireConceptIntersect(
     cohortId = "stroke_no_valve",
-    conceptSet = conditions["valve_disorders_broad"], 
+    conceptSet = conditions["valve_disorder_excl_endocarditis"], 
     window = c(-Inf, 0),
     intersections = 0
   )
