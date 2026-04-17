@@ -6,10 +6,22 @@ results <- list()
 createLogFile(logFile = file.path(results_folder, "log_{date}_{time}"))
 
 maxObsEnd <- cdm$observation_period |>
-  summarise(maxObsEnd = max(observation_period_end_date, na.rm = TRUE)) |>
+  summarise(max_obs_end = max(observation_period_end_date, na.rm = TRUE)) |>
   dplyr::pull()
 
 study_period <- c(as.Date(study_start), as.Date(maxObsEnd))
+
+# parametrisation
+drugs <- importCodelist(here("Cohorts", "drugs"), type = "csv")
+drugs_tromb <- drugs[grepl("thrombolytics", names(drugs))]
+drugs_rest <- drugs[!grepl("thrombolytics", names(drugs))]
+mi_proc <- importCodelist(here("Cohorts", "miProcedures"), type = "csv")
+stroke_proc <- importCodelist(here("Cohorts", "strokeProcedures"), type = "csv")
+conditions <- importCodelist(here("Cohorts", "comorbidities"), type = "csv")
+miTypes <- importCodelist(here("Cohorts", "miTypes"), type = "csv")
+
+ageGroupStrata <- list("age_range" = list(c(18, 64), c(65, 84), c(85, Inf)))
+ageGroupChar <- list(c(18, 39), c(40, 49), c(50, 59), c(60, 69), c(70, 79), c(80, 89), c(90, Inf))
 
 cdm$person <- cdm$person |>
   filter(
@@ -26,27 +38,22 @@ if (db_name == "DataLoch") {
     filter(drug_type_concept_id == 32829)
 }
 
+logMessage("Build observation period")
+cdm <- buildObservationPeriod(cdm = cdm, recordsFrom = "visit_occurrence")
+
 # create and export snapshot
 logMessage("RETRIEVING SNAPSHOT")
 results[["snap"]] <- summariseOmopSnapshot(cdm)
-logMessage("SNAPSHOT COMPLETED")
 
 # summarise observation periods
 logMessage("RETRIEVING OBSERVATION PERIOD SUMMARY")
 results[["observation_period"]] <- summariseObservationPeriod(cdm$observation_period)
-logMessage("OBSERVATION PERIOD SUMMARY COMPLETED")
 
-logMessage("INSTANTIATING OUTCOME COHORTS")
-source(here("Cohorts","InstantiateOutcomeCohorts.R"))
-logMessage("INSTANTIATED OUTCOME COHORTS")
+logMessage("INSTANTIATING COHORTS")
+source(here("Cohorts","InstantiateCohorts.R"))
 
-logMessage("INSTANTIATING HOSPITAL COHORTS")
-source(here("Cohorts", "Hospital", "InstantiatingHospitalCohorts.R"))
-logMessage("HOSPITAL COHORTS INSTANTIATED")
-
-logMessage("RUN SUMMARISE CHARACTERISTICS")
+logMessage("SUMMARISE CHARACTERISTICS")
 source(here("Analyses", "hospitalCharacteristics.R"))
-logMessage("SUMMARISE CHARACTERISTICS FINISHED")
 
 # export results ----
 result <- omopgenerics::bind(results)

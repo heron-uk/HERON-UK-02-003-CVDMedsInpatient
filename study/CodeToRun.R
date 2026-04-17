@@ -20,6 +20,9 @@ library(RPostgres)
 library(odbc)
 library(PatientProfiles)
 library(clock)
+library(OmopConstructor)
+library(purrr)
+library(broom)
 
 #database metadata and connection details
 #The name/ acronym for the database
@@ -66,15 +69,9 @@ cdm <- CDMConnector::cdmFromCon(
 
 
 # Hospital databases should set the start date as "2022-01-01". 
-study_start <- "2012-01-01"
+study_start <- "2022-01-01"
 
 min_cell_count <- 5
-
-hospital_care <- FALSE
-primary_care <- TRUE
-
-run_characteristics <- TRUE
-run_drug_adherence <- TRUE
 
 # Run the study
 source(here("RunStudy.R"))
