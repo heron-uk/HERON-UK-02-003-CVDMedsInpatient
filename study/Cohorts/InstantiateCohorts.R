@@ -94,7 +94,7 @@ cdm$stroke <- conceptCohort(
   ) |>
   requireConceptIntersect(
     cohortId = "stroke_with_af",
-    conceptSet = conditions["atrial_fibrilation"], 
+    conceptSet = conditions["atrial_fibrillation"], 
     window = c(-Inf, 7),
     intersections = c(1, Inf)
   )
