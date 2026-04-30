@@ -147,6 +147,16 @@ x <- x |>
 drugs <- colnames(x)[startsWith(colnames(x), "drug_")]
 cohorts <- unique(x$cohort_name)
 
+cov <- list(
+  model1 = "age_group",
+  model2 = c("age_group", "sex"),
+  model3 = c("age_group", "sex", "ses"),
+  model4 = c("age_group", "sex", "ethnicity"),
+  model5 = c("age_group", "sex", "mi_type"),
+  model6 = c("age_group", "sex", "ses", "ethnicity"),
+  model7 = c("age_group", "sex", "ses", "ethnicity", "mi_type")
+)
+
 models <- list()
 for (drug in drugs) {
   for (cohort in cohorts) {
@@ -158,29 +168,33 @@ for (drug in drugs) {
       as.list() |>
       keep(\(x) length(unique(x)) > 1) |>
       names()
-    if (length(vars) > 0 & length(unique(xx$initiate)) > 1) {
-      formula <- paste0("initiate ~ ", paste0(vars, collapse = " + ")) |>
-        as.formula()
-      models[[paste0(drug, "_", cohort)]] <- tryCatch({
-        reg <- glm(formula = formula, data = xx, family = "binomial")
-        tidy(reg) |>
-          filter(term != "(Intercept)") |>
-          select(variable_name = "term", coef = "estimate", se_coef = "std.error") |>
-          mutate(index_condition = cohort, drug = drug)
-      },
-      error = function(e) {
-        logMessage(paste0("error in ", cohort, " - ", drug, ": ", as.character(e)))
-        NULL
-      })
+    
+    for (md in names(cov)) {
+      modelVars <- cov[[nm]]
+      if (all(modelVars %in% vars)) {
+        formula <- paste0("initiate ~ ", paste0(modelVars, collapse = " + ")) |>
+          as.formula()
+        models[[paste0(drug, "_", cohort, "_", md)]] <- tryCatch({
+          reg <- glm(formula = formula, data = xx, family = "binomial")
+          tidy(reg) |>
+            filter(term != "(Intercept)") |>
+            select(variable_level = "term", coef = "estimate", se_coef = "std.error") |>
+            mutate(index_condition = cohort, drug = drug, variable_name = md)
+        },
+        error = function(e) {
+          logMessage(paste0("error in ", cohort, " - ", drug, " - ", md,  ": ", as.character(e)))
+          NULL
+        })
+      }
     }
+    
   }
 }
 
 results[["logistic_regression"]] <- bind_rows(models) |>
   mutate(
     cdm_name = cdmName(cdm),
-    result_type = "drug_initiate",
-    variable_level = NA_character_
+    result_type = "drug_initiate"
   ) |>
   transformToSummarisedResult(
     group = "index_condition",
