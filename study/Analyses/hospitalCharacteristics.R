@@ -170,7 +170,7 @@ for (drug in drugs) {
       names()
     
     for (md in names(cov)) {
-      modelVars <- cov[[nm]]
+      modelVars <- cov[[md]]
       if (all(modelVars %in% vars)) {
         formula <- paste0("initiate ~ ", paste0(modelVars, collapse = " + ")) |>
           as.formula()
