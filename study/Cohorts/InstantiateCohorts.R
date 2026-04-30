@@ -81,13 +81,22 @@ cdm$stroke <- conceptCohort(
   requireIsFirstEntry() |>
   mutate(mi_type = "None") |>
   compute(name = "stroke") |>
-  copyCohorts(name = "stroke", n = 2) |>
-  renameCohort(newCohortName = "stroke_no_valve", cohortId = "stroke_1") |>
+  copyCohorts(name = "stroke", n = 3) |>
+  renameCohort(
+    newCohortName = c("stroke_no_valve", "stroke_with_af"), 
+    cohortId = c("stroke_1", "stroke_2")
+  ) |>
   requireConceptIntersect(
     cohortId = "stroke_no_valve",
     conceptSet = conditions["valve_disorder_excl_endocarditis"], 
     window = c(-Inf, 0),
     intersections = 0
+  ) |>
+  requireConceptIntersect(
+    cohortId = "stroke_with_af",
+    conceptSet = conditions["atrial_fibrilation"], 
+    window = c(-Inf, 7),
+    intersections = c(1, Inf)
   )
 
 logMessage("BIND STUDY COHORTS")
