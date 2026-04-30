@@ -76,7 +76,7 @@ results[["characterisation"]] <- cdm$index_cohorts |>
       )
     ),
     
-    strata = list(c("age_range"), c("sex"), c("ses")),
+    strata = list(c("age_range"), c("sex"), c("ses"), "ethnicity"),
     
     otherVariables = c("ses", "ethnicity", "mi_type")
   )
