@@ -49,7 +49,7 @@ results[["characterisation"]] <- cdm$index_cohorts |>
         window = c(-7, 28)
       ),
       "Procedures [-7, 28]" = list(
-        conceptSet = mi_proc,
+        conceptSet = c(mi_proc, stroke_proc),
         window = c(-7, 28)
       ),
       "Prior Comorbidities (-Inf to 0]" = list(
