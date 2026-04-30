@@ -87,6 +87,27 @@ results[["characterisation_drug_initiators"]] <- cdm$drug_initiators |>
   addSES() |>
   summariseCharacteristics(
     ageGroup = ageGroupChar,
+    conceptIntersectFlag = list(
+      "Prior Comorbidities (-Inf to 0]" = list(
+        conceptSet = conditions,
+        window = c(-Inf, 0)
+      )
+    ),
+    
+    cohortIntersectFlag = list(
+      "Prior Comorbidities (-Inf to 0]" = list(
+        targetCohortTable = "obesity",
+        window = c(-Inf, 0)
+      )
+    ),
+    
+    tableIntersectFlag = list(
+      "28-day mortality" = list(
+        tableName = "death",
+        window = c(0, 28)
+      )
+    ),
+    
     otherVariables = c("ses", "ethnicity")
   )
 
