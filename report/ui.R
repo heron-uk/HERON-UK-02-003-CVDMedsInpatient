@@ -2,7 +2,7 @@
 # Be careful editing this file
 
 ui <- bslib::page_navbar(
-  # intro duction ----
+  # introduction ----
   title = shiny::tags$span(
     shiny::tags$img(
       src = "ohdsi_logo.svg",
@@ -292,7 +292,7 @@ ui <- bslib::page_navbar(
 
     ### counts ----
     bslib::nav_panel(
-      title = "Cohort Count",
+      title = "Cohort Counts",
       icon = shiny::icon("users"),
       bslib::layout_sidebar(
         sidebar = bslib::sidebar(
@@ -493,7 +493,7 @@ ui <- bslib::page_navbar(
 
     ### demographics ----
     bslib::nav_panel(
-      title = "Summarise demographics",
+      title = "Demographics",
       icon = shiny::icon("users-gear"),
       bslib::layout_sidebar(
         sidebar = bslib::sidebar(
@@ -669,7 +669,7 @@ ui <- bslib::page_navbar(
 
     ### mortality ----
     bslib::nav_panel(
-      title = "Summarise 28-day mortality",
+      title = "28-day mortality",
       icon = shiny::icon("users-gear"),
       bslib::layout_sidebar(
         sidebar = bslib::sidebar(
@@ -821,7 +821,7 @@ ui <- bslib::page_navbar(
 
     ### treatments ----
     bslib::nav_panel(
-      title = "Summarise treatments",
+      title = "Treatments",
       icon = shiny::icon("users-gear"),
       bslib::layout_sidebar(
         sidebar = bslib::sidebar(
@@ -989,7 +989,7 @@ ui <- bslib::page_navbar(
 
     ### procedures ----
     bslib::nav_panel(
-      title = "Summarise procedures",
+      title = "Procedures",
       icon = shiny::icon("users-gear"),
       bslib::layout_sidebar(
         sidebar = bslib::sidebar(
@@ -1155,25 +1155,33 @@ ui <- bslib::page_navbar(
       )
     ),
 
-    ### timing ----
+    ### initiatiors demographics ----
     bslib::nav_panel(
-      title = "Summarise time to intervention",
+      title = "Initiators demographics",
       icon = shiny::icon("users-gear"),
       bslib::layout_sidebar(
         sidebar = bslib::sidebar(
           shinyWidgets::pickerInput(
-            inputId = "timings_cdm_name",
+            inputId = "summarise_drug_initiators_cdm_name",
             label = "CDM name",
-            choices = choices$timings_cdm_name,
-            selected = selected$timings_cdm_name,
+            choices = choices$summarise_drug_initiators_cdm_name,
+            selected = selected$summarise_drug_initiators_cdm_name,
             multiple = TRUE,
             options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
           ),
           shinyWidgets::pickerInput(
-            inputId = "timings_cohort_name",
-            label = "Cohort name",
-            choices = choices$timings_cohort_name,
-            selected = selected$timings_cohort_name,
+            inputId = "summarise_drug_initiators_index_condition",
+            label = "Index condition",
+            choices = choices$summarise_drug_initiators_index_condition,
+            selected = selected$summarise_drug_initiators_index_condition[1],
+            multiple = TRUE,
+            options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
+          ),
+          shinyWidgets::pickerInput(
+            inputId = "summarise_drug_initiators_drug",
+            label = "Drug",
+            choices = choices$summarise_drug_initiators_drug,
+            selected = selected$summarise_drug_initiators_drug,
             multiple = TRUE,
             options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
           ),
@@ -1181,44 +1189,88 @@ ui <- bslib::page_navbar(
         ),
         bslib::navset_card_tab(
           bslib::nav_panel(
-            title = "Time to procedure",
+            title = "Table",
             bslib::card(
               full_screen = TRUE,
-              gt::gt_output("timings_proc_table") |>
+              bslib::layout_sidebar(
+                sidebar = bslib::sidebar(
+                  sortable::bucket_list(
+                    header = NULL,
+                    sortable::add_rank_list(
+                      text = "None",
+                      labels = c("variable_name", "variable_level", "estimate_name"),
+                      input_id = "summarise_drug_initiators_table_none"
+                    ),
+                    sortable::add_rank_list(
+                      text = "Header",
+                      labels = c("cdm_name"),
+                      input_id = "summarise_drug_initiators_table_header"
+                    ),
+                    sortable::add_rank_list(
+                      text = "Group columns",
+                      labels = c("index_condition", "drug"),
+                      input_id = "summarise_drug_initiators_table_group_column"
+                    ),
+                    sortable::add_rank_list(
+                      text = "Hide",
+                      labels = character(),
+                      input_id = "summarise_drug_initiators_table_hide"
+                    )
+                  ),
+                  position = "right"
+                ),
+                gt::gt_output("summarise_drug_initiators_table") |>
+                  shinycssloaders::withSpinner()
+              )
+            )
+          ),
+          bslib::nav_panel(
+            title = "Radial plot",
+            bslib::card(
+              full_screen = TRUE,
+              shiny::plotOutput("summarise_drug_initiators_radial", height = "600px") |>
                 shinycssloaders::withSpinner()
             )
           ),
           bslib::nav_panel(
-            title = "Time to medication",
+            title = "Forest plot",
             bslib::card(
               full_screen = TRUE,
-              gt::gt_output("timings_med_table") |>
-                shinycssloaders::withSpinner()
+              shiny::plotOutput("summarise_drug_initiators_forest", height = "600px") |>
+                shinycssloaders::withSpinner(),
             )
           )
         )
       )
     ),
 
-    ### Admission and discharge ----
+    ### Probability to initiate ----
     bslib::nav_panel(
-      title = "Admision and discharge",
+      title = "Probability to initiate",
       icon = shiny::icon("users-gear"),
       bslib::layout_sidebar(
         sidebar = bslib::sidebar(
           shinyWidgets::pickerInput(
-            inputId = "admit_discharge_cdm_name",
+            inputId = "drug_initiate_cdm_name",
             label = "CDM name",
-            choices = choices$admit_discharge_cdm_name,
-            selected = selected$admit_discharge_cdm_name,
+            choices = choices$drug_initiate_cdm_name,
+            selected = selected$drug_initiate_cdm_name,
             multiple = TRUE,
             options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
           ),
           shinyWidgets::pickerInput(
-            inputId = "admit_discharge_cohort_name",
-            label = "Cohort name",
-            choices = choices$admit_discharge_cohort_name,
-            selected = selected$admit_discharge_cohort_name,
+            inputId = "drug_initiate_index_condition",
+            label = "Index condition",
+            choices = choices$drug_initiate_index_condition,
+            selected = selected$drug_initiate_index_condition[1],
+            multiple = TRUE,
+            options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
+          ),
+          shinyWidgets::pickerInput(
+            inputId = "drug_initiate_drug",
+            label = "Drug",
+            choices = choices$drug_initiate_drug,
+            selected = selected$drug_initiate_drug,
             multiple = TRUE,
             options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
           ),
@@ -1226,18 +1278,18 @@ ui <- bslib::page_navbar(
         ),
         bslib::navset_card_tab(
           bslib::nav_panel(
-            title = "Admit",
+            title = "Table",
             bslib::card(
               full_screen = TRUE,
-              gt::gt_output("admit_table") |>
+              gt::gt_output("drug_initiate_table") |>
                 shinycssloaders::withSpinner()
             )
           ),
           bslib::nav_panel(
-            title = "Discharge",
+            title = "Plot",
             bslib::card(
               full_screen = TRUE,
-              gt::gt_output("discharge_table") |>
+              shiny::plotOutput("drug_initiate_plot") |>
                 shinycssloaders::withSpinner()
             )
           )

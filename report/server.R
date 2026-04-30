@@ -236,7 +236,7 @@ server <- function(input, output, session) {
       CohortCharacteristics::tableCharacteristics(
         header = input$summarise_demographics_table_header,
         groupColumn = input$summarise_demographics_table_group_column,
-        hide = input$summarise_demographics_table_hide
+        hide = unique(c("index_condition", "drug", "table_name", input$summarise_demographics_table_hide))
       )
   })
   output$summarise_demographics_table <- gt::render_gt({
@@ -291,7 +291,7 @@ server <- function(input, output, session) {
       CohortCharacteristics::tableCharacteristics(
         header = input$summarise_death_table_header,
         groupColumn = input$summarise_death_table_group_column,
-        hide = input$summarise_death_table_hide
+        hide = unique(c("index_condition", "drug", "table_name", "variable_level", input$summarise_death_table_hide))
       )
   })
   output$summarise_death_table <- gt::render_gt({
@@ -349,7 +349,7 @@ server <- function(input, output, session) {
       CohortCharacteristics::tableCharacteristics(
         header = input$summarise_treatments_table_header,
         groupColumn = input$summarise_treatments_table_group_column,
-        hide = input$summarise_treatments_table_hide
+        hide = unique(c("index_condition", "drug", "table_name", input$summarise_treatments_table_hide))
       )
   })
   output$summarise_treatments_table <- gt::render_gt({
@@ -408,7 +408,7 @@ server <- function(input, output, session) {
       CohortCharacteristics::tableCharacteristics(
         header = input$summarise_procedures_table_header,
         groupColumn = input$summarise_procedures_table_group_column,
-        hide = input$summarise_procedures_table_hide
+        hide = unique(c("index_condition", "drug", "table_name", input$summarise_procedures_table_hide))
       )
   })
   output$summarise_procedures_table <- gt::render_gt({
@@ -450,62 +450,119 @@ server <- function(input, output, session) {
     }
   )
 
-  # timings -----
-  getTimingsData <- shiny::reactive({
-    data[["timings"]] |>
+  # initiators demographics -----
+  getInitiatorsDemoData <- shiny::reactive({
+    data[["summarise_drug_initiators"]] |>
       dplyr::filter(
-        .data$cdm_name %in% input$timings_cdm_name
+        .data$cdm_name %in% input$summarise_drug_initiators_cdm_name
       ) |>
-      omopgenerics::filterGroup(.data$cohort_name %in% input$timings_cohort_name)
-  })
-  output$timings_proc_table <- gt::render_gt({
-    getTimingsData() |>
-      dplyr::filter(is.na(variable_level) | variable_level %in% c(
-        "coronary_artery_bypass_graft", "percutaneous_coronary_intervention",
-        "stroke_rx_procedures", "thromboendarterectomy"
-      )) |>
-      visOmopResults::visOmopTable(
-        estimateName = c("missing N(%)" = "<count_missing> (<percentage_missing>%)"),
-        header = "cdm_name",
-        groupColumn = "cohort_name",
+      omopgenerics::filterGroup(
+        .data$index_condition %in% input$summarise_drug_initiators_index_condition,
+        .data$drug %in% input$summarise_drug_initiators_drug
       )
   })
-  output$timings_med_table <- gt::render_gt({
-    getTimingsData() |>
-      dplyr::filter(is.na(variable_level) | variable_level %in% c(
-        "thrombolytics_alteplase", "thrombolytics_tenecteplase"
-      )) |>
-      visOmopResults::visOmopTable(
-        estimateName = c("missing N(%)" = "<count_missing> (<percentage_missing>%)"),
-        header = "cdm_name",
-        groupColumn = "cohort_name",
+  getInitiatorsDemoTable <- shiny::reactive({
+    getInitiatorsDemoData() |>
+      CohortCharacteristics::tableCharacteristics(
+        header = input$summarise_drug_initiators_table_header,
+        groupColumn = input$summarise_drug_initiators_table_group_column,
+        hide = unique(c("cohort_name", "strata", "table_name", input$summarise_drug_initiators_table_hide))
       )
   })
-
-  # admit -----
-  getAdDisData <- shiny::reactive({
-    data[["admit_discharge"]] |>
+  output$summarise_drug_initiators_table <- gt::render_gt({
+    getInitiatorsDemoTable()
+  })
+  getInitiatorRRData <- shiny::reactive({
+    data$radial |>
       dplyr::filter(
-        .data$cdm_name %in% input$admit_discharge_cdm_name
-      ) |>
-      omopgenerics::filterGroup(.data$cohort_name %in% input$admit_discharge_cohort_name)
-  })
-  output$admit_table <- gt::render_gt({
-    getAdDisData() |>
-      dplyr::filter(variable_name != "discharge") |>
-      visOmopResults::visOmopTable(
-        header = "cdm_name",
-        groupColumn = "cohort_name",
-        estimateName = c("N(%)" = "<count> (<percentage>%)")
+        .data$cdm_name %in% input$summarise_drug_initiators_cdm_name,
+        .data$index_condition %in% input$summarise_drug_initiators_index_condition,
+        .data$drug %in% input$summarise_drug_initiators_drug
       )
   })
-  output$discharge_table <- gt::render_gt({
-    getAdDisData() |>
-      dplyr::filter(variable_name != "admit") |>
+  output$summarise_drug_initiators_forest <- shiny::renderPlot({
+    x <- getInitiatorRRData()
+    labs <- x |>
+      dplyr::distinct(variable_level, y)
+    ggplot2::ggplot(
+      data = x,
+      mapping = ggplot2::aes(x = rr, xmin = rr_lower, xmax = rr_upper, y = y, colour = variable_name)
+    ) +
+      ggplot2::geom_point() +
+      ggplot2::geom_errorbar() +
+      ggplot2::facet_grid(cdm_name ~ index_condition + drug) +
+      ggplot2::geom_vline(xintercept = 1) +
+      ggplot2::scale_x_log10(name = "Relative Risk") +
+      ggplot2::coord_cartesian(xlim = c(0.5, 2)) +
+      ggplot2::scale_y_continuous(
+        breaks = labs$y,
+        labels = labs$variable_level
+      )
+  })
+  output$summarise_drug_initiators_radial <- shiny::renderPlot({
+    x <- getInitiatorRRData() |>
+      dplyr::mutate(value = count1 / den1)
+    labs <- x |>
+      dplyr::distinct(variable_level, y)
+    ggplot2::ggplot(
+      data = x,
+      mapping = ggplot2::aes(x = y, y = value, fill = variable_name)
+    ) +
+      ggplot2::geom_col() +
+      ggplot2::facet_grid(cdm_name ~ index_condition + drug) +
+      ggplot2::coord_polar() +
+      ggplot2::scale_x_continuous(
+        breaks = labs$y,
+        labels = labs$variable_level
+      )
+  })
+  # probability to initiate ----
+  getDrugInitiateData <- shiny::reactive({
+    data$drug_initiate |>
+      dplyr::filter(
+        .data$cdm_name %in% input$drug_initiate_cdm_name
+      ) |>
+      omopgenerics::filterGroup(.data$index_condition %in% input$drug_initiate_index_condition) |>
+      omopgenerics::filterStrata(.data$drug %in% input$drug_initiate_drug)
+  })
+  output$drug_initiate_table <- gt::render_gt({
+    getDrugInitiateData() |>
       visOmopResults::visOmopTable(
+        estimateName = c("RR [95%CI]" = "<rr> [<rr_lower> - <rr_upper>]"),
         header = "cdm_name",
-        groupColumn = "cohort_name",
-        estimateName = c("N(%)" = "<count> (<percentage>%)")
+        groupColumn = c("index_condition", "drug"),
+        hide = "variable_level"
+      )
+  })
+  output$drug_initiate_plot <- shiny::renderPlot({
+    x <- getDrugInitiateData() |>
+      omopgenerics::tidy() |>
+      dplyr::mutate(variable_level = dplyr::case_when(
+        stringr::str_starts(variable_name, "age_group") ~ "age_group",
+        stringr::str_starts(variable_name, "sex") ~ "sex",
+        stringr::str_starts(variable_name, "ses") ~ "ses",
+        stringr::str_starts(variable_name, "ethnicity") ~ "ethnicity",
+        stringr::str_starts(variable_name, "mi_type") ~ "mi_type",
+      ))
+    labs <- x |>
+      dplyr::distinct(variable_name) |>
+      dplyr::arrange(.data$variable_name) |>
+      dplyr::mutate(y = dplyr::row_number())
+    x <- x |>
+      dplyr::inner_join(labs, by = "variable_name")
+    ggplot2::ggplot(
+      data = x,
+      mapping = ggplot2::aes(x = rr, xmin = rr_lower, xmax = rr_upper, y = y, colour = variable_level)
+    ) +
+      ggplot2::geom_point() +
+      ggplot2::geom_errorbar() +
+      ggplot2::facet_grid(cdm_name ~ index_condition + drug) +
+      ggplot2::geom_vline(xintercept = 1) +
+      ggplot2::scale_x_log10(name = "Relative Risk") +
+      ggplot2::coord_cartesian(xlim = c(0.5, 2)) +
+      ggplot2::scale_y_continuous(
+        breaks = labs$y,
+        labels = labs$variable_name
       )
   })
 

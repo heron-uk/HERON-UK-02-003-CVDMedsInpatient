@@ -74,7 +74,7 @@ if (n > 0) {
 
 # add to person
 cdm$ses_table <- cdm$ses_table |>
-  dplyr::left_join(
+  dplyr::right_join(
     cdm$person |>
       dplyr::select("person_id"), 
     by = "person_id"
