@@ -27,7 +27,7 @@ library(broom)
 #database metadata and connection details
 #The name/ acronym for the database
 
-db_name <- "..."
+dbName <- "..."
 
 # Database connection details
 # In this study we also use the DBI package to connect to the database
@@ -37,39 +37,28 @@ db_name <- "..."
 # you may need to install another package for this
 # eg for postgres
 
-db <- dbConnect("...",
-                dbname = "...",
-                port = "...",
-                host = "...",
-                user = "...",
-                password = "...",
-                bigint = c("integer")
-)
+con <- dbConnect("...")
 
 # Set database details -----
 
 # The name of the schema that contains the OMOP CDM with patient-level data
-cdm_schema <- "..."
+cdmSchema <- "..."
 
 # The name of the schema where results tables will be created
-write_schema <- "..."
+writeSchema <- "..."
 
 # Table prefix -----
 # any tables created in the database during the analysis will start with this prefix
-study_prefix <- "..."
+writePrefix <- "..."
 
 # create cdm reference -----
 cdm <- CDMConnector::cdmFromCon(
-  con = db,
-  cdmSchema = cdm_schema,
-  writeSchema = write_schema,
-  cdmName = db_name,
-  writePrefix = study_prefix
+  con = con,
+  cdmSchema = cdmSchema,
+  writeSchema = writeSchema,
+  cdmName = dbName,
+  writePrefix = writePrefix
 )
-
-
-# Hospital databases should set the start date as "2022-01-01". 
-study_start <- "2022-01-01"
 
 min_cell_count <- 5
 

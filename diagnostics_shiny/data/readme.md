@@ -1,3 +1,5 @@
-# data
+# Data
 
-This folder contains the processed data for the shiny app.
+This folder contains processed data for the diagnostics Shiny app.
+
+The app creates `appData.qs` from files in `raw/` when preprocessing is needed. See [../../INSTRUCTIONS.md](../../INSTRUCTIONS.md#diagnostics-shiny-data).

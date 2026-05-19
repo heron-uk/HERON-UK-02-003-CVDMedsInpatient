@@ -39,7 +39,7 @@ dbName <- "..."
 #   user = user,
 #   password = password
 # )
-db <- dbConnect("...")
+con <- dbConnect("...")
 
 # The name of the schema that contains the OMOP CDM with patient-level data
 cdmSchema <- "..."
@@ -59,10 +59,10 @@ minCellCount <- 5
 
 # create cdm reference
 cdm <- cdmFromCon(
-  con = db,
-  cdmSchema = cdmSchema, 
-  writeSchema = writeSchema, 
-  cdmName = dbName, 
+  con = con,
+  cdmSchema = cdmSchema,
+  writeSchema = writeSchema,
+  cdmName = dbName,
   writePrefix = writePrefix,
   achillesSchema = achillesSchema
 )
