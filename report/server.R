@@ -523,7 +523,8 @@ server <- function(input, output, session) {
         .data$cdm_name %in% input$drug_initiate_cdm_name
       ) |>
       omopgenerics::filterGroup(.data$index_condition %in% input$drug_initiate_index_condition) |>
-      omopgenerics::filterStrata(.data$drug %in% input$drug_initiate_drug)
+      omopgenerics::filterStrata(.data$drug %in% input$drug_initiate_drug) |>
+      omopgenerics::filterAdditional(.data$model %in% input$drug_initiate_model)
   })
   output$drug_initiate_table <- gt::render_gt({
     getDrugInitiateData() |>

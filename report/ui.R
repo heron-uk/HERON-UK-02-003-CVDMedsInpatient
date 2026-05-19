@@ -179,7 +179,7 @@ ui <- bslib::page_navbar(
                   ),
                   position = "right"
                 ),
-                shiny::uiOutput("summarise_observation_period_plot") |>
+                shiny::uiOutput("summarise_observation_period_plot", style = "height: 700px;") |>
                   shinycssloaders::withSpinner()
               )
             )
@@ -397,7 +397,7 @@ ui <- bslib::page_navbar(
                   ),
                   position = "right"
                 ),
-                shiny::uiOutput("summarise_cohort_count_plot") |>
+                shiny::uiOutput("summarise_cohort_count_plot", style = "height: 700px;") |>
                   shinycssloaders::withSpinner()
               )
             )
@@ -482,7 +482,7 @@ ui <- bslib::page_navbar(
                   ),
                   position = "right"
                 ),
-                DiagrammeR::grVizOutput("summarise_cohort_attrition_diagram") |>
+                DiagrammeR::grVizOutput("summarise_cohort_attrition_diagram", height = "700px") |>
                   shinycssloaders::withSpinner()
               )
             )
@@ -658,7 +658,7 @@ ui <- bslib::page_navbar(
                   ),
                   position = "right"
                 ),
-                shiny::uiOutput("summarise_demographics_plot") |>
+                shiny::uiOutput("summarise_demographics_plot", style = "height: 700px;") |>
                   shinycssloaders::withSpinner()
               )
             )
@@ -810,7 +810,7 @@ ui <- bslib::page_navbar(
                   ),
                   position = "right"
                 ),
-                shiny::uiOutput("summarise_death_plot") |>
+                shiny::uiOutput("summarise_death_plot", style = "height: 700px;") |>
                   shinycssloaders::withSpinner()
               )
             )
@@ -978,7 +978,7 @@ ui <- bslib::page_navbar(
                   ),
                   position = "right"
                 ),
-                shiny::uiOutput("summarise_treatments_plot") |>
+                shiny::uiOutput("summarise_treatments_plot", style = "height: 700px;") |>
                   shinycssloaders::withSpinner()
               )
             )
@@ -1146,7 +1146,7 @@ ui <- bslib::page_navbar(
                   ),
                   position = "right"
                 ),
-                shiny::uiOutput("summarise_procedures_plot") |>
+                shiny::uiOutput("summarise_procedures_plot", style = "height: 700px;") |>
                   shinycssloaders::withSpinner()
               )
             )
@@ -1228,7 +1228,7 @@ ui <- bslib::page_navbar(
             title = "Radial plot",
             bslib::card(
               full_screen = TRUE,
-              shiny::plotOutput("summarise_drug_initiators_radial", height = "600px") |>
+              shiny::plotOutput("summarise_drug_initiators_radial", height = "700px") |>
                 shinycssloaders::withSpinner()
             )
           )#,
@@ -1236,7 +1236,7 @@ ui <- bslib::page_navbar(
           #   title = "Forest plot",
           #   bslib::card(
           #     full_screen = TRUE,
-          #     shiny::plotOutput("summarise_drug_initiators_forest", height = "600px") |>
+          #     shiny::plotOutput("summarise_drug_initiators_forest", height = "700px") |>
           #       shinycssloaders::withSpinner(),
           #   )
           # )
@@ -1297,7 +1297,7 @@ ui <- bslib::page_navbar(
             title = "Plot",
             bslib::card(
               full_screen = TRUE,
-              shiny::plotOutput("drug_initiate_plot") |>
+              shiny::plotOutput("drug_initiate_plot", height = "700px") |>
                 shinycssloaders::withSpinner()
             )
           )

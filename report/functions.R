@@ -435,12 +435,14 @@ getSelected <- function(choices) {
     vals
   })
 }
-renderInteractivePlot <- function(plt, interactive) {
+figureHeightPx <- 700
+
+renderInteractivePlot <- function(plt, interactive, height = figureHeightPx) {
   plt <- stylePlot(plt)
   if (interactive) {
-    plotly::renderPlotly(plt)
+    plotly::renderPlotly(plotly::ggplotly(plt, height = height))
   } else {
-    shiny::renderPlot(plt)
+    shiny::renderPlot(plt, height = height)
   }
 }
 updateMessage <- shiny::div(
