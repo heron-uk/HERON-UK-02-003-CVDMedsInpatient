@@ -497,7 +497,8 @@ server <- function(input, output, session) {
       ggplot2::scale_y_continuous(
         breaks = labs$y,
         labels = labs$variable_level
-      )
+      ) +
+      visOmopResults::themeVisOmop(style = "_brand.yml")
   })
   output$summarise_drug_initiators_radial <- shiny::renderPlot({
     x <- getInitiatorRRData() |>
@@ -514,7 +515,8 @@ server <- function(input, output, session) {
       ggplot2::scale_x_continuous(
         breaks = labs$y,
         labels = labs$variable_level
-      )
+      ) +
+      visOmopResults::themeVisOmop(style = "_brand.yml")
   })
   # probability to initiate ----
   getDrugInitiateData <- shiny::reactive({
@@ -556,7 +558,8 @@ server <- function(input, output, session) {
       ggplot2::scale_y_continuous(
         breaks = labs$y,
         labels = labs$variable_level
-      )
+      ) +
+      visOmopResults::themeVisOmop(style = "_brand.yml")
   })
 
 }

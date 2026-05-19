@@ -5,7 +5,7 @@ ui <- bslib::page_navbar(
   # introduction ----
   title = shiny::tags$span(
     shiny::tags$img(
-      src = "ohdsi_logo.svg",
+      src = "hdruk_logo.png",
       width = "auto",
       height = "46px",
       class = "me-3",
@@ -13,7 +13,45 @@ ui <- bslib::page_navbar(
     ),
     ""
   ),
-  theme = bslib::bs_theme(brand = TRUE),
+  theme = bslib::bs_theme(brand = TRUE) |>
+    bslib::bs_add_rules("
+      .navbar,
+      .navbar.bg-primary,
+      .navbar.navbar-dark,
+      .navbar.navbar-light {
+        background-color: #3db28c !important;
+        background-image: linear-gradient(90deg, #3db28c 0%, #43969c 52%, #475da7 100%) !important;
+        border-color: transparent !important;
+        --bs-navbar-color: rgba(255, 255, 255, 0.92);
+        --bs-navbar-hover-color: #ffffff;
+        --bs-navbar-active-color: #ffffff;
+        --bs-navbar-brand-color: #ffffff;
+        --bs-navbar-brand-hover-color: #ffffff;
+        --bs-navbar-toggler-border-color: rgba(255, 255, 255, 0.45);
+      }
+
+      .navbar .navbar-brand,
+      .navbar .nav-link,
+      .navbar .nav-link.active,
+      .navbar .nav-link.show,
+      .navbar .navbar-nav .show > .nav-link,
+      .navbar .btn,
+      .navbar .form-check-label {
+        color: #ffffff !important;
+      }
+
+      .navbar .nav-link:hover,
+      .navbar .nav-link:focus,
+      .navbar .btn:hover,
+      .navbar .btn:focus {
+        color: rgba(255, 255, 255, 0.88) !important;
+      }
+
+      .navbar .dropdown-menu {
+        --bs-dropdown-link-active-bg: #475da7;
+        --bs-dropdown-link-active-color: #ffffff;
+      }
+    "),
   bslib::nav_panel(
     title = "Background",
     icon = shiny::icon("book-atlas"),
