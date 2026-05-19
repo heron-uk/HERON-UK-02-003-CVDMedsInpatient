@@ -24,35 +24,39 @@ result <- file.path(getwd(), "rawData") |>
   }) |>
   omopgenerics::bind()
 
+cohorts <- c("stroke", "stroke_no_valve", "stroke_with_af", "acute_mi", "acute_mi_stemi", "acute_mi_not_stemi")
+
 resultChar <- result |>
   omopgenerics::filterSettings(result_type == "summarise_characteristics") |>
   omopgenerics::splitGroup() |>
   omopgenerics::splitStrata() |>
   dplyr::mutate(
     drug = dplyr::if_else(
-      cohort_name %in% c("stroke", "stroke_no_valve", "acute_mi", "acute_mi_stemi", "acute_mi_not_stemi"),
+      cohort_name %in% cohorts,
       NA_character_,
       dplyr::case_when(
         stringr::str_ends(.data$cohort_name, "stroke") ~ stringr::str_replace(.data$cohort_name, "_stroke", ""),
         stringr::str_ends(.data$cohort_name, "stroke_no_valve") ~ stringr::str_replace(.data$cohort_name, "_stroke_no_valve", ""),
+        stringr::str_ends(.data$cohort_name, "stroke_with_af") ~ stringr::str_replace(.data$cohort_name, "_stroke_with_af", ""),
         stringr::str_ends(.data$cohort_name, "acute_mi") ~ stringr::str_replace(.data$cohort_name, "_acute_mi", ""),
         stringr::str_ends(.data$cohort_name, "acute_mi_stemi") ~ stringr::str_replace(.data$cohort_name, "_acute_mi_stemi", ""),
         stringr::str_ends(.data$cohort_name, "acute_mi_not_stemi") ~ stringr::str_replace(.data$cohort_name, "_acute_mi_not_stemi", "")
       )
     ),
     index_condition = dplyr::if_else(
-      cohort_name %in% c("stroke", "stroke_no_valve", "acute_mi", "acute_mi_stemi", "acute_mi_not_stemi"),
+      cohort_name %in% cohorts,
       NA_character_,
       dplyr::case_when(
         stringr::str_ends(.data$cohort_name, "stroke") ~ "stroke",
         stringr::str_ends(.data$cohort_name, "stroke_no_valve") ~ "stroke_no_valve",
+        stringr::str_ends(.data$cohort_name, "stroke_with_af") ~ "stroke_with_af",
         stringr::str_ends(.data$cohort_name, "acute_mi") ~ "acute_mi",
         stringr::str_ends(.data$cohort_name, "acute_mi_stemi") ~ "acute_mi_stemi",
         stringr::str_ends(.data$cohort_name, "acute_mi_not_stemi") ~ "acute_mi_not_stemi"
       )
     ),
     cohort_name = dplyr::if_else(
-      cohort_name %in% c("stroke", "stroke_no_valve", "acute_mi", "acute_mi_stemi", "acute_mi_not_stemi"),
+      cohort_name %in% cohorts,
       cohort_name,
       NA_character_
     ),
@@ -69,6 +73,7 @@ resultChar <- result |>
       .data$age_range != "overall" ~ paste0("Age group: ", age_range),
       .data$sex != "overall" ~ paste0("Sex: ", sex),
       .data$ses != "overall" ~ paste0("SES: ", ses),
+      .data$ethnicity != "overall" ~ paste0("Ethnicity: ", ethnicity),
       .default = "overall"
     ),
     variable_level = dplyr::case_when(
@@ -87,27 +92,58 @@ resultChar <- result |>
       .default = .data$variable_name
     )
   ) |>
+  dplyr::filter(
+    variable_name != "Procedures [-7, 28]" |
+      (startsWith(cohort_name, "stroke") & variable_level %in% c("Thromboendarterectomy", "Stroke rx procedures")) |
+      (startsWith(cohort_name, "acute_mi") & variable_level %in% c("Percutaneous coronary intervention", "Coronary artery bypass graft"))
+  ) |>
   omopgenerics::uniteStrata("strata") |>
   omopgenerics::uniteGroup(c("cohort_name", "index_condition", "drug")) |>
-  dplyr::select(!c("age_range", "sex", "ses")) |>
+  dplyr::select(!c("age_range", "sex", "ses", "ethnicity")) |>
   dplyr::filter(
     .data$variable_name != "MI type" |
-      group_level %in% c("stroke", "stroke_no_valve", "acute_mi", "acute_mi_stemi", "acute_mi_not_stemi")
+      group_level %in% cohorts
   )
 
 init <- result |>
   omopgenerics::filterSettings(result_type == "drug_initiate") |>
   omopgenerics::tidy() |>
+  dplyr::filter(index_condition != "acute_mi" | variable_name != "model6") |>
   dplyr::mutate(
+    model = dplyr::case_when(
+      variable_name == "model1" ~ "Age model",
+      variable_name == "model2" ~ "Age+Sex model",
+      variable_name == "model3" ~ "SES + Age + Sex model",
+      variable_name == "model4" ~ "Eth + Age + Sex model",
+      variable_name == "model5" ~ "MI type + Age + Sex model",
+      variable_name %in% c("model6", "model7") ~ "SES + Eth + (MI type) + Age + Sex model"
+    ),
+    model_type = dplyr::if_else(
+      variable_name %in% c("model6", "model7"), "Combined model", "Individual model"
+    ),
+    variable_name = dplyr::case_when(
+      stringr::str_starts(variable_level, "age_group") ~ "Age group",
+      stringr::str_starts(variable_level, "sex") ~ "Sex",
+      stringr::str_starts(variable_level, "ses") ~ "Socio-economic Status",
+      stringr::str_starts(variable_level, "ethnicity") ~ "Ethnicity",
+      stringr::str_starts(variable_level, "mi_type") ~ "MI type",
+    ),
+    variable_level = stringr::str_replace(.data$variable_level, "age_group|sex|ses|ethnicity|mi_type", ""),
     rr = exp(.data$coef),
     rr_lower = exp(.data$coef - 1.96 * .data$se_coef),
     rr_upper = exp(.data$coef + 1.96 * .data$se_coef),
     dplyr::across(dplyr::starts_with("rr"), \(x) dplyr::if_else(x>100, 100, x)),
     result_type = "drug_initiate"
   ) |>
+  dplyr::filter(
+    model %in% c("Age model", "SES + Eth + (MI type) + Age + Sex model") |
+      (model == "Age+Sex model" & variable_name != "Age group") |
+      !variable_name %in% c("Sex", "Age group")
+  ) |>
   omopgenerics::transformToSummarisedResult(
     group = "index_condition",
     strata = "drug",
+    additional = c("model", "model_type"),
     estimates = c("rr", "rr_lower", "rr_upper"),
     settings = "result_type"
   )

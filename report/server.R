@@ -530,39 +530,31 @@ server <- function(input, output, session) {
       visOmopResults::visOmopTable(
         estimateName = c("RR [95%CI]" = "<rr> [<rr_lower> - <rr_upper>]"),
         header = "cdm_name",
-        groupColumn = c("index_condition", "drug"),
-        hide = "variable_level"
+        groupColumn = c("index_condition", "drug", "model"),
+        hide = c("model_type")
       )
   })
   output$drug_initiate_plot <- shiny::renderPlot({
     x <- getDrugInitiateData() |>
-      omopgenerics::tidy() |>
-      dplyr::mutate(variable_level = dplyr::case_when(
-        stringr::str_starts(variable_name, "age_group") ~ "age_group",
-        stringr::str_starts(variable_name, "sex") ~ "sex",
-        stringr::str_starts(variable_name, "ses") ~ "ses",
-        stringr::str_starts(variable_name, "ethnicity") ~ "ethnicity",
-        stringr::str_starts(variable_name, "mi_type") ~ "mi_type",
-      ))
+      omopgenerics::tidy()
     labs <- x |>
-      dplyr::distinct(variable_name) |>
-      dplyr::arrange(.data$variable_name) |>
+      dplyr::distinct(variable_name, variable_level) |>
       dplyr::mutate(y = dplyr::row_number())
     x <- x |>
-      dplyr::inner_join(labs, by = "variable_name")
+      dplyr::inner_join(labs, by = c("variable_name", "variable_level"))
     ggplot2::ggplot(
       data = x,
-      mapping = ggplot2::aes(x = rr, xmin = rr_lower, xmax = rr_upper, y = y, colour = variable_level)
+      mapping = ggplot2::aes(x = rr, xmin = rr_lower, xmax = rr_upper, y = y, colour = variable_name)
     ) +
       ggplot2::geom_point() +
       ggplot2::geom_errorbar() +
-      ggplot2::facet_grid(cdm_name ~ index_condition + drug) +
+      ggplot2::facet_grid(cdm_name ~ index_condition + drug + model_type) +
       ggplot2::geom_vline(xintercept = 1) +
       ggplot2::scale_x_log10(name = "Relative Risk") +
-      ggplot2::coord_cartesian(xlim = c(0.5, 2)) +
+      ggplot2::coord_cartesian(xlim = c(0.25, 4)) +
       ggplot2::scale_y_continuous(
         breaks = labs$y,
-        labels = labs$variable_name
+        labels = labs$variable_level
       )
   })
 

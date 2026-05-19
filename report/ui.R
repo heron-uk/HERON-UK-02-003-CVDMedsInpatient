@@ -1231,15 +1231,15 @@ ui <- bslib::page_navbar(
               shiny::plotOutput("summarise_drug_initiators_radial", height = "600px") |>
                 shinycssloaders::withSpinner()
             )
-          ),
-          bslib::nav_panel(
-            title = "Forest plot",
-            bslib::card(
-              full_screen = TRUE,
-              shiny::plotOutput("summarise_drug_initiators_forest", height = "600px") |>
-                shinycssloaders::withSpinner(),
-            )
-          )
+          )#,
+          # bslib::nav_panel(
+          #   title = "Forest plot",
+          #   bslib::card(
+          #     full_screen = TRUE,
+          #     shiny::plotOutput("summarise_drug_initiators_forest", height = "600px") |>
+          #       shinycssloaders::withSpinner(),
+          #   )
+          # )
         )
       )
     ),
@@ -1271,6 +1271,14 @@ ui <- bslib::page_navbar(
             label = "Drug",
             choices = choices$drug_initiate_drug,
             selected = selected$drug_initiate_drug,
+            multiple = TRUE,
+            options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
+          ),
+          shinyWidgets::pickerInput(
+            inputId = "drug_initiate_model",
+            label = "Model",
+            choices = choices$drug_initiate_model,
+            selected = selected$drug_initiate_model,
             multiple = TRUE,
             options = list(`actions-box` = TRUE, size = 10, `selected-text-format` = "count > 3")
           ),
