@@ -9,20 +9,26 @@ cdm$inpatient_visit <- conceptCohort(
 logMessage("INSTANTIATING HOSPITAL MI COHORT")
 cdm$acute_mi <- conceptCohort(
   cdm = cdm,
-  conceptSet = conditions["acute_mi"],
+  conceptSet = conditions[c("acute_mi_broad", "acute_mi_narrow")],
   name = "acute_mi"
 ) |> 
   requireCohortIntersect(
-    cohortId = "acute_mi",
+    cohortId = "acute_mi_broad",
     targetCohortTable = "acute_mi", 
-    targetCohortId = "acute_mi",
+    targetCohortId = "acute_mi_broad",
+    window = c(-28, -1), 
+    intersections = 0
+  ) |>
+  requireCohortIntersect(
+    cohortId = "acute_mi_narrow",
+    targetCohortTable = "acute_mi", 
+    targetCohortId = "acute_mi_narrow",
     window = c(-28, -1), 
     intersections = 0
   ) |>
   requireInDateRange(dateRange = study_period) |>
   requireAge(ageRange = c(18, 150)) |>
   requireCohortIntersect(
-    cohortId = "acute_mi",
     targetCohortTable = "inpatient_visit",
     targetCohortId = "inpatient",
     window = c(0, 0),
@@ -45,34 +51,42 @@ cdm$acute_mi <- conceptCohort(
   compute(name = "acute_mi") |>
   copyCohorts(name = "acute_mi", n = 3) |>
   renameCohort(
-    newCohortName = c("acute_mi_stemi", "acute_mi_not_stemi"),
-    cohortId = c(2, 3)
+    newCohortName = c("acute_mi_broad_stemi", "acute_mi_broad_not_stemi", "acute_mi_narrow_stemi", "acute_mi_narrow_not_stemi"),
+    cohortId = c("acute_mi_broad_1", "acute_mi_broad_2", "acute_mi_narrow_1", "acute_mi_narrow_2")
   ) |>
+  addCohortName() |>
   filter(
-    cohort_definition_id != 2 | mi_type == "STEMI",
-    cohort_definition_id != 3 | mi_type == "not STEMI"
+    !cohort_name %in% c("acute_mi_broad_stemi", "acute_mi_narrow_stemi") | mi_type == "STEMI",
+    !cohort_name %in% c("acute_mi_broad_not_stemi", "acute_mi_narrow_not_stemi") | mi_type == "not STEMI"
   ) |>
+  select(!"cohort_name") |>
   compute(name = "acute_mi") |>
-  recordCohortAttrition(reason = "Only STEMI records", cohortId = 2) |>
-  recordCohortAttrition(reason = "Only not STEMI records", cohortId = 3)
+  recordCohortAttrition(reason = "Only STEMI records", cohortId = c("acute_mi_broad_stemi", "acute_mi_narrow_stemi")) |>
+  recordCohortAttrition(reason = "Only not STEMI records", cohortId = c("acute_mi_broad_not_stemi", "acute_mi_narrow_not_stemi"))
 
 logMessage("INSTANTIATING HOSPITAL STROKE COHORT")
 cdm$stroke <- conceptCohort(
   cdm = cdm,
-  conceptSet = conditions["stroke"],
+  conceptSet = conditions[c("stroke_narrow", "stroke_broad")],
   name = "stroke"
 ) |> 
   requireCohortIntersect(
-    cohortId = "stroke",
+    cohortId = "stroke_narrow",
     targetCohortTable = "stroke", 
-    targetCohortId = "stroke",
+    targetCohortId = "stroke_narrow",
+    window = c(-28, -1), 
+    intersections = 0
+  ) |>
+  requireCohortIntersect(
+    cohortId = "stroke_broad",
+    targetCohortTable = "stroke", 
+    targetCohortId = "stroke_broad",
     window = c(-28, -1), 
     intersections = 0
   ) |>
   requireInDateRange(dateRange = study_period) |>
   requireAge(ageRange = c(18, 150)) |>
   requireCohortIntersect(
-    cohortId = "stroke",
     targetCohortTable = "inpatient_visit",
     targetCohortId = "inpatient",
     window = c(0, 0),
@@ -83,17 +97,17 @@ cdm$stroke <- conceptCohort(
   compute(name = "stroke") |>
   copyCohorts(name = "stroke", n = 3) |>
   renameCohort(
-    newCohortName = c("stroke_no_valve", "stroke_with_af"), 
-    cohortId = c("stroke_1", "stroke_2")
+    newCohortName = c("stroke_narrow_no_valve", "stroke_narrow_with_af", "stroke_broad_no_valve", "stroke_broad_with_af"), 
+    cohortId = c("stroke_narrow_1", "stroke_narrow_2", "stroke_broad_1", "stroke_broad_2")
   ) |>
   requireConceptIntersect(
-    cohortId = "stroke_no_valve",
+    cohortId = c("stroke_broad_no_valve", "stroke_narrow_no_valve"),
     conceptSet = conditions["valve_disorder_excl_endocarditis"], 
     window = c(-Inf, 0),
     intersections = 0
   ) |>
   requireConceptIntersect(
-    cohortId = "stroke_with_af",
+    cohortId = c("stroke_broad_with_af", "stroke_narrow_with_af"),
     conceptSet = conditions["atrial_fibrillation"], 
     window = c(-Inf, 7),
     intersections = c(1, Inf)

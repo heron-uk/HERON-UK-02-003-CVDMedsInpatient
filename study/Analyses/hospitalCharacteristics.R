@@ -4,19 +4,33 @@ results[["cohort_count"]] <- cdm$index_cohorts |>
   summariseCohortCount()
 
 logMessage("Cohort code use")
-results[["cohort_code_use_mi"]] <- summariseCohortCodeUse(
+results[["cohort_code_use_mi_broad"]] <- summariseCohortCodeUse(
   cohortTable = "index_cohorts",
-  cohortId = "acute_mi",
+  cohortId = "acute_mi_broad",
   cdm = cdm,
   timing = "entry", 
-  x = conditions["acute_mi"]
+  x = conditions["acute_mi_broad"]
 )
-results[["cohort_code_use_stroke"]] <-summariseCohortCodeUse(
+results[["cohort_code_use_mi_narrow"]] <- summariseCohortCodeUse(
   cohortTable = "index_cohorts",
-  cohortId = "stroke",
+  cohortId = "acute_mi_narrow",
+  cdm = cdm,
+  timing = "entry", 
+  x = conditions["acute_mi_narrow"]
+)
+results[["cohort_code_use_stroke_broad"]] <-summariseCohortCodeUse(
+  cohortTable = "index_cohorts",
+  cohortId = "stroke_broad",
   cdm = cdm,
   timing = "entry",
-  x = conditions["stroke"]
+  x = conditions["stroke_broad"]
+)
+results[["cohort_code_use_stroke_narrow"]] <-summariseCohortCodeUse(
+  cohortTable = "index_cohorts",
+  cohortId = "stroke_narrow",
+  cdm = cdm,
+  timing = "entry",
+  x = conditions["stroke_narrow"]
 )
 
 logMessage("Extract attrition")
@@ -57,7 +71,7 @@ results[["characterisation"]] <- cdm$index_cohorts |>
         window = c(-Inf, 0)
       ),
       "Prior MI/Stroke (-Inf to -1]" = list(
-        conceptSet = conditions[c("stroke", "acute_mi")],
+        conceptSet = conditions[c("stroke_broad", "stroke_narrow", "acute_mi_broad", "acute_mi_narrow")],
         window = c(-Inf, -1)
       )
     ),
