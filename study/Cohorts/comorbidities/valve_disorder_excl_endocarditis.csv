@@ -1,87 +1,87 @@
-﻿concept_id
-314368
-315273
-321041
-437461
-604345
-607639
-618992
-618994
-619135
-3654724
-3654725
-4020159
-4040820
-4062117
-4078214
-4081039
-4088260
-4089254
-4089367
-4095624
-4108166
-4117862
-4119461
-4120277
-4120278
-4120279
-4122764
-4125004
-4125005
-4125006
-4125007
-4125008
-4154293
-4155964
-4156119
-4161458
-4161459
-4161975
-4178551
-4182346
-4188554
-4215619
-4222174
-4231452
-4259295
-4301373
-4313828
-4353740
-4353822
-4354063
-37163275
-43020459
-43020630
-43020946
-43020947
-43020948
-43020949
-43020950
-43021473
-43021624
-43021625
-43021941
-45766069
-45766071
-45766072
-45766078
-45766079
-45766080
-45766081
-45766082
-45766083
-45766084
-45766086
-45766094
-45766103
-45766177
-45766178
-45766179
-45766180
-45766181
-45766182
-45766185
-45766186
-45771317
-45773076
-45773168
+concept_id,concept_name,domain_id,vocabulary_id,standard_concept
+314368,Mitral stenosis with insufficiency,Condition,SNOMED,standard
+315273,Mitral valve stenosis,Condition,SNOMED,standard
+321041,Mitral stenosis and aortic insufficiency,Condition,SNOMED,standard
+437461,Disorder of prosthetic cardiac valve,Condition,SNOMED,standard
+604345,Acquired regurgitation of left ventricular component of common atrioventricular valve following repair of biventricular connection,Condition,SNOMED,standard
+607639,Rheumatic mitral valve obstruction,Condition,SNOMED,standard
+618992,Acquired regurgitation of right ventricular component of common atrioventricular valve following repair of biventricular connection,Condition,SNOMED,standard
+618994,Acquired regurgitation of common atrioventricular valve following repair of biventricular connection,Condition,SNOMED,standard
+619135,Acquired common atrioventricular valve regurgitation following procedure,Condition,SNOMED,standard
+3654724,Moderate mitral valve stenosis,Condition,SNOMED,standard
+3654725,Severe mitral valve stenosis,Condition,SNOMED,standard
+4020159,Mechanical complication of heart valve prosthesis,Condition,SNOMED,non-standard
+4040820,Rheumatic disease of mitral AND aortic valves,Condition,SNOMED,standard
+4062117,Recurrent rheumatic heart disease,Condition,SNOMED,standard
+4078214,Rheumatic heart valve stenosis,Condition,SNOMED,standard
+4081039,Pulmonary hypertension with occult mitral stenosis,Condition,SNOMED,standard
+4088260,Prosthetic valve sound,Condition,SNOMED,standard
+4089254,Closing click of prosthetic valve,Condition,SNOMED,standard
+4089367,Prosthetic valve sound muffled,Condition,SNOMED,standard
+4095624,Opening click of prosthetic valve,Condition,SNOMED,standard
+4108166,Paraprosthetic mitral regurgitation,Condition,SNOMED,standard
+4117862,Chronic rheumatic mitral valvulitis,Condition,SNOMED,standard
+4119461,Mitral restenosis,Condition,SNOMED,standard
+4120277,Prosthetic cardiac valve component embolism,Condition,SNOMED,standard
+4120278,Prosthetic cardiac valve obstruction,Condition,SNOMED,standard
+4120279,Prosthetic cardiac valve vegetation,Condition,SNOMED,standard
+4122764,Prosthetic cardiac valve dehiscence,Condition,SNOMED,standard
+4125004,Prosthetic cardiac valve regurgitation,Condition,SNOMED,standard
+4125005,Prosthetic cardiac paravalvular leak,Condition,SNOMED,standard
+4125006,Prosthetic cardiac valve thrombosis,Condition,SNOMED,standard
+4125007,Prosthetic cardiac valve calcification,Condition,SNOMED,standard
+4125008,Prosthetic cardiac valve displacement,Condition,SNOMED,standard
+4154293,Rheumatic heart valve stenosis with insufficiency,Condition,SNOMED,standard
+4155964,Acute mitral regurgitation from chordal rupture,Condition,SNOMED,standard
+4156119,Rheumatic mitral AND aortic valve obstruction,Condition,SNOMED,standard
+4161458,Acute mitral regurgitation from chordal dysfunction,Condition,SNOMED,standard
+4161459,Acute mitral regurgitation from papillary muscle dysfunction,Condition,SNOMED,standard
+4161975,Acute mitral regurgitation from papillary muscle rupture,Condition,SNOMED,standard
+4178551,Paraprosthetic pulmonary regurgitation,Condition,SNOMED,standard
+4182346,Paraprosthetic tricuspid regurgitation,Condition,SNOMED,standard
+4188554,Acute mitral regurgitation,Condition,SNOMED,standard
+4215619,Rheumatic mitral valve stenosis AND aortic valve insufficiency,Condition,SNOMED,standard
+4222174,Rheumatic disease of mitral valve,Condition,SNOMED,standard
+4231452,Chronic rheumatic valvulitis,Condition,SNOMED,standard
+4259295,Rheumatic mitral valve and aortic valve stenosis,Condition,SNOMED,standard
+4301373,Rheumatic mitral stenosis with regurgitation,Condition,SNOMED,standard
+4313828,Rheumatic mitral stenosis,Condition,SNOMED,standard
+4353740,Paraprosthetic aortic regurgitation,Condition,SNOMED,standard
+4353822,Prosthetic mitral valve regurgitation,Condition,SNOMED,standard
+4354063,Prosthetic aortic valve regurgitation,Condition,SNOMED,standard
+37163275,Periprosthetic aortic valve regurgitation,Condition,SNOMED,standard
+43020459,Mechanical breakdown of prosthetic heart valve,Condition,SNOMED,standard
+43020630,Disorder of aortic valve prosthesis,Condition,SNOMED,standard
+43020946,Disorder of atrioventricular (not morphologically mitral or tricuspid) valve prosthesis,Condition,SNOMED,standard
+43020947,Disorder of right atrioventricular (not morphologically tricuspid) valve prosthesis,Condition,SNOMED,standard
+43020948,Disorder of tricuspid valve prosthesis,Condition,SNOMED,standard
+43020949,Disorder of pulmonary valve prosthesis,Condition,SNOMED,standard
+43020950,Disorder of truncal valve prosthesis,Condition,SNOMED,standard
+43021473,Disorder of left atrioventricular (not morphologically mitral) valve prosthesis,Condition,SNOMED,standard
+43021624,Failure of cardiac valve prosthesis,Condition,SNOMED,standard
+43021625,Abscess at site of cardiac valve prosthesis,Condition,SNOMED,standard
+43021941,Disorder of mitral valve prosthesis,Condition,SNOMED,standard
+45766069,Prosthetic mitral valve failure,Condition,SNOMED,standard
+45766071,Prosthetic mitral valve failure requiring replacement,Condition,SNOMED,standard
+45766072,Prosthetic mitral valve failure requiring revision,Condition,SNOMED,standard
+45766078,Prosthetic mitral valve stenosis,Condition,SNOMED,standard
+45766079,Prosthetic mitral valve stenosis and regurgitation,Condition,SNOMED,standard
+45766080,Acute prosthetic aortic valve regurgitation,Condition,SNOMED,standard
+45766081,Prosthetic aortic valve stenosis,Condition,SNOMED,standard
+45766082,Prosthetic aortic valve failure,Condition,SNOMED,standard
+45766083,Prosthetic aortic valve failure requiring revision,Condition,SNOMED,standard
+45766084,Acute prosthetic mitral valve regurgitation,Condition,SNOMED,standard
+45766086,Prosthetic mitral valve calcific stenosis,Condition,SNOMED,standard
+45766094,Prosthetic pulmonary valve failure requiring replacement,Condition,SNOMED,standard
+45766103,Prosthetic tricuspid valve stenosis,Condition,SNOMED,standard
+45766177,Prosthetic tricuspid valve failure,Condition,SNOMED,standard
+45766178,Prosthetic tricuspid valve failure requiring revision,Condition,SNOMED,standard
+45766179,Prosthetic tricuspid valve failure requiring replacement,Condition,SNOMED,standard
+45766180,Prosthetic pulmonary valve stenosis,Condition,SNOMED,standard
+45766181,Prosthetic tricuspid valve regurgitation,Condition,SNOMED,standard
+45766182,Prosthetic pulmonary valve regurgitation,Condition,SNOMED,standard
+45766185,Acute prosthetic tricuspid valve regurgitation,Condition,SNOMED,standard
+45766186,Prosthetic aortic valve stenosis and regurgitation,Condition,SNOMED,standard
+45771317,Prosthetic aortic valve failure requiring replacement,Condition,SNOMED,standard
+45773076,Prosthetic pulmonary valve failure requiring revision,Condition,SNOMED,standard
+45773168,Prosthetic pulmonary valve failure,Condition,SNOMED,standard

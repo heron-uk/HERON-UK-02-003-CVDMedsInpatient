@@ -1,46 +1,48 @@
-concept_id
-313217
-605092
-1340258
-2101903
-2108844
-2108845
-4047554
-4064452
-4117112
-4119601
-4119602
-4139517
-4141360
-4154290
-4199501
-4232691
-4232697
-37168922
-37170582
-37171038
-37172212
-37172244
-37208965
-37310849
-37395821
-40761370
-40761371
-40761374
-40761375
-40768550
-40768551
-42538272
-42539346
-42689664
-44782442
-44788803
-44790918
-44803702
-44803786
-44803842
-44803845
-44803863
-44804336
-44808026
-45768480
+concept_id,concept_name,domain_id,vocabulary_id,standard_concept
+313217,Atrial fibrillation,Condition,SNOMED,standard
+605092,Paroxysmal atrial fibrillation with rapid ventricular response,Condition,SNOMED,standard
+1340258,Exacerbation of atrial fibrillation,Condition,OMOP Extension,standard
+2101903,Documentation of permanent or persistent or paroxysmal atrial fibrillation (STR),Observation,CPT4,standard
+2108844,Patient receiving warfarin therapy for nonvalvular atrial fibrillation or atrial flutter (AFIB),Drug,CPT4,non-standard
+2108845,Patient not receiving warfarin therapy for nonvalvular atrial fibrillation or atrial flutter (AFIB),Observation,CPT4,standard
+4047554,Atrial fibrillation monitoring,Observation,SNOMED,standard
+4064452,ECG: atrial fibrillation,Condition,SNOMED,standard
+4068155,Atrial arrhythmia,Condition,SNOMED,standard
+4108832,Atrial fibrillation and flutter,Condition,SNOMED,non-standard
+4117112,Controlled atrial fibrillation,Condition,SNOMED,standard
+4119601,Lone atrial fibrillation,Condition,SNOMED,standard
+4119602,Non-rheumatic atrial fibrillation,Condition,SNOMED,standard
+4139517,Transient cerebral ischemia due to atrial fibrillation,Condition,SNOMED,standard
+4141360,Chronic atrial fibrillation,Condition,SNOMED,standard
+4154290,Paroxysmal atrial fibrillation,Condition,SNOMED,standard
+4199501,Rapid atrial fibrillation,Condition,SNOMED,standard
+4232691,Permanent atrial fibrillation,Condition,SNOMED,standard
+4232697,Persistent atrial fibrillation,Condition,SNOMED,standard
+37168922,Hypercoagulable state due to atrial fibrillation,Condition,SNOMED,standard
+37170582,Permanent atrial fibrillation due to heart valve disorder,Condition,SNOMED,standard
+37171038,Atrial fibrillation due to heart valve disorder,Condition,SNOMED,standard
+37172212,Paroxysmal atrial fibrillation due to heart valve disorder,Condition,SNOMED,standard
+37172244,Persistent atrial fibrillation due to heart valve disorder,Condition,SNOMED,standard
+37208965,QOF (Quality and Outcomes Framework) atrial fibrillation quality indicator-related care invitation,Observation,SNOMED,standard
+37310849,QOF (Quality and Outcomes Framework) atrial fibrillation quality indicator-related care invitation using preferred method of communication,Observation,SNOMED,standard
+37395821,Familial atrial fibrillation,Condition,SNOMED,standard
+40761370,Date of first episode of atrial fibrillation,Observation,LOINC,standard
+40761371,Emergency room visit or hospitalized or saw doctor for atrial fibrillation,Observation,LOINC,standard
+40761374,Taking any anticoagulants for treatment of atrial fibrillation,Observation,LOINC,standard
+40761375,Taking any antiarrhythmics for treatment of atrial fibrillation,Observation,LOINC,standard
+40768550,Stroke after atrial fibrillation 5 year risk [#] Framingham.Wang 2003,Observation,LOINC,standard
+40768551,Stroke or death after atrial fibrillation 5 year risk [#] Framingham.Wang 2003,Observation,LOINC,standard
+42538272,Referral to atrial fibrillation clinic,Observation,SNOMED,standard
+42539346,Preexcited atrial fibrillation,Condition,SNOMED,standard
+42689664,Atrial fibrillation detected,Condition,SNOMED,standard
+44782442,Atrial fibrillation with rapid ventricular response,Condition,SNOMED,standard
+44788803,Atrial fibrillation resolved,Observation,SNOMED,standard
+44790918,Atrial fibrillation annual review,Observation,SNOMED,standard
+44803702,Atrial fibrillation monitoring third letter,Observation,SNOMED,standard
+44803786,Atrial fibrillation monitoring telephone invitation,Observation,SNOMED,standard
+44803842,Atrial fibrillation monitoring second letter,Observation,SNOMED,standard
+44803845,Atrial fibrillation monitoring verbal invitation,Observation,SNOMED,standard
+44803863,Atrial fibrillation monitoring first letter,Observation,SNOMED,standard
+44804336,Atrial fibrillation monitoring invitation,Observation,SNOMED,standard
+44808026,Atrial fibrillation care pathway,Observation,SNOMED,standard
+45768480,Longstanding persistent atrial fibrillation,Condition,SNOMED,standard
