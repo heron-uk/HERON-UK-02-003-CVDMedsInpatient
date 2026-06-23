@@ -95,16 +95,10 @@ cdm$stroke <- conceptCohort(
   requireIsFirstEntry() |>
   mutate(mi_type = "None") |>
   compute(name = "stroke") |>
-  copyCohorts(name = "stroke", n = 3) |>
+  copyCohorts(name = "stroke", n = 2) |>
   renameCohort(
-    newCohortName = c("stroke_narrow_no_valve", "stroke_narrow_with_af", "stroke_broad_no_valve", "stroke_broad_with_af"), 
-    cohortId = c("stroke_narrow_1", "stroke_narrow_2", "stroke_broad_1", "stroke_broad_2")
-  ) |>
-  requireConceptIntersect(
-    cohortId = c("stroke_broad_no_valve", "stroke_narrow_no_valve"),
-    conceptSet = conditions["valve_disorder_excl_endocarditis"], 
-    window = c(-Inf, 0),
-    intersections = 0
+    newCohortName = c("stroke_narrow_with_af", "stroke_broad_with_af"), 
+    cohortId = c("stroke_narrow_1", "stroke_broad_1")
   ) |>
   requireConceptIntersect(
     cohortId = c("stroke_broad_with_af", "stroke_narrow_with_af"),
