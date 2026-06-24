@@ -12,7 +12,6 @@ concept_id,concept_name,domain_id,vocabulary_id,standard_concept
 4117112,Controlled atrial fibrillation,Condition,SNOMED,standard
 4119601,Lone atrial fibrillation,Condition,SNOMED,standard
 4119602,Non-rheumatic atrial fibrillation,Condition,SNOMED,standard
-4139517,Transient cerebral ischemia due to atrial fibrillation,Condition,SNOMED,standard
 4141360,Chronic atrial fibrillation,Condition,SNOMED,standard
 4154290,Paroxysmal atrial fibrillation,Condition,SNOMED,standard
 4199501,Rapid atrial fibrillation,Condition,SNOMED,standard
@@ -30,8 +29,6 @@ concept_id,concept_name,domain_id,vocabulary_id,standard_concept
 40761371,Emergency room visit or hospitalized or saw doctor for atrial fibrillation,Observation,LOINC,standard
 40761374,Taking any anticoagulants for treatment of atrial fibrillation,Observation,LOINC,standard
 40761375,Taking any antiarrhythmics for treatment of atrial fibrillation,Observation,LOINC,standard
-40768550,Stroke after atrial fibrillation 5 year risk [#] Framingham.Wang 2003,Observation,LOINC,standard
-40768551,Stroke or death after atrial fibrillation 5 year risk [#] Framingham.Wang 2003,Observation,LOINC,standard
 42538272,Referral to atrial fibrillation clinic,Observation,SNOMED,standard
 42539346,Preexcited atrial fibrillation,Condition,SNOMED,standard
 42689664,Atrial fibrillation detected,Condition,SNOMED,standard

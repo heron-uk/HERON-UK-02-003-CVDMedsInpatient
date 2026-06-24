@@ -65,7 +65,6 @@ concept_id,concept_name,domain_id,vocabulary_id,standard_concept
 4121477,Post-infarction pericarditis,Condition,SNOMED,standard
 4124684,Acute Q wave infarction - lateral,Condition,SNOMED,standard
 4124685,Acute non-Q wave infarction - widespread,Condition,SNOMED,standard
-4124686,Silent myocardial infarction,Condition,SNOMED,standard
 4124687,Cardiac rupture due to and following acute myocardial infarction,Condition,SNOMED,standard
 4126801,Acute Q wave myocardial infarction,Condition,SNOMED,standard
 4145721,Acute non-Q wave infarction,Condition,SNOMED,standard
