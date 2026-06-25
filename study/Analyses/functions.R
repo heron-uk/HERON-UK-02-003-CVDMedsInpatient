@@ -35,15 +35,6 @@ if (n_imd > 0) {
     dplyr::group_by(.data$person_id) |>
     dplyr::filter(.data$measurement_date == max(.data$measurement_date, na.rm = TRUE)) |>
     dplyr::select("person_id", "ses") |>
-    dplyr::mutate(ses = dplyr::case_when(
-      .data$ses %in% c(1, 2)  ~ 1L,
-      .data$ses %in% c(3, 4)  ~ 2L,
-      .data$ses %in% c(5, 6)  ~ 3L,
-      .data$ses %in% c(7, 8)  ~ 4L,
-      .data$ses %in% c(9, 10) ~ 5L,
-      TRUE ~ NA_real_
-    )) |>
-    dplyr::distinct() |>
     dplyr::compute(name = "ses_table")
   
 } else {
@@ -55,6 +46,24 @@ if (n_imd > 0) {
     dplyr::compute(name = "ses_table")
 }
 
+max_ses <- cdm$ses_table |>
+  dplyr::summarise(max_ses = max(.data$ses, na.rm = TRUE)) |>
+  dplyr::pull()
+  
+if (max_ses > 5) {
+  cdm$ses_table <- cdm$ses_table |>
+    dplyr::mutate(
+      ses = dplyr::case_when(
+        ses %in% c(1, 2)  ~ 1L,
+        ses %in% c(3, 4)  ~ 2L,
+        ses %in% c(5, 6)  ~ 3L,
+        ses %in% c(7, 8)  ~ 4L,
+        ses %in% c(9, 10) ~ 5L,
+        TRUE              ~ NA_integer_
+      )) |>
+    dplyr::distinct() |>
+    dplyr::compute(name = "ses_table")
+}
 # search duplicated
 exclude <- cdm$ses_table |>
   dplyr::group_by(.data$person_id) |>
