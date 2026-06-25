@@ -66,6 +66,7 @@ concept_id,concept_name,domain_id,vocabulary_id,standard_concept
 765515,Cerebral infarction due to basilar artery stenosis,Condition,SNOMED,standard
 765518,Monoplegia of dominant lower limb due to and following ischemic cerebrovascular accident,Condition,SNOMED,standard
 765907,Occlusion and stenosis of middle cerebral artery with infarction,Condition,SNOMED,standard
+1076484,Iatrogenic ischemic cerebral infarction,Condition,SNOMED,standard
 1245872,Cerebrovascular accident due to occlusion of bilateral posterior communicating arteries,Condition,SNOMED,standard
 4043731,Infarction - precerebral,Condition,SNOMED,standard
 4045734,CVA - cerebrovascular accident due to cerebral artery occlusion,Condition,SNOMED,standard
@@ -112,6 +113,7 @@ concept_id,concept_name,domain_id,vocabulary_id,standard_concept
 37110239,Cerebral ischemic stroke due to extracranial large artery atherosclerosis,Condition,SNOMED,standard
 37110678,Cerebral ischemic stroke due to occlusion of extracranial large artery,Condition,SNOMED,standard
 37110679,Cerebral ischemic stroke due to stenosis of extracranial large artery,Condition,SNOMED,standard
+37110765,Ischemic stroke without residual deficits,Condition,SNOMED,standard
 37116473,Multifocal cerebral infarction due to and following procedure on cardiovascular system,Condition,SNOMED,standard
 37162743,Pediatric arterial ischemic stroke,Condition,SNOMED,standard
 37164462,Malignant middle cerebral artery syndrome,Condition,SNOMED,standard
@@ -169,6 +171,8 @@ concept_id,concept_name,domain_id,vocabulary_id,standard_concept
 42539166,Cerebrovascular accident due to thrombus of left carotid artery,Condition,SNOMED,standard
 42539195,Cerebrovascular accident due to occlusion of left posterior cerebral artery,Condition,SNOMED,standard
 42539262,Cerebrovascular accident due to occlusion of left carotid artery,Condition,SNOMED,standard
+43530669,Ischemic stroke with coma,Condition,SNOMED,standard
+43530670,Ischemic stroke without coma,Condition,SNOMED,standard
 43530683,Cerebral infarction due to carotid artery occlusion,Condition,SNOMED,standard
 43531605,Occlusion of cerebral artery with stroke,Condition,SNOMED,standard
 43531607,Cerebral infarction due to stenosis of carotid artery,Condition,SNOMED,standard

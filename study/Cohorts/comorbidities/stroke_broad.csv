@@ -1,5 +1,14 @@
 concept_id,concept_name,domain_id,vocabulary_id,standard_concept
+372924,Cerebral artery occlusion,Condition,SNOMED,standard
+375557,Cerebral embolism,Condition,SNOMED,standard
+381316,Cerebrovascular accident,Condition,SNOMED,standard
+437308,Basilar artery occlusion,Condition,SNOMED,standard
+439295,Multiple and bilateral precerebral arterial occlusion,Condition,SNOMED,standard
+441874,Cerebral thrombosis,Condition,SNOMED,standard
 443454,Cerebral infarction,Condition,SNOMED,standard
+600670,Occlusion of anterior cerebral artery,Condition,SNOMED,standard
+601068,Bilateral occlusion of middle cerebral arteries,Condition,SNOMED,standard
+601069,Bilateral occlusion of anterior cerebral arteries,Condition,SNOMED,standard
 602584,Cerebrovascular accident due to occlusion of basilar artery,Condition,SNOMED,standard
 602613,Cerebrovascular accident due to embolism of bilateral cerebellar arteries,Condition,SNOMED,standard
 602615,Cerebrovascular accident due to occlusion of right anterior cerebral artery,Condition,SNOMED,standard
@@ -8,6 +17,21 @@ concept_id,concept_name,domain_id,vocabulary_id,standard_concept
 604171,Cerebrovascular accident due to thrombosis of right cerebellar artery,Condition,SNOMED,standard
 605421,Cerebrovascular accident due to embolism of bilateral anterior cerebral arteries,Condition,SNOMED,standard
 606048,Neonatal ischemic stroke,Condition,SNOMED,standard
+607524,Occlusion of right anterior cerebral artery,Condition,SNOMED,standard
+607525,Occlusion of left anterior cerebral artery,Condition,SNOMED,standard
+607526,Bilateral occlusion of posterior cerebral arteries,Condition,SNOMED,standard
+607564,Occlusion of right posterior communicating artery,Condition,SNOMED,standard
+607565,Occlusion of left posterior communicating artery,Condition,SNOMED,standard
+607568,Embolism of left anterior cerebral artery,Condition,SNOMED,standard
+607569,Embolism of right anterior cerebral artery,Condition,SNOMED,standard
+607585,Bilateral embolism of middle cerebral arteries,Condition,SNOMED,standard
+607586,Bilateral embolism of posterior cerebral arteries,Condition,SNOMED,standard
+607587,Bilateral embolism of anterior cerebral arteries,Condition,SNOMED,standard
+607611,Bilateral embolism of carotid arteries,Condition,SNOMED,standard
+607612,Bilateral embolism of cerebellar arteries,Condition,SNOMED,standard
+607815,Left posterior cerebral artery thrombosis,Condition,SNOMED,standard
+607816,Right posterior cerebral artery thrombosis,Condition,SNOMED,standard
+607817,Left cerebellar artery thrombosis,Condition,SNOMED,standard
 608742,Cerebrovascular accident due to embolism of bilateral carotid arteries,Condition,SNOMED,standard
 609188,Cerebrovascular accident due to embolism of bilateral posterior cerebral arteries,Condition,SNOMED,standard
 609242,Cerebrovascular accident due to occlusion of left anterior cerebral artery,Condition,SNOMED,standard
@@ -66,39 +90,59 @@ concept_id,concept_name,domain_id,vocabulary_id,standard_concept
 765515,Cerebral infarction due to basilar artery stenosis,Condition,SNOMED,standard
 765518,Monoplegia of dominant lower limb due to and following ischemic cerebrovascular accident,Condition,SNOMED,standard
 765907,Occlusion and stenosis of middle cerebral artery with infarction,Condition,SNOMED,standard
+1076484,Iatrogenic ischemic cerebral infarction,Condition,SNOMED,standard
 1245872,Cerebrovascular accident due to occlusion of bilateral posterior communicating arteries,Condition,SNOMED,standard
+3655974,Occlusion of branch of basilar artery,Condition,SNOMED,standard
+4006294,Basilar artery embolism,Condition,SNOMED,standard
+4031045,Anterior choroidal artery syndrome,Condition,SNOMED,standard
 4043731,Infarction - precerebral,Condition,SNOMED,standard
 4045734,CVA - cerebrovascular accident due to cerebral artery occlusion,Condition,SNOMED,standard
 4045735,Anterior cerebral circulation infarction,Condition,SNOMED,standard
 4045736,Posterior cerebral circulation infarction,Condition,SNOMED,standard
 4045737,Pure motor lacunar infarction,Condition,SNOMED,standard
 4045738,Pure sensory lacunar infarction,Condition,SNOMED,standard
+4045740,Lacunar ataxic hemiparesis,Condition,SNOMED,standard
+4045741,Dysarthria-clumsy hand syndrome,Condition,SNOMED,standard
 4045747,Anterior circulation stroke of uncertain pathology,Condition,SNOMED,standard
 4045748,Posterior circulation stroke of uncertain pathology,Condition,SNOMED,standard
+4046358,Total anterior cerebral circulation infarction,Condition,SNOMED,standard
+4046359,Partial anterior cerebral circulation infarction,Condition,SNOMED,standard
 4046360,Lacunar infarction,Condition,SNOMED,standard
 4046361,Pure sensorimotor lacunar infarction,Condition,SNOMED,standard
 4046363,Stroke of uncertain pathology,Condition,SNOMED,standard
 4077086,Occipital cerebral infarction,Condition,SNOMED,standard
+4078314,Foville syndrome,Condition,SNOMED,standard
+4078315,Top of basilar syndrome,Condition,SNOMED,standard
 4108356,Cerebral infarction due to embolism of cerebral arteries,Condition,SNOMED,standard
 4110189,Cerebral infarct due to thrombosis of precerebral arteries,Condition,SNOMED,standard
 4110190,Cerebral infarction due to embolism of precerebral arteries,Condition,SNOMED,standard
 4110192,Cerebral infarction due to thrombosis of cerebral arteries,Condition,SNOMED,standard
+4110194,Middle cerebral artery syndrome,Condition,SNOMED,standard
+4111710,Brainstem stroke syndrome,Condition,SNOMED,standard
+4111711,Cerebellar stroke syndrome,Condition,SNOMED,standard
 4111714,"Cerebral infarction due to cerebral venous thrombosis, non-pyogenic",Condition,SNOMED,standard
+4111717,Occlusion and stenosis of posterior cerebral artery,Condition,SNOMED,standard
+4112023,Occlusion and stenosis of middle cerebral artery,Condition,SNOMED,standard
 4119140,Infarction of visual cortex,Condition,SNOMED,standard
 4131383,Infarction of basal ganglia,Condition,SNOMED,standard
 4138327,Acute lacunar infarction,Condition,SNOMED,standard
 4141405,Left sided cerebral infarction,Condition,SNOMED,standard
 4141661,Infarction of medulla oblongata,Condition,SNOMED,standard
 4142739,Thalamic infarction,Condition,SNOMED,standard
+4145355,Bilateral carotid artery occlusion,Condition,SNOMED,standard
 4146185,Right sided cerebral infarction,Condition,SNOMED,standard
 4153352,Embolic stroke,Condition,SNOMED,standard
 4159140,Thrombotic stroke,Condition,SNOMED,standard
+4159152,Neonatal stroke,Condition,SNOMED,standard
 4189462,Occlusive stroke,Condition,SNOMED,standard
 4211509,Cardioembolic stroke,Condition,SNOMED,standard
+4216520,Lacunar infarct,Observation,SNOMED,standard
 4301259,Posterior inferior cerebellar artery syndrome,Condition,SNOMED,standard
 4310996,Ischemic stroke,Condition,SNOMED,standard
 4316224,Brain stem infarction,Condition,SNOMED,standard
+4317291,Cerebellar artery occlusion,Condition,SNOMED,standard
 4319331,Cerebellar infarction,Condition,SNOMED,standard
+4338227,Basilar artery thrombosis,Condition,SNOMED,standard
 35610084,Cerebral infarction due to occlusion of cerebral artery,Condition,SNOMED,non-standard
 35610085,Cerebral infarction due to stenosis of cerebral artery,Condition,SNOMED,standard
 36685002,Dysarthria due to and following ischemic cerebrovascular accident,Condition,SNOMED,standard
@@ -107,15 +151,20 @@ concept_id,concept_name,domain_id,vocabulary_id,standard_concept
 36685011,Dysarthria due to and following embolic cerebrovascular accident,Condition,SNOMED,standard
 36685012,Aphasia due to and following embolic cerebrovascular accident,Condition,SNOMED,standard
 36716757,Perinatal arterial ischemic stroke of fetus and/or neonate,Condition,SNOMED,standard
+36716999,Cerebellar stroke,Condition,SNOMED,standard
 37110237,Cerebral ischemic stroke due to small artery occlusion,Condition,SNOMED,standard
 37110238,Cerebral ischemic stroke due to intracranial large artery atherosclerosis,Condition,SNOMED,standard
 37110239,Cerebral ischemic stroke due to extracranial large artery atherosclerosis,Condition,SNOMED,standard
 37110678,Cerebral ischemic stroke due to occlusion of extracranial large artery,Condition,SNOMED,standard
 37110679,Cerebral ischemic stroke due to stenosis of extracranial large artery,Condition,SNOMED,standard
+37110765,Ischemic stroke without residual deficits,Condition,SNOMED,standard
 37116473,Multifocal cerebral infarction due to and following procedure on cardiovascular system,Condition,SNOMED,standard
 37162743,Pediatric arterial ischemic stroke,Condition,SNOMED,standard
 37164462,Malignant middle cerebral artery syndrome,Condition,SNOMED,standard
 37167963,Cerebrovascular accident due to thrombosis of anterior cerebral artery,Condition,SNOMED,standard
+37167964,Thrombosis of anterior cerebral artery,Condition,SNOMED,standard
+37167965,Thrombosis of left anterior cerebral artery,Condition,SNOMED,standard
+37167969,Bilateral thrombosis of carotid arteries,Condition,SNOMED,standard
 37167974,Cerebrovascular accident due to occlusion of anterior choroidal artery,Condition,SNOMED,standard
 37169493,Cerebrovascular accident due to occlusion of left anterior choroidal artery,Condition,SNOMED,standard
 37169663,Cerebrovascular accident due to occlusion of bilateral carotid arteries,Condition,SNOMED,standard
@@ -129,6 +178,7 @@ concept_id,concept_name,domain_id,vocabulary_id,standard_concept
 37174313,Cerebrovascular accident due to thrombosis of right anterior cerebral artery,Condition,SNOMED,standard
 37209562,Cerebrovascular accident due to stenosis of bilateral carotid arteries,Condition,SNOMED,standard
 37309657,Cerebrovascular accident due to stenosis of bilateral vertebral arteries,Condition,SNOMED,standard
+37309665,Cerebrovascular accident due to occlusion of bilateral pontine arteries,Condition,SNOMED,standard
 37312014,Cerebral ischemic stroke due to hypercoagulable state,Condition,SNOMED,standard
 37312015,Cerebral ischemic stroke due to global hypoperfusion with watershed infarct,Condition,SNOMED,standard
 37312016,Cerebral ischemic stroke due to aortic arch embolism,Condition,SNOMED,standard
@@ -137,6 +187,7 @@ concept_id,concept_name,domain_id,vocabulary_id,standard_concept
 37395575,Cerebrovascular accident due to right carotid artery stenosis,Condition,SNOMED,standard
 37395576,Cerebrovascular accident due to left carotid artery stenosis,Condition,SNOMED,standard
 40479572,Infarct of cerebrum due to iatrogenic cerebrovascular accident,Condition,SNOMED,non-standard
+40480273,Superior cerebellar artery syndrome,Condition,SNOMED,standard
 42535110,Cerebrovascular accident due to occlusion of right posterior cerebral artery,Condition,SNOMED,standard
 42535111,Cerebrovascular accident due to occlusion of right middle cerebral artery,Condition,SNOMED,standard
 42535112,Cerebrovascular accident due to occlusion of left middle cerebral artery,Condition,SNOMED,standard
@@ -146,6 +197,9 @@ concept_id,concept_name,domain_id,vocabulary_id,standard_concept
 42535147,Cerebrovascular accident due to occlusion of right pontine artery,Condition,SNOMED,standard
 42535148,Cerebrovascular accident due to occlusion of left cerebellar artery,Condition,SNOMED,standard
 42535149,Cerebrovascular accident due to occlusion of right cerebellar artery,Condition,SNOMED,standard
+42535232,Dysphasia due to and following cerebrovascular accident,Condition,SNOMED,standard
+42535412,Dysarthria due to and following cerebrovascular accident,Condition,SNOMED,standard
+42535457,Occlusion of left vertebral artery,Condition,SNOMED,standard
 42535458,Cerebrovascular accident due to stenosis of right vertebral artery,Condition,SNOMED,standard
 42535459,Cerebrovascular accident due to stenosis of left vertebral artery,Condition,SNOMED,standard
 42535460,Cerebrovascular accident due to right vertebral artery occlusion,Condition,SNOMED,standard
@@ -158,6 +212,8 @@ concept_id,concept_name,domain_id,vocabulary_id,standard_concept
 42535506,Cerebrovascular accident due to occlusion of left posterior cerebral artery by embolus,Condition,SNOMED,standard
 42535507,Cerebrovascular accident due to occlusion of right cerebellar artery by embolus,Condition,SNOMED,standard
 42535508,Cerebrovascular accident due to occlusion of left cerebellar artery by embolus,Condition,SNOMED,standard
+42535509,Occlusion of left middle cerebral artery,Condition,SNOMED,standard
+42535510,Occlusion of left posterior cerebral artery,Condition,SNOMED,standard
 42535511,Cerebrovascular accident due to thrombus of basilar artery,Condition,SNOMED,standard
 42535512,Cerebrovascular accident due to thrombus of right carotid artery,Condition,SNOMED,standard
 42535523,Lacunar ataxic hemiparesis of left nondominant side,Condition,SNOMED,standard
@@ -166,14 +222,27 @@ concept_id,concept_name,domain_id,vocabulary_id,standard_concept
 42535681,Cognitive deficit due to and following ischemic cerebrovascular accident,Condition,SNOMED,standard
 42535684,Vertigo as sequela of ischemic cerebrovascular accident,Condition,SNOMED,standard
 42535707,Dysphasia due to and following embolic cerebrovascular accident,Condition,SNOMED,standard
+42535874,Thrombosis of left middle cerebral artery,Condition,SNOMED,standard
+42536337,Occlusion of right pontine artery,Condition,SNOMED,standard
+42536338,Occlusion of left pontine artery,Condition,SNOMED,standard
+42538818,Occlusion of right middle cerebral artery by embolus,Condition,SNOMED,standard
+42538819,Occlusion of left middle cerebral artery by embolus,Condition,SNOMED,standard
+42538981,Occlusion of left posterior cerebral artery by embolus,Condition,SNOMED,standard
+42538998,Thrombosis of right middle cerebral artery,Condition,SNOMED,standard
 42539166,Cerebrovascular accident due to thrombus of left carotid artery,Condition,SNOMED,standard
 42539195,Cerebrovascular accident due to occlusion of left posterior cerebral artery,Condition,SNOMED,standard
 42539262,Cerebrovascular accident due to occlusion of left carotid artery,Condition,SNOMED,standard
+42539276,Occlusion of right middle cerebral artery,Condition,SNOMED,standard
+42539787,Occlusion of right posterior cerebral artery,Condition,SNOMED,standard
+43530669,Ischemic stroke with coma,Condition,SNOMED,standard
+43530670,Ischemic stroke without coma,Condition,SNOMED,standard
 43530683,Cerebral infarction due to carotid artery occlusion,Condition,SNOMED,standard
 43531605,Occlusion of cerebral artery with stroke,Condition,SNOMED,standard
 43531607,Cerebral infarction due to stenosis of carotid artery,Condition,SNOMED,standard
+44782551,Embolism of middle cerebral artery,Condition,SNOMED,standard
 44782773,Cerebral infarction due to vertebral artery occlusion,Condition,SNOMED,standard
 44784293,Postoperative thromboembolism of precerebral artery,Condition,SNOMED,standard
+45767657,Thrombosis of middle cerebral artery,Condition,SNOMED,standard
 45767658,Cerebral infarction due to thrombosis of middle cerebral artery,Condition,SNOMED,standard
 45772786,Cerebral infarction due to embolism of middle cerebral artery,Condition,SNOMED,standard
 46270031,Cerebral infarction due to occlusion of precerebral artery,Condition,SNOMED,standard

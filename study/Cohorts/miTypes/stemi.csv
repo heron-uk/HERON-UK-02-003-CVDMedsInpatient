@@ -1,49 +1,49 @@
-concept_id
-604427
-604429
-604430
-761736
-3655133
-3661502
-3661503
-3661504
-3661520
-3661524
-3661547
-3661641
-3661642
-3661643
-3661644
-3661645
-3661646
-4295129
-4296653
-35611570
-35611571
-37169262
-37172157
-37172159
-37172160
-37172162
-37172163
-43020460
-45766075
-45766076
-45766116
-45766151
-45767554
-45767555
-45767556
-45767558
-45767560
-45767627
-45772774
-46270158
-46270159
-46270160
-46270161
-46270162
-46270163
-46270164
-46273495
-46274044
+concept_id,concept_name,domain_id,vocabulary_id,standard_concept
+604427,Acute ST segment elevation myocardial infarction due to occlusion of circumflex branch of left coronary artery,Condition,SNOMED,standard
+604429,Acute ST segment elevation myocardial infarction of apex of heart,Condition,SNOMED,standard
+604430,Acute ST segment elevation myocardial infarction of right ventricle,Condition,SNOMED,standard
+761736,Acute ST segment elevation myocardial infarction of anteroapical wall,Condition,SNOMED,standard
+3655133,Acute ST segment elevation myocardial infarction due to occlusion of intermediate artery,Condition,SNOMED,standard
+3661502,Acute ST segment elevation myocardial infarction due to proximal left anterior descending coronary artery occlusion,Condition,SNOMED,standard
+3661503,Acute ST segment elevation myocardial infarction due to mid left anterior descending coronary artery occlusion,Condition,SNOMED,standard
+3661504,Acute ST segment elevation myocardial infarction due to distal left anterior descending coronary artery occlusion,Condition,SNOMED,standard
+3661520,Acute ST segment elevation myocardial infarction due to occlusion of anterior descending branch of left coronary artery,Condition,SNOMED,standard
+3661524,Acute ST segment elevation myocardial infarction due to occlusion of septal branch of anterior descending branch of left coronary artery,Condition,SNOMED,standard
+3661547,Acute ST segment elevation myocardial infarction due to occlusion of diagonal branch of anterior descending branch of left coronary artery,Condition,SNOMED,standard
+3661641,Acute ST segment elevation myocardial infarction due to occlusion of proximal portion of right coronary artery,Condition,SNOMED,standard
+3661642,Acute ST segment elevation myocardial infarction due to occlusion of distal portion of right coronary artery,Condition,SNOMED,standard
+3661643,Acute ST segment elevation myocardial infarction due to occlusion of mid portion of right coronary artery,Condition,SNOMED,standard
+3661644,Acute ST segment elevation myocardial infarction due to occlusion of marginal branch of right coronary artery,Condition,SNOMED,standard
+3661645,Acute ST segment elevation myocardial infarction due to occlusion of posterior descending branch of right coronary artery,Condition,SNOMED,standard
+3661646,Acute ST segment elevation myocardial infarction due to occlusion of posterior lateral branch of right coronary artery,Condition,SNOMED,standard
+4295129,ST segment elevation,Condition,SNOMED,standard
+4296653,Acute ST segment elevation myocardial infarction,Condition,SNOMED,standard
+35611570,Acute ST segment elevation myocardial infarction of inferolateral wall,Condition,SNOMED,standard
+35611571,Acute ST segment elevation myocardial infarction of inferoposterior wall,Condition,SNOMED,standard
+37169262,Acute ST segment elevation myocardial infarction of atrium,Condition,SNOMED,standard
+37172157,Acute ST segment elevation myocardial infarction due to distal left circumflex coronary artery occlusion,Condition,SNOMED,standard
+37172159,Acute ST segment elevation myocardial infarction due to mid left circumflex coronary artery occlusion,Condition,SNOMED,standard
+37172160,Acute ST segment elevation myocardial infarction due to obtuse marginal branch of left circumflex coronary artery occlusion,Condition,SNOMED,standard
+37172162,Acute ST segment elevation myocardial infarction due to posterolateral branch of left circumflex coronary artery occlusion,Condition,SNOMED,standard
+37172163,Acute ST segment elevation myocardial infarction due to proximal left circumflex coronary artery occlusion,Condition,SNOMED,standard
+43020460,Acute ST segment elevation myocardial infarction involving left anterior descending coronary artery,Condition,SNOMED,standard
+45766075,Acute anterior ST segment elevation myocardial infarction,Condition,SNOMED,standard
+45766076,Acute ST segment elevation myocardial infarction of anterior wall involving right ventricle,Condition,SNOMED,standard
+45766116,Acute ST segment elevation myocardial infarction of inferior wall,Condition,SNOMED,standard
+45766151,Acute ST segment elevation myocardial infarction of inferior wall involving right ventricle,Condition,SNOMED,standard
+45767554,Lateral ST segment elevation,Condition,SNOMED,standard
+45767555,Inferior ST segment elevation,Condition,SNOMED,standard
+45767556,Anterior ST segment elevation,Condition,SNOMED,standard
+45767558,Posterior ST segment elevation,Condition,SNOMED,standard
+45767560,Inferior and lateral ST segment elevation,Condition,SNOMED,standard
+45767627,Inferior and right sided ST segment elevation,Condition,SNOMED,standard
+45772774,Anterior and lateral ST segment elevation,Condition,SNOMED,standard
+46270158,Acute ST segment elevation myocardial infarction of posterolateral wall,Condition,SNOMED,standard
+46270159,Acute ST segment elevation myocardial infarction of anterolateral wall,Condition,SNOMED,standard
+46270160,Acute ST segment elevation myocardial infarction of anteroseptal wall,Condition,SNOMED,standard
+46270161,Acute ST segment elevation myocardial infarction of posterior wall,Condition,SNOMED,standard
+46270162,Acute ST segment elevation myocardial infarction due to left coronary artery occlusion,Condition,SNOMED,standard
+46270163,Acute ST segment elevation myocardial infarction due to right coronary artery occlusion,Condition,SNOMED,standard
+46270164,Acute ST segment elevation myocardial infarction of septum,Condition,SNOMED,standard
+46273495,Acute ST segment elevation myocardial infarction of posterobasal wall,Condition,SNOMED,standard
+46274044,Acute ST segment elevation myocardial infarction of lateral wall,Condition,SNOMED,standard

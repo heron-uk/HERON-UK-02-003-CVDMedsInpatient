@@ -1,341 +1,390 @@
-﻿concept_id
-619135
-45773174
-618994
-604345
-618992
-45766143
-45766144
-3656098
-3656142
-3656100
-43020914
-43020915
-43020919
-43020920
-4188554
-4161458
-4155964
-4161459
-4161975
-36716978
-45766080
-45766084
-45766185
-4266019
-313500
-4225090
-4108596
-4111409
-4119589
-4108595
-4111098
-315564
-45771326
-4189343
-4111099
-40488397
-40487186
-40487183
-40487184
-40487652
-40487653
-40487654
-40487600
-4298008
-4119463
-606883
-4089254
-4245104
-321107
-313007
-4035467
-4305961
-4231324
-43021861
-4246951
-314457
-45772930
-40493472
-313006
-40493461
-313005
-4023404
-45768850
-4263510
-259123
-4337282
-43020916
-4207052
-43020921
-44804848
-4324704
-4216144
-4199318
-312728
-315295
-4144901
-4103131
-40487158
-40487195
-4109463
-43020630
-43020946
-43021473
-43021941
-437461
-43020949
-43020947
-43020948
-43020950
-40490417
-3656077
-42538529
-3656079
-3654955
-4246657
-40487980
-43021624
-37109597
-4070916
-4124690
-4119957
-4121472
-4069184
-4081037
-37110120
-606038
-35622773
-4109347
-40488014
-4069096
-4306131
-36674972
-43020459
-4020159
-600662
-3654798
-3654574
-3654726
-3654723
-3654795
-3654792
-3654729
-3654789
-4108659
-317890
-320115
-605552
-605551
-4119461
-321041
-314368
-443962
-606159
-45771327
-45766214
-45771323
-45766213
-315273
-36684984
-3654799
-3654575
-3654727
-3654724
-3654796
-3654793
-3654730
-3654790
-4354085
-40488027
-40488028
-45771321
-45766205
-45766092
-45766093
-4058384
-4152384
-45766136
-4158911
-4108815
-45769461
-762035
-4110937
-45766207
-45766087
-4111414
-4095624
-4353740
-4108166
-4178551
-4182346
-4070297
-4108739
-37163275
-4113295
-37160925
-45766124
-45766125
-45766126
-45773080
-45766127
-45766089
-45766097
-45766099
-45766100
-4109324
-45766082
-45771317
-45766083
-4354063
-45766081
-45766186
-4125005
-4125007
-4120277
-4122764
-4125008
-4120278
-4125004
-4125006
-4120279
-45766086
-45766069
-45766071
-45766072
-4353822
-45766078
-45766079
-45773168
-45766094
-45773076
-45766182
-45766180
-45766177
-45766179
-45766178
-45766181
-45766103
-4088260
-4089367
-4030676
-4317288
-4081039
-4111416
-4108233
-4112094
-45768939
-37205075
-35624311
-4354070
-4108819
-4354071
-44783642
-4126122
-4237202
-4209011
-4062117
-43021806
-4102992
-43021945
-43020964
-43020962
-43021944
-43020957
-43020960
-43021943
-605778
-605897
-35607996
-439834
-313221
-320429
-607641
-4181949
-315282
-435829
-4040820
-4222174
-317296
-4175807
-319825
-4240289
-4182110
-4078214
-4154293
-4184497
-4156119
-4244437
-318776
-4313828
-4301373
-4259295
-43020465
-4221806
-4304541
-4108168
-607639
-43020466
-4215619
-4178585
-4143607
-4238914
-4312621
-4108085
-4057759
-4195677
-4339544
-4108587
-4354052
-4119956
-3654800
-3654576
-3654728
-3654725
-3654797
-3654794
-3654731
-3654791
-40487966
-40487668
-40488060
-3656136
-43020959
-43020963
-43020956
-43020958
-43020961
-43020955
-40490010
-4069183
-37204437
-43020913
-43020917
-40489905
-40492025
-43020903
-43020902
-40489972
-43020918
-43020922
-4147787
-40487572
-4189522
-4219047
-320835
-4163292
-4101619
-42538671
-4101618
-37163270
-261881
-4111412
-4111413
-4108817
-4006971
-1244581
-4176099
-1244582
-45766206
-1244580
-4101620
+concept_id,concept_name,domain_id,vocabulary_id,standard_concept
+259123,Congenital subaortic stenosis,Condition,SNOMED,standard
+261881,Trauma and postoperative pulmonary insufficiency,Condition,SNOMED,standard
+312728,Congenital tricuspid atresia and stenosis,Condition,SNOMED,standard
+313005,Congenital stenosis of pulmonary valve,Condition,SNOMED,standard
+313006,Congenital stenosis of mitral valve,Condition,SNOMED,standard
+313007,Congenital insufficiency of mitral valve,Condition,SNOMED,standard
+313221,Rheumatic aortic stenosis,Condition,SNOMED,standard
+313500,Acute rheumatic heart disease,Condition,SNOMED,standard
+314054,Aortic valve disorder,Condition,SNOMED,standard
+314368,Mitral stenosis with insufficiency,Condition,SNOMED,standard
+314457,Congenital stenosis of aortic valve,Condition,SNOMED,standard
+315273,Mitral valve stenosis,Condition,SNOMED,standard
+315282,Rheumatic disease of aortic valve,Condition,SNOMED,standard
+315295,Congestive rheumatic heart failure,Condition,SNOMED,standard
+315564,Aortic valve regurgitation,Condition,SNOMED,standard
+316993,Tricuspid valve disorder,Condition,SNOMED,standard
+317296,Rheumatic disease of pulmonary valve,Condition,SNOMED,standard
+317890,Mitral and aortic stenosis,Condition,SNOMED,standard
+318776,Rheumatic mitral regurgitation,Condition,SNOMED,standard
+319825,Rheumatic heart disease,Condition,SNOMED,standard
+319843,Mitral valve disorder,Condition,SNOMED,standard
+319845,Pulmonary valve disorder,Condition,SNOMED,standard
+319921,Congenital pulmonary valve abnormality,Condition,SNOMED,standard
+320115,Mitral insufficiency and aortic stenosis,Condition,SNOMED,standard
+320416,Diseases of mitral and aortic valves,Condition,SNOMED,standard
+320429,Rheumatic aortic stenosis with regurgitation,Condition,SNOMED,standard
+320835,Tetralogy of Fallot,Condition,SNOMED,standard
+321041,Mitral stenosis and aortic insufficiency,Condition,SNOMED,standard
+321107,Congenital insufficiency of aortic valve,Condition,SNOMED,standard
+435829,Rheumatic disease of heart valve,Condition,SNOMED,standard
+437461,Disorder of prosthetic cardiac valve,Condition,SNOMED,standard
+439834,Rheumatic aortic regurgitation,Condition,SNOMED,standard
+443962,Mitral valve regurgitation,Condition,SNOMED,standard
+600662,Mechanical hemolysis following insertion of prosthetic heart valve,Condition,SNOMED,standard
+604345,Acquired regurgitation of left ventricular component of common atrioventricular valve following repair of biventricular connection,Condition,SNOMED,standard
+605551,Mitral regurgitation due to congenital abnormality of mitral subvalvular apparatus,Condition,SNOMED,standard
+605552,Mitral regurgitation due to acquired abnormality of mitral subvalvular apparatus,Condition,SNOMED,standard
+605778,Regurgitation of left atrioventricular (not morphologically mitral) valve,Condition,SNOMED,standard
+605897,Regurgitation of right atrioventricular (not morphologically tricuspid) valve,Condition,SNOMED,standard
+606038,Late syphilitic pulmonary regurgitation,Condition,SNOMED,standard
+606159,Mitral valve regurgitation due to acute myocardial infarction,Condition,SNOMED,standard
+606883,Chronic rheumatic carditis,Condition,SNOMED,standard
+607639,Rheumatic mitral valve obstruction,Condition,SNOMED,standard
+607641,Rheumatic aortic valve obstruction,Condition,SNOMED,standard
+618992,Acquired regurgitation of right ventricular component of common atrioventricular valve following repair of biventricular connection,Condition,SNOMED,standard
+618994,Acquired regurgitation of common atrioventricular valve following repair of biventricular connection,Condition,SNOMED,standard
+619135,Acquired common atrioventricular valve regurgitation following procedure,Condition,SNOMED,standard
+762035,Non-rheumatic mitral valve prolapse,Condition,SNOMED,standard
+1244580,Tricuspid valve stenosis with regurgitation due to neuroendocrine tumor,Condition,SNOMED,standard
+1244581,Tricuspid valve regurgitation due to neuroendocrine tumor,Condition,SNOMED,standard
+1244582,Tricuspid valve stenosis due to neuroendocrine tumor,Condition,SNOMED,standard
+3654574,Mild aortic valve stenosis,Condition,SNOMED,standard
+3654575,Moderate aortic valve stenosis,Condition,SNOMED,standard
+3654576,Severe aortic valve stenosis,Condition,SNOMED,standard
+3654723,Mild mitral valve stenosis,Condition,SNOMED,standard
+3654724,Moderate mitral valve stenosis,Condition,SNOMED,standard
+3654725,Severe mitral valve stenosis,Condition,SNOMED,standard
+3654726,Mild mitral valve regurgitation,Condition,SNOMED,standard
+3654727,Moderate mitral valve regurgitation,Condition,SNOMED,standard
+3654728,Severe mitral valve regurgitation,Condition,SNOMED,standard
+3654729,Mild tricuspid valve regurgitation,Condition,SNOMED,standard
+3654730,Moderate tricuspid valve regurgitation,Condition,SNOMED,standard
+3654731,Severe tricuspid valve regurgitation,Condition,SNOMED,standard
+3654789,Mild tricuspid valve stenosis,Condition,SNOMED,standard
+3654790,Moderate tricuspid valve stenosis,Condition,SNOMED,standard
+3654791,Severe tricuspid valve stenosis,Condition,SNOMED,standard
+3654792,Mild pulmonary valve stenosis,Condition,SNOMED,standard
+3654793,Moderate pulmonary valve stenosis,Condition,SNOMED,standard
+3654794,Severe pulmonary valve stenosis,Condition,SNOMED,standard
+3654795,Mild pulmonary valve regurgitation,Condition,SNOMED,standard
+3654796,Moderate pulmonary valve regurgitation,Condition,SNOMED,standard
+3654797,Severe pulmonary valve regurgitation,Condition,SNOMED,standard
+3654798,Mild aortic valve regurgitation,Condition,SNOMED,standard
+3654799,Moderate aortic valve regurgitation,Condition,SNOMED,standard
+3654800,Severe aortic valve regurgitation,Condition,SNOMED,standard
+3654955,Double outlet right ventricle with subaortic ventricular septal defect without pulmonary stenosis,Condition,SNOMED,standard
+3656077,Double outlet right ventricle with subaortic or doubly committed ventricular septal defect and pulmonary stenosis Fallot type,Condition,SNOMED,standard
+3656079,Double outlet right ventricle with subaortic ventricular septal defect and pulmonary stenosis Fallot type,Condition,SNOMED,standard
+3656098,Acquired stenosis of subpulmonary area,Condition,SNOMED,standard
+3656100,Acquired subaortic stenosis,Condition,SNOMED,standard
+3656136,Stenosis of aortic arch following procedure,Condition,SNOMED,standard
+3656142,Acquired stenosis of supravalvar area,Condition,SNOMED,standard
+4006971,Tricuspid valve regurgitation,Condition,SNOMED,standard
+4020159,Mechanical complication of heart valve prosthesis,Condition,SNOMED,non-standard
+4023404,Congenital stenosis of pulmonary veins,Condition,SNOMED,standard
+4030676,"Prune belly syndrome with pulmonic stenosis, intellectual disability and deafness",Condition,SNOMED,standard
+4035467,Congenital insufficiency of pulmonary valve,Condition,SNOMED,standard
+4040820,Rheumatic disease of mitral AND aortic valves,Condition,SNOMED,standard
+4057759,Rheumatic tricuspid valve failure,Condition,SNOMED,standard
+4058384,Nodular calcific aortic valve stenosis,Condition,SNOMED,standard
+4062117,Recurrent rheumatic heart disease,Condition,SNOMED,standard
+4063128,Mitral valve prosthesis,Device,SNOMED,standard
+4069096,Lutembacher's syndrome,Condition,SNOMED,standard
+4069182,Ebstein's anomaly,Condition,SNOMED,standard
+4069183,Subaortic stenosis,Condition,SNOMED,standard
+4069184,Infundibular pulmonic stenosis,Condition,SNOMED,standard
+4070297,Pentalogy of Fallot,Condition,SNOMED,standard
+4070916,Fallot's trilogy,Condition,SNOMED,standard
+4078214,Rheumatic heart valve stenosis,Condition,SNOMED,standard
+4081037,Isolated aortic stenosis,Condition,SNOMED,standard
+4081039,Pulmonary hypertension with occult mitral stenosis,Condition,SNOMED,standard
+4088260,Prosthetic valve sound,Condition,SNOMED,standard
+4089254,Closing click of prosthetic valve,Condition,SNOMED,standard
+4089367,Prosthetic valve sound muffled,Condition,SNOMED,standard
+4095624,Opening click of prosthetic valve,Condition,SNOMED,standard
+4100875,Congenital abnormality of atrioventricular valves in atrioventricular septal defect,Condition,SNOMED,standard
+4101189,Left atrioventricular valve stenosis,Condition,SNOMED,standard
+4101488,"Abnormality of atrioventricular (non-mitral, non-tricuspid) valve",Condition,SNOMED,standard
+4101618,Tetralogy of Fallot with pulmonary stenosis,Condition,SNOMED,standard
+4101619,Tetralogy of Fallot with atresia of pulmonary valve,Condition,SNOMED,standard
+4101620,Ventricular septal defect in Fallot's tetralogy,Condition,SNOMED,standard
+4102679,Cardiac valve prosthesis,Device,SNOMED,standard
+4102992,Regurgitation of common atrioventricular valve,Condition,SNOMED,standard
+4103131,Dextraposition of aorta in Fallot's tetralogy,Condition,SNOMED,standard
+4103188,Tricuspid valve lesion,Condition,SNOMED,standard
+4108085,Rheumatic tricuspid stenosis and insufficiency,Condition,SNOMED,standard
+4108166,Paraprosthetic mitral regurgitation,Condition,SNOMED,standard
+4108168,Rheumatic mitral valve leaflet changes,Condition,SNOMED,standard
+4108170,Mitral valve annular calcification,Condition,SNOMED,standard
+4108233,"Pulmonary stenosis, non-rheumatic",Condition,SNOMED,standard
+4108587,Right ventricular fibromuscular infundibular stenosis,Condition,SNOMED,standard
+4108595,Aortic stenosis with doming,Condition,SNOMED,standard
+4108596,Aortic cusp regurgitation,Condition,SNOMED,standard
+4108659,Mitral and aortic incompetence,Condition,SNOMED,standard
+4108739,Peripheral pulmonary artery stenosis,Condition,SNOMED,standard
+4108815,Non-rheumatic mitral regurgitation,Condition,SNOMED,standard
+4108817,"Tricuspid valve disorder, non-rheumatic",Condition,SNOMED,standard
+4108819,Pulmonary valve stenosis with insufficiency,Condition,SNOMED,standard
+4109324,Preductal aortic stenosis,Condition,SNOMED,standard
+4109340,Aortic valve cusp abnormality,Condition,SNOMED,standard
+4109347,Localized supravalvar aortic stenosis,Condition,SNOMED,standard
+4109463,Diffuse supravalvar aortic stenosis,Condition,SNOMED,standard
+4110937,Non-rheumatic mitral valve stenosis,Condition,SNOMED,standard
+4111098,"Aortic stenosis, non-rheumatic",Condition,SNOMED,standard
+4111099,Aortic valve stenosis with insufficiency,Condition,SNOMED,standard
+4111409,"Aortic incompetence, non-rheumatic",Condition,SNOMED,standard
+4111412,"Tricuspid incompetence, non-rheumatic",Condition,SNOMED,standard
+4111413,"Tricuspid stenosis, non-rheumatic",Condition,SNOMED,standard
+4111414,Non-rheumatic tricuspid valve stenosis with insufficiency,Condition,SNOMED,standard
+4111416,"Pulmonary incompetence, non-rheumatic",Condition,SNOMED,standard
+4112094,Pulmonary trunk stenosis,Condition,SNOMED,standard
+4113295,Postductal aortic stenosis,Condition,SNOMED,standard
+4114159,Pulmonary valve lesion,Condition,SNOMED,standard
+4117862,Chronic rheumatic mitral valvulitis,Condition,SNOMED,standard
+4119459,Syphilitic valve disease,Condition,SNOMED,standard
+4119461,Mitral restenosis,Condition,SNOMED,standard
+4119463,Calcific aortic stenosis - bicuspid valve,Condition,SNOMED,standard
+4119589,Aortic regurgitation due to cystic medial necrosis of aorta,Condition,SNOMED,standard
+4119956,Senile aortic stenosis,Condition,SNOMED,standard
+4119957,Functional pulmonary regurgitation,Condition,SNOMED,standard
+4120277,Prosthetic cardiac valve component embolism,Condition,SNOMED,standard
+4120278,Prosthetic cardiac valve obstruction,Condition,SNOMED,standard
+4120279,Prosthetic cardiac valve vegetation,Condition,SNOMED,standard
+4121472,Functional tricuspid regurgitation,Condition,SNOMED,standard
+4122764,Prosthetic cardiac valve dehiscence,Condition,SNOMED,standard
+4124690,Functional mitral regurgitation,Condition,SNOMED,standard
+4125004,Prosthetic cardiac valve regurgitation,Condition,SNOMED,standard
+4125005,Prosthetic cardiac paravalvular leak,Condition,SNOMED,standard
+4125006,Prosthetic cardiac valve thrombosis,Condition,SNOMED,standard
+4125007,Prosthetic cardiac valve calcification,Condition,SNOMED,standard
+4125008,Prosthetic cardiac valve displacement,Condition,SNOMED,standard
+4126122,Pulmonic stenosis and congenital nephrosis,Condition,SNOMED,standard
+4137534,Repair of tetralogy of Fallot with absent pulmonary valve,Procedure,SNOMED,standard
+4143607,Rheumatic pulmonary valve insufficiency,Condition,SNOMED,standard
+4144901,Critical stenosis of aortic valve,Condition,SNOMED,standard
+4145119,Heart valve replacement,Procedure,SNOMED,standard
+4145884,Prosthetic replacement of heart valve,Procedure,SNOMED,standard
+4147787,Supravalvar aortic stenosis,Condition,SNOMED,standard
+4149490,Implantation of aortic valve prosthesis or synthetic device,Procedure,SNOMED,standard
+4152384,Non-rheumatic aortic sclerosis,Condition,SNOMED,standard
+4154293,Rheumatic heart valve stenosis with insufficiency,Condition,SNOMED,standard
+4155964,Acute mitral regurgitation from chordal rupture,Condition,SNOMED,standard
+4156119,Rheumatic mitral AND aortic valve obstruction,Condition,SNOMED,standard
+4158911,Non-rheumatic heart valve disorder,Condition,SNOMED,standard
+4161458,Acute mitral regurgitation from chordal dysfunction,Condition,SNOMED,standard
+4161459,Acute mitral regurgitation from papillary muscle dysfunction,Condition,SNOMED,standard
+4161975,Acute mitral regurgitation from papillary muscle rupture,Condition,SNOMED,standard
+4163292,Tetralogy of Fallot with absent pulmonary valve,Condition,SNOMED,standard
+4175807,Rheumatic disease of tricuspid valve,Condition,SNOMED,standard
+4176099,Tricuspid valve stenosis,Condition,SNOMED,standard
+4178551,Paraprosthetic pulmonary regurgitation,Condition,SNOMED,standard
+4178585,Rheumatic pulmonary valve failure,Condition,SNOMED,standard
+4181949,Rheumatic aortic valve sclerosis,Condition,SNOMED,standard
+4182110,Rheumatic heart valve regurgitation,Condition,SNOMED,standard
+4182346,Paraprosthetic tricuspid regurgitation,Condition,SNOMED,standard
+4184497,Rheumatic left ventricular failure,Condition,SNOMED,standard
+4184499,Congenital anomaly of tricuspid valve,Condition,SNOMED,standard
+4188554,Acute mitral regurgitation,Condition,SNOMED,standard
+4189343,Aortic valve stenosis,Condition,SNOMED,standard
+4189522,Syphilitic aortic incompetence,Condition,SNOMED,standard
+4195003,Heart valve stenosis,Condition,SNOMED,standard
+4195677,Rheumatic tricuspid valve regurgitation,Condition,SNOMED,standard
+4199318,Congenital supravalvular pulmonary stenosis,Condition,SNOMED,standard
+4207052,Congenital subaortic stenosis of tunnel type,Condition,SNOMED,standard
+4209011,Pulmonic valve stenosis,Condition,SNOMED,standard
+4213311,Implantation of tricuspid valve prosthesis or synthetic device,Procedure,SNOMED,standard
+4215619,Rheumatic mitral valve stenosis AND aortic valve insufficiency,Condition,SNOMED,standard
+4216144,Congenital supravalvular mitral stenosis,Condition,SNOMED,standard
+4219047,Syphilitic aortic stenosis,Condition,SNOMED,standard
+4221806,Rheumatic mitral valve failure,Condition,SNOMED,standard
+4222174,Rheumatic disease of mitral valve,Condition,SNOMED,standard
+4224817,Aortic valve prosthesis,Device,SNOMED,standard
+4225090,Acute rheumatic valvulitis,Condition,SNOMED,standard
+4230774,Heart valve regurgitation,Condition,SNOMED,standard
+4231324,Congenital muscular subaortic stenosis,Condition,SNOMED,standard
+4237202,Pulmonic valve regurgitation,Condition,SNOMED,standard
+4238914,Rheumatic pulmonary valve stenosis,Condition,SNOMED,standard
+4240289,Rheumatic heart valve failure,Condition,SNOMED,standard
+4244437,Rheumatic mitral AND aortic valve regurgitation,Condition,SNOMED,standard
+4245104,Combined valvular-subvalvular pulmonic stenosis,Condition,SNOMED,standard
+4246657,Dynamic subaortic stenosis,Condition,SNOMED,standard
+4246951,Congenital stenosis of aortic arch,Condition,SNOMED,standard
+4252872,Mitral valve prolapse,Condition,SNOMED,standard
+4259295,Rheumatic mitral valve and aortic valve stenosis,Condition,SNOMED,standard
+4263510,Congenital stenosis of tricuspid valve,Condition,SNOMED,standard
+4266019,Acute respiratory failure requiring reintubation,Condition,SNOMED,standard
+4267710,"Correction of tetralogy of Fallot, one-stage",Procedure,SNOMED,standard
+4269199,Congenital atresia of tricuspid valve,Condition,SNOMED,standard
+4281749,Heart valve disorder,Condition,SNOMED,standard
+4289152,Congenital absence of pulmonary valve,Condition,SNOMED,standard
+4298008,Café-au-lait macules with pulmonary stenosis,Condition,SNOMED,standard
+4298105,Implantation of mitral valve prosthesis or synthetic device,Procedure,SNOMED,standard
+4301373,Rheumatic mitral stenosis with regurgitation,Condition,SNOMED,standard
+4304541,Rheumatic mitral valve insufficiency and aortic valve stenosis,Condition,SNOMED,standard
+4305961,Congenital insufficiency of tricuspid valve,Condition,SNOMED,standard
+4306131,MacCallum's patch,Condition,SNOMED,standard
+4308136,Complete repair of tetralogy of Fallot with transannular patch,Procedure,SNOMED,standard
+4309540,Pulmonary valve prosthesis,Device,SNOMED,standard
+4312621,Rheumatic pulmonary valve stenosis with insufficiency,Condition,SNOMED,standard
+4313828,Rheumatic mitral stenosis,Condition,SNOMED,standard
+4317288,Pulmonary artery stenosis,Condition,SNOMED,standard
+4324704,Congenital supravalvular aortic stenosis,Condition,SNOMED,standard
+4337282,Congenital subaortic stenosis due to fibromuscular shelf,Condition,SNOMED,standard
+4339544,Rheumatic tricuspid valve stenosis,Condition,SNOMED,standard
+4353740,Paraprosthetic aortic regurgitation,Condition,SNOMED,standard
+4353822,Prosthetic mitral valve regurgitation,Condition,SNOMED,standard
+4354052,Right ventricular muscular infundibular stenosis,Condition,SNOMED,standard
+4354063,Prosthetic aortic valve regurgitation,Condition,SNOMED,standard
+4354070,Pulmonary valve stenosis with doming,Condition,SNOMED,standard
+4354071,Pulmonary valve stenosis with narrow jet,Condition,SNOMED,standard
+4354085,Multiple peripheral pulmonary artery stenoses,Condition,SNOMED,standard
+35607996,Retinal arterial macroaneurysm with supravalvular pulmonic stenosis,Condition,SNOMED,standard
+35622773,Laubry Pezzi syndrome,Condition,SNOMED,standard
+35624311,"Pulmonary valve agenesis, tetralogy of Fallot, absence of ductus arteriosus syndrome",Condition,SNOMED,standard
+36674972,Macrothrombocytopenia with mitral valve insufficiency,Condition,SNOMED,standard
+36684984,Mixed aortic valve disease,Condition,SNOMED,standard
+36716978,Acute on chronic hypercapnic respiratory failure,Condition,SNOMED,standard
+37109597,Fallot complex with intellectual disability and growth delay syndrome,Condition,SNOMED,standard
+37110120,Keutel syndrome,Condition,SNOMED,standard
+37160925,Postoperative stenosis of pulmonary vein,Condition,SNOMED,standard
+37163270,Thromboembolism from prosthetic heart valve,Condition,SNOMED,standard
+37163275,Periprosthetic aortic valve regurgitation,Condition,SNOMED,standard
+37204437,Subaortic stenosis and short stature syndrome,Condition,SNOMED,standard
+37205075,"Pulmonary valve agenesis, intact ventricular septum, persistent ductus arteriosus syndrome",Condition,SNOMED,standard
+40486627,Stenosis of right pulmonary artery,Condition,SNOMED,standard
+40487158,Diffuse stenosis of left pulmonary artery,Condition,SNOMED,standard
+40487183,Atrioventricular septal defect with atrioventricular valve regurgitation through left septal commissure,Condition,SNOMED,standard
+40487184,Atrioventricular septal defect with atrioventricular valve regurgitation through left superior bridging leaflet lateral mural commissure,Condition,SNOMED,standard
+40487186,Atrioventricular septal defect with atrioventricular valve regurgitation through left inferior bridging leaflet lateral mural commissure,Condition,SNOMED,standard
+40487195,Diffuse stenosis of right pulmonary artery,Condition,SNOMED,standard
+40487550,Atrioventricular septal defect associated with tetralogy of Fallot,Condition,SNOMED,standard
+40487572,Supravalvar pulmonary trunk stenosis,Condition,SNOMED,standard
+40487600,Atrioventricular septal defect with atrioventricular valve regurgitation through right septal commissure,Condition,SNOMED,standard
+40487652,Atrioventricular septal defect with atrioventricular valve regurgitation through right anterosuperior inferior mural commissure,Condition,SNOMED,standard
+40487653,Atrioventricular septal defect with atrioventricular valve regurgitation through right anterosuperior superior bridging leaflet commissure,Condition,SNOMED,standard
+40487654,Atrioventricular septal defect with atrioventricular valve regurgitation through right inferior bridging leaflet inferior mural commissure,Condition,SNOMED,standard
+40487668,Single stenosis of left pulmonary artery,Condition,SNOMED,standard
+40487966,Shelf-like supravalvar aortic stenosis,Condition,SNOMED,standard
+40487980,Ebstein's anomaly with functional tricuspid stenosis,Condition,SNOMED,standard
+40488014,Localized supravalvar aortic stenosis at sinutubular junction,Condition,SNOMED,standard
+40488027,Multiple stenoses of left pulmonary artery,Condition,SNOMED,standard
+40488028,Multiple stenoses of right pulmonary artery,Condition,SNOMED,standard
+40488060,Single stenosis of right pulmonary artery,Condition,SNOMED,standard
+40488397,Atrioventricular septal defect with atrioventricular valve regurgitation,Condition,SNOMED,standard
+40488996,Repair of tetralogy of Fallot using right ventricular outflow conduit,Procedure,SNOMED,standard
+40489905,Subaortic stenosis due to common atrioventricular valve,Condition,SNOMED,standard
+40489972,Subpulmonary stenosis,Condition,SNOMED,standard
+40490010,Stenosis of left pulmonary artery,Condition,SNOMED,standard
+40490417,Double outlet right ventricle with doubly committed ventricular septal defect and pulmonary stenosis,Condition,SNOMED,standard
+40490966,Abnormality of pulmonary valve,Condition,SNOMED,standard
+40491478,Abnormality of aortic valve,Condition,SNOMED,standard
+40492025,Subaortic stenosis due to restrictive ventricular septal defect in functionally univentricular heart,Condition,SNOMED,standard
+40493461,Congenital stenosis of pulmonary artery,Condition,SNOMED,standard
+40493472,Congenital stenosis of mitral subvalvular apparatus,Condition,SNOMED,standard
+42538529,Double outlet right ventricle with subaortic or doubly committed ventricular septal defect without pulmonary stenosis - ventricular septal defect type,Condition,SNOMED,standard
+42538671,Tetralogy of Fallot with pulmonary atresia and systemic-to-pulmonary collateral artery,Condition,SNOMED,standard
+42538803,Injury of cardiac valve,Condition,SNOMED,standard
+42539099,Prosthetic heart valve in situ,Observation,SNOMED,non-standard
+42539373,Disorder of cardiac valve following procedure,Condition,SNOMED,standard
+43020459,Mechanical breakdown of prosthetic heart valve,Condition,SNOMED,standard
+43020465,Rheumatic mitral valve annular calcification,Condition,SNOMED,standard
+43020466,Rheumatic mitral valve prolapse,Condition,SNOMED,standard
+43020504,Shone complex,Condition,SNOMED,standard
+43020630,Disorder of aortic valve prosthesis,Condition,SNOMED,standard
+43020902,Subneopulmonary valve stenosis,Condition,SNOMED,standard
+43020903,Subneoaortic valve stenosis,Condition,SNOMED,standard
+43020913,Subaortic stenosis as complication of procedure,Condition,SNOMED,standard
+43020914,Acquired subaortic stenosis associated with functionally univentricular heart,Condition,SNOMED,standard
+43020915,Acquired subaortic stenosis due to restrictive ventricular septal defect associated with functionally univentricular heart,Condition,SNOMED,standard
+43020916,Congenital subaortic stenosis due to restrictive ventricular septal defect associated with functionally univentricular heart,Condition,SNOMED,standard
+43020917,Subaortic stenosis associated with functionally univentricular heart as complication of procedure,Condition,SNOMED,standard
+43020918,Subpulmonary stenosis as complication of procedure,Condition,SNOMED,standard
+43020919,Acquired subpulmonary stenosis associated with functionally univentricular heart,Condition,SNOMED,standard
+43020920,Acquired subpulmonary stenosis due to restrictive ventricular defect associated with functionally univentricular heart,Condition,SNOMED,standard
+43020921,Congenital subpulmonary stenosis due to restrictive ventricular defect associated with functionally univentricular heart,Condition,SNOMED,standard
+43020922,Subpulmonary stenosis associated with functionally univentricular heart as complication of procedure,Condition,SNOMED,standard
+43020946,Disorder of atrioventricular (not morphologically mitral or tricuspid) valve prosthesis,Condition,SNOMED,standard
+43020947,Disorder of right atrioventricular (not morphologically tricuspid) valve prosthesis,Condition,SNOMED,standard
+43020948,Disorder of tricuspid valve prosthesis,Condition,SNOMED,standard
+43020949,Disorder of pulmonary valve prosthesis,Condition,SNOMED,standard
+43020950,Disorder of truncal valve prosthesis,Condition,SNOMED,standard
+43020955,Stenosis of fetal tricuspid valve,Condition,SNOMED,standard
+43020956,Stenosis of fetal mitral valve,Condition,SNOMED,standard
+43020957,Regurgitation of fetal pulmonary valve,Condition,SNOMED,standard
+43020958,Stenosis of fetal pulmonary valve,Condition,SNOMED,standard
+43020959,Stenosis of fetal aortic valve,Condition,SNOMED,standard
+43020960,Regurgitation of fetal right atrioventricular (not morphologically tricuspid) valve,Condition,SNOMED,standard
+43020961,Stenosis of fetal right atrioventricular (not morphologically tricuspid) valve,Condition,SNOMED,standard
+43020962,Regurgitation of fetal left atrioventricular (not morphologically mitral) valve,Condition,SNOMED,standard
+43020963,Stenosis of fetal left atrioventricular (not morphologically mitral) valve,Condition,SNOMED,standard
+43020964,Regurgitation of fetal common atrioventricular valve,Condition,SNOMED,standard
+43021473,Disorder of left atrioventricular (not morphologically mitral) valve prosthesis,Condition,SNOMED,standard
+43021624,Failure of cardiac valve prosthesis,Condition,SNOMED,standard
+43021806,Regurgitation of atrioventricular (not morphologically mitral or tricuspid) valve,Condition,SNOMED,standard
+43021861,Congenital peripheral pulmonary artery stenosis,Condition,SNOMED,standard
+43021941,Disorder of mitral valve prosthesis,Condition,SNOMED,standard
+43021943,Regurgitation of fetal tricuspid valve,Condition,SNOMED,standard
+43021944,Regurgitation of fetal mitral valve,Condition,SNOMED,standard
+43021945,Regurgitation of fetal aortic valve,Condition,SNOMED,standard
+44511398,Other specified repair of tetralogy of Fallot,Procedure,OPCS4,standard
+44782566,Pulmonary hypertension due to left-sided valvular heart disease,Condition,SNOMED,standard
+44783642,Pulmonary venous hypertension due to congenital stenosis of pulmonary vein,Condition,SNOMED,standard
+44804848,Congenital subvalvar mitral stenosis,Condition,SNOMED,standard
+45766069,Prosthetic mitral valve failure,Condition,SNOMED,standard
+45766071,Prosthetic mitral valve failure requiring replacement,Condition,SNOMED,standard
+45766072,Prosthetic mitral valve failure requiring revision,Condition,SNOMED,standard
+45766078,Prosthetic mitral valve stenosis,Condition,SNOMED,standard
+45766079,Prosthetic mitral valve stenosis and regurgitation,Condition,SNOMED,standard
+45766080,Acute prosthetic aortic valve regurgitation,Condition,SNOMED,standard
+45766081,Prosthetic aortic valve stenosis,Condition,SNOMED,standard
+45766082,Prosthetic aortic valve failure,Condition,SNOMED,standard
+45766083,Prosthetic aortic valve failure requiring revision,Condition,SNOMED,standard
+45766084,Acute prosthetic mitral valve regurgitation,Condition,SNOMED,standard
+45766086,Prosthetic mitral valve calcific stenosis,Condition,SNOMED,standard
+45766087,Non-rheumatic pulmonary valve stenosis with regurgitation,Condition,SNOMED,standard
+45766089,Postprocedural pulmonary valve regurgitation,Condition,SNOMED,standard
+45766092,Neopulmonary valve regurgitation,Condition,SNOMED,standard
+45766093,Neopulmonary valve stenosis,Condition,SNOMED,standard
+45766094,Prosthetic pulmonary valve failure requiring replacement,Condition,SNOMED,standard
+45766097,Postprocedural pulmonary valve stenosis,Condition,SNOMED,standard
+45766099,Postprocedural regurgitation of tricuspid valve,Condition,SNOMED,standard
+45766100,Postprocedural stenosis of tricuspid valve,Condition,SNOMED,standard
+45766103,Prosthetic tricuspid valve stenosis,Condition,SNOMED,standard
+45766124,Postprocedural aortic valve regurgitation,Condition,SNOMED,standard
+45766125,Postprocedural aortic valve stenosis,Condition,SNOMED,standard
+45766126,Postprocedural mitral valve regurgitation,Condition,SNOMED,standard
+45766127,Postprocedural mitral valve stenosis,Condition,SNOMED,standard
+45766136,Non-rheumatic aortic valve stenosis with regurgitation,Condition,SNOMED,standard
+45766143,Acquired stenosis of left pulmonary artery,Condition,SNOMED,standard
+45766144,Acquired stenosis of right pulmonary artery,Condition,SNOMED,standard
+45766177,Prosthetic tricuspid valve failure,Condition,SNOMED,standard
+45766178,Prosthetic tricuspid valve failure requiring revision,Condition,SNOMED,standard
+45766179,Prosthetic tricuspid valve failure requiring replacement,Condition,SNOMED,standard
+45766180,Prosthetic pulmonary valve stenosis,Condition,SNOMED,standard
+45766181,Prosthetic tricuspid valve regurgitation,Condition,SNOMED,standard
+45766182,Prosthetic pulmonary valve regurgitation,Condition,SNOMED,standard
+45766185,Acute prosthetic tricuspid valve regurgitation,Condition,SNOMED,standard
+45766186,Prosthetic aortic valve stenosis and regurgitation,Condition,SNOMED,standard
+45766205,Neoaortic valve stenosis,Condition,SNOMED,standard
+45766206,Tricuspid valve stenosis with insufficiency,Condition,SNOMED,standard
+45766207,Non-rheumatic mitral valve stenosis with regurgitation,Condition,SNOMED,standard
+45766210,Aortic valve regurgitation due to trauma,Condition,SNOMED,standard
+45766211,Aortic valve regurgitation due to dissection,Condition,SNOMED,standard
+45766213,Mitral valve regurgitation due to infiltrative disease,Condition,SNOMED,standard
+45766214,Mitral valve regurgitation due to acute myocardial infarction without papillary muscle and chordal rupture,Condition,SNOMED,standard
+45768850,Congenital stenosis of right pulmonary artery,Condition,SNOMED,standard
+45768939,Pulmonary trunk stenosis as complication of procedure,Condition,SNOMED,standard
+45769387,Valvular stenosis with valvular insufficiency,Observation,SNOMED,standard
+45769461,Non-rheumatic mitral valve disease,Condition,SNOMED,standard
+45771317,Prosthetic aortic valve failure requiring replacement,Condition,SNOMED,standard
+45771321,Neoaortic valve regurgitation,Condition,SNOMED,standard
+45771323,Mitral valve regurgitation due to cardiomyopathy,Condition,SNOMED,standard
+45771326,Aortic valve regurgitation due to aortic dilation,Condition,SNOMED,standard
+45771327,Mitral valve regurgitation due to acute myocardial infarction with papillary muscle and chordal rupture,Condition,SNOMED,standard
+45772930,Congenital stenosis of left pulmonary artery,Condition,SNOMED,standard
+45773076,Prosthetic pulmonary valve failure requiring revision,Condition,SNOMED,standard
+45773080,Postprocedural mitral valve regurgitation due to papillary muscle and chordal rupture,Condition,SNOMED,standard
+45773168,Prosthetic pulmonary valve failure,Condition,SNOMED,standard
+45773174,Acquired pulmonary trunk stenosis,Condition,SNOMED,standard
