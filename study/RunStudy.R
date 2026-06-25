@@ -9,7 +9,7 @@ maxObsEnd <- cdm$observation_period |>
   summarise(max_obs_end = max(observation_period_end_date, na.rm = TRUE)) |>
   dplyr::pull()
 
-study_period <- c(as.Date(study_start), as.Date(maxObsEnd))
+study_period <- c(as.Date("2022-01-01"), as.Date(maxObsEnd))
 
 # parametrisation
 drugs <- importCodelist(here("Cohorts", "drugs"), type = "csv")
@@ -33,7 +33,7 @@ cdm$person <- cdm$person |>
 # Load functions
 source(here("Analyses","functions.R"))
 
-if (db_name == "DataLoch") {
+if (cdmName(cdm) == "DataLoch") {
   cdm$drug_exposure <- cdm$drug_exposure |>
     filter(drug_type_concept_id == 32829)
 }
