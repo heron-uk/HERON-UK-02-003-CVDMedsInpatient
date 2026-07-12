@@ -18,6 +18,33 @@ library(dplyr)
 library(omopgenerics)
 library(flextable)
 library(ggplot2)
+library(here)
+library(CodelistGenerator)
+library(stringr)
+library(CohortCharacteristics)
+library(purrr)
+library(rlang)
+library(tidyr)
+library(scales)
+
+cohort <- "mi"
+# cohort <- "stroke"
+
+if (cohort == "mi") {
+  cohorts <- c("acute_mi_narrow", "acute_mi_narrow_stemi", "acute_mi_narrow_not_stemi")
+  drugs <- c("antihypertensives", "beta_blockers", "anticoagulants", "antiplatelets", "lipid_lowering_drugs", "thrombolytics")
+} else {
+  cohorts <- c("stroke_broad")
+  drugs <- c("anticoagulants", "antiplatelets", "lipid_lowering_drugs", "thrombolytics")
+}
+
+clean <- function(x) {
+  x |>
+    str_replace_all(pattern = "_", replacement = " ") |>
+    str_to_title()
+}
+
+drugsTidy <- clean(drugs)
 
 # Load results stored in the package ----
 fileData <- file.path(getwd(), "data", "studyData.RData")
@@ -34,6 +61,38 @@ load(fileData)
 # source functions
 source(file.path(getwd(), "functions.R"))
 
+data$summarise_treatments$variable_level <- str_to_title(data$summarise_treatments$variable_level)
+
+# filter data
+data <- data |>
+  imap(\(x, nm) {
+    if (!nm %in% c("summarise_omop_snapshot", "summarise_observation_period")) {
+      if (inherits(x, "summarised_result")) {
+        col <- c("cohort_name", "index_condition") |>
+          keep(\(y) y %in% groupColumns(x))
+        if (length(col) == 2) {
+          x <- x |>
+            filterGroup(cohort_name %in% cohorts | index_condition %in% cohorts)
+        } else {
+          x <- x |>
+            filterGroup(.data[[col]] %in% cohorts)
+          if (col == "index_condition") {
+            x <- x |>
+              filterStrata(drug %in% drugs)
+          }
+        }
+      } else {
+        x <- x |>
+          filter(index_condition %in% cohorts & drug %in% drugs)
+      }
+      if (nm == "summarise_treatments") {
+        x <- x |>
+          filter(variable_level %in% drugsTidy)
+      }
+    }
+    return(x)
+  })
+
 # Global options ----
 knitr::opts_chunk$set(
   out.width  = "95%",  # figures occupy ~95% of document width
@@ -45,76 +104,147 @@ knitr::opts_chunk$set(
 )
 
 updateCohortName <- function(x, col, version = "long") {
-  if (version == "short") {
-    x <- x |>
-      mutate(!!col := case_when(
-        .data[[col]] == "stroke" ~ "Stroke",
-        .data[[col]] == "acute_mi" ~ "MI",
-        .data[[col]] == "stroke_no_valve" ~ "Stroke no valve",
-        .data[[col]] == "stroke_with_af" ~ "Stroke with AF",
-        .data[[col]] == "acute_mi_stemi" ~ "MI STEMI",
-        .data[[col]] == "acute_mi_not_stemi" ~ "MI not STEMI",
-        .default = .data[[col]]
-      ))
-  } else {
-    x <- x |>
-      mutate(!!col := case_when(
-        .data[[col]] == "stroke" ~ "Acute Ischemic Stroke",
-        .data[[col]] == "acute_mi" ~ "Acute Myocardial Infarction",
-        .data[[col]] == "stroke_no_valve" ~ "Acute Ischemic Stroke no Valve",
-        .data[[col]] == "stroke_with_af" ~ "Acute Ischemic Stroke with AF",
-        .data[[col]] == "acute_mi_stemi" ~ "Acute Myocardial Infarction STEMI",
-        .data[[col]] == "acute_mi_not_stemi" ~ "Acute Myocardial Infarction not STEMI",
-        .default = .data[[col]]
-      ))
-  }
-  x
+  dic <- tribble(
+    ~name, ~long, ~short,
+    "stroke_broad", "Acute Ischaemic Stroke", "Stroke",
+    "stroke_narrow", "Acute Ischaemic Stroke narrow", "Stroke narrow",
+    "stroke_broad_with_af", "Acute Ischaemic Stroke with Atrial Fibrillation", "Stroke with AF",
+    "stroke_narrow_with_af", "Acute Ischaemic Stroke narrow with Atrial Fibrillation", "Stroke narrow with AF",
+    "acute_mi_broad", "Acute Myocardial Infarction broad", "MI broad",
+    "acute_mi_narrow", "Acute Myocardial Infarction", "MI",
+    "acute_mi_broad_stemi", "Acute Myocardial Infarction broad ST-Elevation Myocardial Infarction", "MI broad STEMI",
+    "acute_mi_narrow_stemi", "Acute Myocardial Infarction ST-Elevation Myocardial Infarction", "MI STEMI",
+    "acute_mi_broad_not_stemi", "Acute Myocardial Infarction broad Non-ST-elevation Myocardial Infarction", "MI broad NSTEMI",
+    "acute_mi_narrow_not_stemi", "Acute Myocardial Infarction Non-ST-elevation Myocardial Infarction", "MI NSTEMI"
+  )
+  q <- paste0(
+    ".data[['", col, "']] == '", dic$name, "' ~ '", dic[[version]], "'"
+  )
+  q <- paste0(c(q, ".default = .data[[col]]"), collapse = ", ")
+  q <- paste0("case_when(", q, ")") |>
+    parse_exprs() |>
+    set_names(col)
+  
+  x |>
+    filter(.data[[col]] %in% cohorts) |>
+    mutate(!!!q)
 }
 
 setGlobalPlotOptions(type = "ggplot")
 setGlobalTableOptions(type = "flextable")
 ```
 
-:::{custom-style="Caption"}
-**Table 1:** Database metadata.
-:::
+```{r, echo=FALSE}
+cdm <- omock::mockCdmFromDataset("delphi-100k")
 
-```{r}
-OmopSketch::tableOmopSnapshot(data[["summarise_omop_snapshot"]])
+comorbidities <- importCodelist(path = here("../study/Cohorts/comorbidities")) |>
+  asCodelistWithDetails(cdm = cdm)
+miTypes <- importCodelist(path = here("../study/Cohorts/miTypes")) |>
+  asCodelistWithDetails(cdm = cdm)
+names(miTypes) <- c("acute_mi_narrow_not_stemi", "acute_mi_narrow_stemi")
+comorbidities <- c(comorbidities, miTypes)
+drugsCodes <- importCodelist(path = here("../study/Cohorts/drugs"))[drugs] |>
+  asCodelistWithDetails(cdm = cdm)
+procedures <- importCodelist(path = here("../study/Cohorts/miProcedures")) |>
+  asCodelistWithDetails(cdm = cdm)
 ```
 
 :::{custom-style="Caption"}
-**Table 2:** Demographics characterisation at first record of Myocardial infarction.
+**Table S1:** Data partners characteristics.
+:::
+
+```{r}
+data$summarise_omop_snapshot |>
+  filter(variable_name != "cdm_source" | estimate_name == "type") |>
+  tableOmopSnapshot()
+```
+
+:::{custom-style="Caption"}
+**Table S2:** Codelists for condition of interest.
+:::
+
+```{r}
+comorbidities[cohorts] |>
+  as_tibble() |>
+  updateCohortName(col = "codelist_with_details_name") |>
+  visTable(groupColumn = "codelist_with_details_name")
+```
+
+:::{custom-style="Caption"}
+**Table S3:** Codelists for drugs
+:::
+
+```{r}
+drugsCodes |>
+  as_tibble() |>
+  mutate(
+    codelist_with_details_name = codelist_with_details_name |>
+      str_replace_all("_", " ") |>
+      str_to_title()
+  ) |>
+  # subset to ingredients
+  inner_join(
+    cdm$concept |>
+      filter(concept_class_id == "Ingredient") |>
+      select("concept_id"),
+    by = "concept_id"
+  ) |>
+  visTable(groupColumn = "codelist_with_details_name")
+```
+
+:::{custom-style="Caption"}
+**Table S4:** Codelists for Coronary Artery Bypass Graft and Percutaneous Coronary Intervention.
+:::
+
+```{r, echo=FALSE}
+procedures |>
+  as_tibble() |>
+  mutate(
+    codelist_with_details_name = codelist_with_details_name |>
+      str_replace_all("_", " ") |>
+      str_to_title()
+  ) |>
+  visTable(groupColumn = "codelist_with_details_name")
+```
+
+:::{custom-style="Caption"}
+**Table 1:** Demographics characterisation at first record.
 :::
 
 ```{r}
 arrangeCharacteristics <- function(x) {
   x |>
-    dplyr::mutate(order_id = dplyr::case_when(
+    mutate(order_id = dplyr::case_when(
       variable_name == "Number records" ~ 1L,
       variable_name == "Number subjects" ~ 2L,
       variable_name == "Sex" ~ 5L,
       variable_name == "Age" ~ 6L,
       variable_name == "Age group" ~ 7L,
-      variable_name == "Ethnicity group" ~ 8L,
-      variable_name == "SES" ~ 9L,
-      variable_name == "MI type" ~ 12L
+      variable_name == "Ethnicity" ~ 8L,
+      variable_name == "Socio-economic status" ~ 9L,
+      variable_name == "MI type" ~ 12L,
+      variable_name == "Prior comorbidities (-inf to 0]" ~ 13L
     )) |>
-    dplyr::arrange(order_id, variable_level) |>
-    dplyr::select(!"order_id")
+    arrange(order_id, variable_level) |>
+    select(!"order_id")
 }
-data$summarise_demographics |>
+characteristics <- data$summarise_demographics |>
   updateCohortName("group_level") |>
   filter(
     variable_name %in% c(
-      "Number records", "Number subjects", "Sex", "Age", "Age group",
-      "Ethnicity group", "SES", "MI type", "Socio-economic status"
+      "Number subjects", "Sex", "Age", "Age group",
+      "Ethnicity", "MI type", "Socio-economic status", "Prior comorbidities (-inf to 0]"
     ),
-    variable_level != "Male" | is.na(variable_level),
+    !(
+      variable_level %in% c("Male", "Both") |
+        grepl("cute mi", variable_level) |
+        grepl("Stroke", variable_level) |
+        grepl("docardit", variable_level) |
+        grepl("arotid", variable_level)
+      ) | 
+      is.na(variable_level)
+      ,
     !estimate_name %in% c("median", "q25", "q75", "min", "max"),
-    group_level %in% c(
-      "Acute Ischemic Stroke", "Acute Myocardial Infarction"
-    ),
     strata_level == "overall"
   ) |>
   arrange(group_level, cdm_name) |>
@@ -123,8 +253,10 @@ data$summarise_demographics |>
     variable_level = coalesce(variable_level, variable_name),
     variable_name = case_when(
       variable_name == "Age group" ~ "Age group — N(%)",
-      variable_name == "Ethnicity group" ~ "Ethnicity — N(%)",
+      variable_name == "Ethnicity" ~ "Ethnicity — N(%)",
       variable_name == "Socio-economic status" ~ "Socio-economic status — N(%)",
+      variable_name == "MI type" ~ "STEMI/NSTEMI — N(%)",
+      variable_name == "Prior comorbidities (-inf to 0]" ~ "Prior comorbidities (-inf to 0] — N(%)", 
       .default = "Demographics"
     ),
     variable_level = if_else(
@@ -136,139 +268,321 @@ data$summarise_demographics |>
         variable_level == "Age" ~ "Age — Mean (SD)",
         .default = variable_level
       ),
-      variable_level
+      case_when(
+        variable_level == "Not stemi" ~ "NSTEMI",
+        variable_level == "Stemi" ~ "STEMI",
+        .default = variable_level
+      )
     )
-  ) |>
-  CohortCharacteristics::tableCharacteristics(
-    hide = c("strata", "table_name", "age_range", "ses", "sex", "mi_type", "estimate_name", "index_condition", "drug"),
-    header = c("cohort_name", "cdm_name"),
+  )
+
+characteristics |>
+  filter(!grepl("ST-", group_level)) |>
+  tableCharacteristics(
+    hide = c("cohort_name", "strata", "table_name", "age_range", "ses", "sex", "mi_type", "estimate_name", "index_condition", "drug", "estimate_name"),
+    header = c("cdm_name"),
     groupColumn = "variable_name"
   )
 ```
 
 :::{custom-style="Caption"}
-**Table 3:** Medications.
+**Table S1:** Demographics characterisation at first record.
+:::
+
+```{r}
+characteristics |>
+  filter(grepl("ST-", group_level)) |>
+  tableCharacteristics(
+    hide = c("strata", "table_name", "age_range", "ses", "sex", "mi_type", "estimate_name", "index_condition", "drug", "estimate_name"),
+    header = c("cohort_name", "cdm_name"),
+    groupColumn = "variable_name"
+  )
+```
+
+
+:::{custom-style="Caption"}
+**Table 2:** Medications.
 :::
 
 ```{r}
 data$summarise_treatments |>
   updateCohortName("group_level") |>
-  filter(
-    group_level %in% c(
-      "Acute Ischemic Stroke", "Acute Myocardial Infarction"
-    ),
-    strata_level == "overall"
+  mutate(
+    variable_level = str_to_title(variable_level),
+    variable_level = if_else(
+      variable_level == "Thrombolytics", "Thrombolytics*", variable_level
+    )
   ) |>
+  filter(strata_level == "overall") |>
   arrange(group_level, cdm_name) |>
   arrangeCharacteristics() |>
   CohortCharacteristics::tableCharacteristics(
     hide = c("variable_name", "strata", "table_name", "age_range", "ses", "sex", "mi_type", "estimate_name", "drug", "index_condition"),
-    header = c("cohort_name", "cdm_name"),
-    groupColumn = "variable_name"
+    header = c("cdm_name"),
+    groupColumn = c("cohort_name")
   )
 ```
 
-```{r}
-x <- data$summarise_treatments |>
+:::{custom-style="Caption"}
+**Figure 1:** 28-day mortality after Index date stratified by Age group, Ethnicity, Socio-Economic Status (SES) and Sex. Each colour represents a different hospital data.
+:::
+
+```{r, fig.height=11/2.54}
+x <- data$summarise_death |>
   tidy() |>
   updateCohortName("cohort_name") |>
-  filter(
-    cohort_name == "Acute Myocardial Infarction",
-    !grepl("cangrelor", variable_level),
-    grepl("P2y12", variable_level),
-    grepl("Sex", strata),
-    !grepl("STEMI", cohort_name)
-  ) |>
   mutate(
-    drug = if_else(
-      variable_level == "P2y12 inhibitors",
-      "overall",
-      gsub("P2y12 inhibitors ", "", variable_level)
-    ) |>
-      factor(c("overall", "clopidogrel", "prasugrel", "ticagrelor")),
-    sex = gsub("Sex: ", "", strata)
-  )
-p <- ggplot(data = x, mapping = aes(x = drug, y = percentage, fill = sex)) +
+    strata_name = str_extract(strata, "^[^:]+"),
+    strata_value  = coalesce(trimws(str_extract(strata, "(?<=:).*")), "")
+  ) |>
+  filter(strata != "overall")
+p <- ggplot(data = x, mapping = aes(x = strata_value, y = percentage, fill = cdm_name)) +
   geom_col(position = "dodge") +
-  facet_grid(. ~ cdm_name) +
+  facet_grid(. ~ strata_name, scales = "free_x") +
   labs(fill = "", y = "Percentage (%)", x = "") +
   theme_bw()
 stylePlot(p) +
-  theme(legend.position = "top")
+  theme(
+    legend.position = "top",
+    axis.text.x = element_text(angle = 60, hjust = 1)
+  )
 ```
 
 :::{custom-style="Caption"}
-**Figure 1:** P2Y12 inhibitors for AMI.
+**Figure 2:** Radial plots.
 :::
 
-```{r}
-x <- data$summarise_treatments |>
-  tidy() |>
-  updateCohortName("cohort_name") |>
+```{r, fig.width=1.5*20/2.54, fig.height=1.5*15/2.54}
+x <- data$radial |>
+  updateCohortName("index_condition") |>
   filter(
-    cohort_name == "Acute Ischemic Stroke",
-    variable_level %in% c("Doacs", "Warfarin"),
-    grepl("Age", strata)
+    !variable_level %in% c("Mix", "Other", "Unknown", "Missing"),
+    !grepl("ST", index_condition),
+    !drug %in% "thrombolytics"
   ) |>
   mutate(
-    drug = if_else(
-      variable_level == "Doacs",
-      "DOACs",
-      "Warfarin"
-    ),
-    age = gsub("Age group: ", "", strata)
+    value = count1 / den1,
+    drug = clean(drug),
+    variable_level = case_when(
+      grepl("Q1", variable_level) ~ "Q1",
+      grepl("Q5", variable_level) ~ "Q5",
+      .default = variable_level
+    )
   )
-p <- ggplot(data = x, mapping = aes(x = drug, y = percentage, fill = age)) +
-  geom_col(position = "dodge") +
-  facet_grid(. ~ cdm_name) +
-  labs(fill = "Age group", y = "Percentage (%)", x = "") +
-  theme_bw()
-stylePlot(p) +
-  theme(legend.position = "top")
+labs <- x |>
+  distinct(variable_level, y) |>
+  arrange(y) |>
+  mutate(y_new = as.integer(row_number()))
+x <- x |>
+  left_join(labs, by = "y")
+ggplot(
+  data = x,
+  mapping = aes(x = y_new, y = value, fill = variable_name)
+) +
+  geom_col() +
+  facet_grid(cdm_name ~ drug) +
+  coord_polar() +
+  scale_x_continuous(
+    breaks = labs$y_new,
+    labels = labs$variable_level
+  ) +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  themeVisOmop(style = "_brand.yml") +
+  theme(
+    legend.position = "top",
+    strip.text.y.right = element_text(angle = 270)
+  ) +
+  labs(x = "", y = "Percentage (%)", fill = "")
 ```
 
 :::{custom-style="Caption"}
-**Figure 2:** Warfarin and DOACS for Stroke.
+**Table 3:** Initiators OR.
 :::
 
 ```{r}
-x <- data$summarise_treatments |>
-  tidy() |>
-  updateCohortName("cohort_name", "short") |>
+#| results: asis
+x <- data$drug_initiate |>
+  updateCohortName("group_level") |>
+  mutate(strata_level = clean(strata_level)) |>
   filter(
-    variable_level == "Statin",
-    grepl("Sex", strata)
+    group_level %in% c("Acute Myocardial Infarction"),
+    strata_level %in% drugsTidy
+  )
+
+xp <- x |> 
+  tidy() |>
+  filter(drug != "Thrombolytics")
+ref <- tribble(
+  ~variable_name, ~variable_level, ~rr, ~rr_lower, ~rr_upper,
+  "Age group", "60 to 69", 1, NA, NA,
+  "Sex", "Female", 1, NA, NA,
+  "Socio-economic Status", "1", 1, NA, NA,
+  "Ethnicity", "White", 1, NA, NA,
+  "MI type", "NSTEMI", 1, NA, NA,
+) |>
+  inner_join(
+    xp |>
+      distinct(cdm_name, index_condition, drug, model, model_type, variable_name),
+    by = "variable_name"
+  )
+lab <- tribble(
+  ~variable_name, ~variable_level,
+  "Age group", "18 to 39",
+  "Age group", "40 to 49",
+  "Age group", "50 to 59",
+  "Age group", "60 to 69",
+  "Age group", "70 to 79",
+  "Age group", "80 to 89",
+  "Age group", "90 or above",
+  "Sex", "Female",
+  "Sex", "Male",
+  "Socio-economic Status", "Q1 (Least dep.)",
+  "Socio-economic Status", "Q2",
+  "Socio-economic Status", "Q3",
+  "Socio-economic Status", "Q4",
+  "Socio-economic Status", "Q5 (Most dep.)",
+  "Socio-economic Status", "Missing",
+  "Ethnicity", "White",
+  "Ethnicity", "Asian",
+  "Ethnicity", "Black",
+  "Ethnicity", "Mix",
+  "Ethnicity", "Other",
+  "Ethnicity", "Unknown",
+  "MI type", "NSTEMI",
+  "MI type", "STEMI",
+  #"MI type", "Both",
+  "MI type", "None"
+) |>
+  mutate(id = row_number())
+xp <- xp |>
+  union_all(ref) |>
+  mutate(
+    variable_level = case_when(
+      variable_name == "Socio-economic Status" & variable_level == "1" ~ "Q1 (Least dep.)",
+      variable_name == "Socio-economic Status" & variable_level == "5" ~ "Q5 (Most dep.)",
+      variable_name == "Socio-economic Status" & variable_level %in% c("2", "3", "4") ~ paste0("Q", variable_level),
+      .default = variable_level
+    ),
+    type = if_else(is.na(rr_lower), "reference", "estimate")
   ) |>
-  mutate(sex = gsub("Sex: ", "", strata), variable_level = "")
-p <- ggplot(data = x, mapping = aes(x = variable_level, y = percentage, fill = sex)) +
-  geom_col(position = "dodge") +
-  facet_grid(cohort_name ~ cdm_name) +
-  labs(fill = "Sex", y = "Percentage (%)", x = "") +
-  theme_bw()
-stylePlot(p) +
-  theme(legend.position = "top", strip.text.y.right = element_text(angle = -90))
+  inner_join(lab, by = c("variable_name", "variable_level")) |>
+  arrange(drug, id)
+
+xp <- xp |>
+  filter(model_type == "Individual model") |>
+  union_all(
+    xp |>
+      filter(model_type == "Combined model")
+  )
+
+for (dr in drugsTidy) {
+  cat(paste0(dr, "\n\n"))
+  tbl <- xp |>
+    filter(drug == dr) |>
+    mutate(or = if_else(
+      is.na(rr_lower),
+      "Ref.",
+      sprintf("%.2f [%.2f - %.2f]", rr, rr_lower, rr_upper)
+    )) |>
+    select(!c("index_condition", "model_type", "drug", "rr", "rr_lower", "rr_upper", "type", "id")) |>
+    pivot_wider(names_from = "cdm_name", values_from = "or") |>
+    visTable(
+      groupColumn = c("model"),
+      hide = c()
+    )
+  cat(knitr::knit_print(tbl))
+  cat("\n\nhi\n\n")
+}
 ```
 
 :::{custom-style="Caption"}
-**Figure 3:** Statins by sex.
+**Figure 3:** Initiators OR.
 :::
 
-:::{custom-style="Caption"}
-**Table 4:** Procedures.
-:::
+```{r, fig.width=2*20/2.54, fig.height=2*15/2.54}
+xp <-  xp |> 
+  filter(model_type == "Individual model")
+ggplot(
+  data = xp,
+  mapping = aes(
+    x = rr,
+    y = -id,
+    xmin = rr_lower,
+    xmax = rr_upper,
+    colour = variable_name
+  )
+) +
+  geom_vline(xintercept = 1, colour = "black") +
+  geom_errorbar() +
+  geom_point(mapping = aes(shape = type)) +
+  scale_shape_manual(
+    values = c(
+      reference = 15,  # square
+      estimate = 16    # circle
+    ),
+    guide = "none"
+  ) +
+  facet_grid(cdm_name ~ drug) +
+  scale_x_log10(
+    name = "Odds Ratio",
+    breaks = c(0.125, 0.25, 0.5, 1, 2, 4, 8),
+    labels = c("1/8", "1/4", "1/2", "1", "2", "4", "8")
+  ) +
+  coord_cartesian(xlim = c(0.1, 10)) +
+  scale_y_continuous(
+    breaks = -lab$id,
+    labels = lab$variable_level,
+    name = ""
+  ) +
+  themeVisOmop("_brand.yml") +
+  theme(
+    strip.text.y.right = element_text(angle = 270),
+    legend.position = "top"
+  ) +
+  labs(colour = "")
+```
 
 ```{r}
 data$summarise_procedures |>
   updateCohortName("group_level") |>
   filter(
-    strata_level == "overall",
-    grepl("Procedures", variable_name),
-    !grepl("IDRIL", cdm_name)
+    group_level %in% c("Acute Myocardial Infarction"),
+    cdm_name %in% c("Barts", "LTHT")
   ) |>
-  arrange(group_level, cdm_name) |>
-  CohortCharacteristics::tableCharacteristics(
-    hide = c("variable_name", "strata", "table_name", "age_range", "ses", "sex", "mi_type", "estimate_name", "drug", "index_condition"),
-    header = c("cdm_name"),
-    groupColumn = "cohort_name"
+  union_all(
+    data$summarise_procedures |>
+      updateCohortName("group_level") |>
+      filter(
+        group_level %in% c("Acute Myocardial Infarction ST-Elevation Myocardial Infarction"),
+        cdm_name %in% c("Barts", "LTHT"),
+        strata_level == "overall"
+      ) |>
+      mutate(
+        group_level = "Acute Myocardial Infarction",
+        strata_name = "strata",
+        strata_level = "STEMI"
+      )
+  ) |>
+  union_all(
+    data$summarise_procedures |>
+      updateCohortName("group_level") |>
+      filter(
+        group_level %in% c("Acute Myocardial Infarction Non-ST-elevation Myocardial Infarction"),
+        cdm_name %in% c("Barts", "LTHT"),
+        strata_level == "overall"
+      ) |>
+      mutate(
+        group_level = "Acute Myocardial Infarction",
+        strata_name = "strata",
+        strata_level = "NSTEMI"
+      )
+  ) |>
+  visOmopTable(
+    estimateName = c("N (%)" = "<count> (<percentage>%)"),
+    header = "cdm_name",
+    hide = c("cohort_name", "index_condition", "drug", "variable_name", "estimate_name"),
+    groupColumn = "variable_level"
   )
 ```
+
+

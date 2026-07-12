@@ -22,9 +22,19 @@ result <- file.path(getwd(), "rawData") |>
     readr::read_csv(file = x, na = "", show_col_types = FALSE) |>
       omopgenerics::newSummarisedResult()
   }) |>
-  omopgenerics::bind()
+  omopgenerics::bind() |>
+  dplyr::mutate(
+    cdm_name = case_when(
+      cdm_name == "IDRIL_1" ~ "IDRIL",
+      cdm_name == "BartsHealthOMOP" ~ "Barts",
+      .default = cdm_name
+    )
+  )
 
-cohorts <- c("stroke", "stroke_no_valve", "stroke_with_af", "acute_mi", "acute_mi_stemi", "acute_mi_not_stemi")
+cohorts <- c(
+  paste0(rep(c("stroke_broad", "stroke_narrow"), each = 2), c("", "_with_af")),
+  paste0(rep(c("acute_mi_broad", "acute_mi_narrow"), each = 3), c("", "_stemi", "_not_stemi"))
+)
 
 resultChar <- result |>
   omopgenerics::filterSettings(result_type == "summarise_characteristics") |>
@@ -34,26 +44,12 @@ resultChar <- result |>
     drug = dplyr::if_else(
       cohort_name %in% cohorts,
       NA_character_,
-      dplyr::case_when(
-        stringr::str_ends(.data$cohort_name, "stroke") ~ stringr::str_replace(.data$cohort_name, "_stroke", ""),
-        stringr::str_ends(.data$cohort_name, "stroke_no_valve") ~ stringr::str_replace(.data$cohort_name, "_stroke_no_valve", ""),
-        stringr::str_ends(.data$cohort_name, "stroke_with_af") ~ stringr::str_replace(.data$cohort_name, "_stroke_with_af", ""),
-        stringr::str_ends(.data$cohort_name, "acute_mi") ~ stringr::str_replace(.data$cohort_name, "_acute_mi", ""),
-        stringr::str_ends(.data$cohort_name, "acute_mi_stemi") ~ stringr::str_replace(.data$cohort_name, "_acute_mi_stemi", ""),
-        stringr::str_ends(.data$cohort_name, "acute_mi_not_stemi") ~ stringr::str_replace(.data$cohort_name, "_acute_mi_not_stemi", "")
-      )
+      stringr::str_remove(cohort_name, paste0("_", cohorts, "$", collapse = "|"))
     ),
     index_condition = dplyr::if_else(
       cohort_name %in% cohorts,
       NA_character_,
-      dplyr::case_when(
-        stringr::str_ends(.data$cohort_name, "stroke") ~ "stroke",
-        stringr::str_ends(.data$cohort_name, "stroke_no_valve") ~ "stroke_no_valve",
-        stringr::str_ends(.data$cohort_name, "stroke_with_af") ~ "stroke_with_af",
-        stringr::str_ends(.data$cohort_name, "acute_mi") ~ "acute_mi",
-        stringr::str_ends(.data$cohort_name, "acute_mi_stemi") ~ "acute_mi_stemi",
-        stringr::str_ends(.data$cohort_name, "acute_mi_not_stemi") ~ "acute_mi_not_stemi"
-      )
+      stringr::str_extract(cohort_name, paste0("(", paste0(cohorts, collapse = "|"), ")$"))
     ),
     cohort_name = dplyr::if_else(
       cohort_name %in% cohorts,
@@ -105,11 +101,44 @@ resultChar <- result |>
       group_level %in% cohorts
   )
 
+# group mi type
+resultChar <- resultChar |>
+  filter(
+    variable_name != "MI type" | variable_level != "Both"
+  ) |>
+  left_join(
+    resultChar |>
+      filter(
+        variable_name == "MI type",
+        variable_level %in% c("None", "Both")
+      ) |>
+      select(!c("variable_level", "estimate_type")) |>
+      mutate(variable_level = "None", estimate_value = coalesce(as.numeric(estimate_value), 0)) |>
+      group_by(dplyr::across(!"estimate_value")) |>
+      summarise(new_estimate_value = sum(estimate_value), .groups = "drop") |>
+      mutate(new_estimate_value = case_when(
+        new_estimate_value == 0 ~ "-",
+        estimate_name == "count" ~ sprintf("%.0f", new_estimate_value),
+        estimate_name == "percentage" ~ sprintf("%.2f", new_estimate_value)
+      )),
+    by = c(
+      "result_id", "cdm_name", "group_name", "group_level", "variable_name",
+      "estimate_name", "additional_name", "additional_level", "strata_name",
+      "strata_level", "variable_level"
+    )
+  ) |>
+  mutate(estimate_value = coalesce(new_estimate_value, estimate_value)) |>
+  select(!"new_estimate_value")
+
 init <- result |>
   omopgenerics::filterSettings(result_type == "drug_initiate") |>
   omopgenerics::tidy() |>
-  dplyr::filter(index_condition != "acute_mi" | variable_name != "model6") |>
+  dplyr::filter(
+    !stringr::str_starts(index_condition, "acute_mi") |
+      variable_name != "model6"
+  ) |>
   dplyr::mutate(
+    drug = stringr::str_remove(drug, "drug_"),
     model = dplyr::case_when(
       variable_name == "model1" ~ "Age model",
       variable_name == "model2" ~ "Age+Sex model",
@@ -154,68 +183,85 @@ result <- result |>
   ) |>
   omopgenerics::bind(resultChar, init)
 
-data <- prepareResult(result, resultList)
+# save different shiny results
+for (nm in c("", "stroke_broad", "acute_mi_narrow")) {
 
-values <- getValues(result, resultList)
+  if (nm == "") {
+    resultNm <- result
+  } else {
+    # subset result
+    resultNm <- result |>
+      addSettings(settingsColumn = "result_type") |>
+      filter(
+        result_type %in% c("summarise_omop_snapshot", "summarise_observation_period", "summarise_log_file") |
+          (result_type %in% c("cohort_code_use", "summarise_characteristics", "summarise_cohort_count", "summarise_cohort_attrition", "drug_initiate") & grepl(nm, group_level))
+      ) |>
+      select(!"result_type")
+  }
 
-# edit choices and values of interest
-choices <- values
-selected <- getSelected(values)
+  data <- prepareResult(resultNm, resultList)
 
-selected$summarise_demographics_strata <- "overall"
-selected$summarise_death_strata <- "overall"
-selected$summarise_treatments_strata <- "overall"
-selected$summarise_procedures_strata <- "overall"
+  values <- getValues(resultNm, resultList)
 
-# prepare data radial plots
-count1 <- data$summarise_drug_initiators |>
-  dplyr::filter(
-    .data$variable_name %in% c("Socio-economic status", "Ethnicity", "Age group", "Sex"),
-    estimate_name == "count"
-  ) |>
-  omopgenerics::tidy() |>
-  dplyr::select("cdm_name", "index_condition", "drug", "variable_name", "variable_level", count1 = "count")
-den1 <- data$summarise_drug_initiators |>
-  dplyr::filter(
-    .data$variable_name == "Number subjects",
-    estimate_name == "count"
-  ) |>
-  omopgenerics::tidy() |>
-  dplyr::select("cdm_name", "index_condition", "drug", den1 = "count")
-count2 <- data$summarise_demographics |>
-  dplyr::filter(
-    .data$variable_name %in% c("Socio-economic status", "Ethnicity", "Age group", "Sex"),
-    estimate_name == "count"
-  ) |>
-  omopgenerics::tidy() |>
-  dplyr::filter(strata == "overall") |>
-  dplyr::select("cdm_name", "index_condition" = "cohort_name", "variable_name", "variable_level", count2 = "count")
-den2 <- data$summarise_demographics |>
-  dplyr::filter(
-    .data$variable_name == "Number subjects",
-    estimate_name == "count"
-  ) |>
-  omopgenerics::tidy() |>
-  dplyr::filter(strata == "overall") |>
-  dplyr::select("cdm_name", "index_condition" = "cohort_name", den2 = "count")
-data$radial <- count1 |>
-  dplyr::full_join(den1, by = c("cdm_name", "index_condition", "drug")) |>
-  dplyr::full_join(count2, by = c("cdm_name", "index_condition", "variable_name", "variable_level")) |>
-  dplyr::full_join(den2, by = c("cdm_name", "index_condition")) |>
-  dplyr::mutate(dplyr::across(dplyr::where(is.numeric), as.numeric)) |>
-  dplyr::mutate(
-    rr = (count1 / den1) / (count2 / den2),
-    rr_lower = exp(log(rr) - 1.96 * sqrt(1/count1 + 1/count2 - 1/den1 - 1/den2)),
-    rr_upper = exp(log(rr) + 1.96 * sqrt(1/count1 + 1/count2 - 1/den1 - 1/den2)),
-    dplyr::across(dplyr::starts_with("rr"), \(x) dplyr::if_else(x>100, 100, x))
-  )
-id <- data$radial |>
-  dplyr::distinct(.data$variable_name, .data$variable_level) |>
-  dplyr::arrange(.data$variable_name, .data$variable_level) |>
-  dplyr::mutate(y = dplyr::row_number())
-data$radial <- data$radial |>
-  dplyr::left_join(id, by = c("variable_name", "variable_level"))
+  # edit choices and values of interest
+  choices <- values
+  selected <- getSelected(values)
 
-save(data, choices, selected, values, file = file.path(getwd(), "data", "studyData.RData"))
+  selected$summarise_demographics_strata <- "overall"
+  selected$summarise_death_strata <- "overall"
+  selected$summarise_treatments_strata <- "overall"
+  selected$summarise_procedures_strata <- "overall"
 
-rm(result, values, choices, selected, resultList, data)
+  # prepare data radial plots
+  count1 <- data$summarise_drug_initiators |>
+    dplyr::filter(
+      .data$variable_name %in% c("Socio-economic status", "Ethnicity", "Age group", "Sex"),
+      estimate_name == "count"
+    ) |>
+    omopgenerics::tidy() |>
+    dplyr::select("cdm_name", "index_condition", "drug", "variable_name", "variable_level", count1 = "count")
+  den1 <- data$summarise_drug_initiators |>
+    dplyr::filter(
+      .data$variable_name == "Number subjects",
+      estimate_name == "count"
+    ) |>
+    omopgenerics::tidy() |>
+    dplyr::select("cdm_name", "index_condition", "drug", den1 = "count")
+  count2 <- data$summarise_demographics |>
+    dplyr::filter(
+      .data$variable_name %in% c("Socio-economic status", "Ethnicity", "Age group", "Sex"),
+      estimate_name == "count"
+    ) |>
+    omopgenerics::tidy() |>
+    dplyr::filter(strata == "overall") |>
+    dplyr::select("cdm_name", "index_condition" = "cohort_name", "variable_name", "variable_level", count2 = "count")
+  den2 <- data$summarise_demographics |>
+    dplyr::filter(
+      .data$variable_name == "Number subjects",
+      estimate_name == "count"
+    ) |>
+    omopgenerics::tidy() |>
+    dplyr::filter(strata == "overall") |>
+    dplyr::select("cdm_name", "index_condition" = "cohort_name", den2 = "count")
+  data$radial <- count1 |>
+    dplyr::full_join(den1, by = c("cdm_name", "index_condition", "drug")) |>
+    dplyr::full_join(count2, by = c("cdm_name", "index_condition", "variable_name", "variable_level")) |>
+    dplyr::full_join(den2, by = c("cdm_name", "index_condition")) |>
+    dplyr::mutate(dplyr::across(dplyr::where(is.numeric), as.numeric)) |>
+    dplyr::mutate(
+      rr = (count1 / den1) / (count2 / den2),
+      rr_lower = exp(log(rr) - 1.96 * sqrt(1/count1 + 1/count2 - 1/den1 - 1/den2)),
+      rr_upper = exp(log(rr) + 1.96 * sqrt(1/count1 + 1/count2 - 1/den1 - 1/den2)),
+      dplyr::across(dplyr::starts_with("rr"), \(x) dplyr::if_else(x>100, 100, x))
+    )
+  id <- data$radial |>
+    dplyr::distinct(.data$variable_name, .data$variable_level) |>
+    dplyr::arrange(.data$variable_name, .data$variable_level) |>
+    dplyr::mutate(y = dplyr::row_number())
+  data$radial <- data$radial |>
+    dplyr::left_join(id, by = c("variable_name", "variable_level"))
+
+  save(data, choices, selected, values, file = file.path(getwd(), "data", paste0("studyData_", nm,".RData")))
+}
+
+rm(resultNm, result, values, choices, selected, resultList, data)

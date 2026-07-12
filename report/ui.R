@@ -55,7 +55,7 @@ ui <- bslib::page_navbar(
   bslib::nav_panel(
     title = "Background",
     icon = shiny::icon("book-atlas"),
-    backgroundCard("background.md")
+    backgroundCard(paste0("background_", nm, ".md"))
   ),
 
   ## diagnostics ----

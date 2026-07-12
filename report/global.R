@@ -26,15 +26,11 @@ library(tidyr)
 library(visOmopResults)
 library(yaml)
 
-# preprocess data if it has not been done
-fileData <- file.path(getwd(), "data", "studyData.RData")
-if (!file.exists(fileData)) {
-  source(file.path(getwd(), "rawData", "preprocess.R"))
-}
+#nm <- ""
+nm <- "acute_mi_narrow"
+#nm <- "stroe_broad"
 
-# uncomment to load the raw data
-# rawData <- omopgenerics::importSummarisedResult(file.path(getwd(), "rawData"))
-
+fileData <- file.path(getwd(), "data", paste0("studyData_", nm, ".RData"))
 # load shiny data
 load(fileData)
 
