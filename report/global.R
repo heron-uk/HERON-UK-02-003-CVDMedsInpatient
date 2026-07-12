@@ -27,8 +27,8 @@ library(visOmopResults)
 library(yaml)
 
 #nm <- ""
-nm <- "acute_mi_narrow"
-#nm <- "stroe_broad"
+#nm <- "acute_mi_narrow"
+nm <- "stroke_broad"
 
 fileData <- file.path(getwd(), "data", paste0("studyData_", nm, ".RData"))
 # load shiny data

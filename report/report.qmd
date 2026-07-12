@@ -27,10 +27,10 @@ library(rlang)
 library(tidyr)
 library(scales)
 
-cohort <- "mi"
-# cohort <- "stroke"
+#cohort <- "acute_mi_narrow"
+cohort <- "stroke_broad"
 
-if (cohort == "mi") {
+if (cohort == "acute_mi_narrow") {
   cohorts <- c("acute_mi_narrow", "acute_mi_narrow_stemi", "acute_mi_narrow_not_stemi")
   drugs <- c("antihypertensives", "beta_blockers", "anticoagulants", "antiplatelets", "lipid_lowering_drugs", "thrombolytics")
 } else {
@@ -47,51 +47,13 @@ clean <- function(x) {
 drugsTidy <- clean(drugs)
 
 # Load results stored in the package ----
-fileData <- file.path(getwd(), "data", "studyData.RData")
-if (!file.exists(fileData)) {
-  source(file.path(getwd(), "rawData", "preprocess.R"))
-}
-
-# uncomment to load the raw data
-# rawData <- omopgenerics::importSummarisedResult(file.path(getwd(), "rawData"))
-
-# load data
+fileData <- file.path(getwd(), "data", paste0("studyData_", cohort, ".RData"))
 load(fileData)
 
 # source functions
 source(file.path(getwd(), "functions.R"))
 
 data$summarise_treatments$variable_level <- str_to_title(data$summarise_treatments$variable_level)
-
-# filter data
-data <- data |>
-  imap(\(x, nm) {
-    if (!nm %in% c("summarise_omop_snapshot", "summarise_observation_period")) {
-      if (inherits(x, "summarised_result")) {
-        col <- c("cohort_name", "index_condition") |>
-          keep(\(y) y %in% groupColumns(x))
-        if (length(col) == 2) {
-          x <- x |>
-            filterGroup(cohort_name %in% cohorts | index_condition %in% cohorts)
-        } else {
-          x <- x |>
-            filterGroup(.data[[col]] %in% cohorts)
-          if (col == "index_condition") {
-            x <- x |>
-              filterStrata(drug %in% drugs)
-          }
-        }
-      } else {
-        x <- x |>
-          filter(index_condition %in% cohorts & drug %in% drugs)
-      }
-      if (nm == "summarise_treatments") {
-        x <- x |>
-          filter(variable_level %in% drugsTidy)
-      }
-    }
-    return(x)
-  })
 
 # Global options ----
 knitr::opts_chunk$set(
@@ -145,8 +107,13 @@ names(miTypes) <- c("acute_mi_narrow_not_stemi", "acute_mi_narrow_stemi")
 comorbidities <- c(comorbidities, miTypes)
 drugsCodes <- importCodelist(path = here("../study/Cohorts/drugs"))[drugs] |>
   asCodelistWithDetails(cdm = cdm)
-procedures <- importCodelist(path = here("../study/Cohorts/miProcedures")) |>
-  asCodelistWithDetails(cdm = cdm)
+if (cohort == "acute_mi_narrow") {
+  procedures <- importCodelist(path = here("../study/Cohorts/miProcedures")) |>
+    asCodelistWithDetails(cdm = cdm)
+} else {
+  procedures <- importCodelist(path = here("../study/Cohorts/strokeProcedures")) |>
+    asCodelistWithDetails(cdm = cdm)
+}
 ```
 
 :::{custom-style="Caption"}
@@ -307,6 +274,7 @@ characteristics |>
 ```{r}
 data$summarise_treatments |>
   updateCohortName("group_level") |>
+  filter(variable_level %in% drugsTidy) |>
   mutate(
     variable_level = str_to_title(variable_level),
     variable_level = if_else(
@@ -352,14 +320,20 @@ stylePlot(p) +
 **Figure 2:** Radial plots.
 :::
 
-```{r, fig.width=1.5*20/2.54, fig.height=1.5*15/2.54}
+```{r, fig.width=2.2*20/2.54, fig.height=2.2*15/2.54}
 x <- data$radial |>
   updateCohortName("index_condition") |>
   filter(
     !variable_level %in% c("Mix", "Other", "Unknown", "Missing"),
-    !grepl("ST", index_condition),
-    !drug %in% "thrombolytics"
-  ) |>
+    drug %in% drugs
+  )
+
+if (cohort == "acute_mi_narrow") {
+  x <- x |>
+    filter(!grepl("ST", index_condition), !drug %in% "thrombolytics")
+}
+
+x <- x |>
   mutate(
     value = count1 / den1,
     drug = clean(drug),
@@ -403,15 +377,23 @@ ggplot(
 #| results: asis
 x <- data$drug_initiate |>
   updateCohortName("group_level") |>
-  mutate(strata_level = clean(strata_level)) |>
-  filter(
-    group_level %in% c("Acute Myocardial Infarction"),
-    strata_level %in% drugsTidy
-  )
+  mutate(strata_level = clean(strata_level))
+
+if (cohort == "acute_mi_broad") {
+  x <- x |>
+    filter(group_level %in% c("Acute Myocardial Infarction"))
+} 
+
+x <- x |>
+  filter(strata_level %in% drugsTidy)
 
 xp <- x |> 
-  tidy() |>
-  filter(drug != "Thrombolytics")
+  tidy()
+
+if (cohort == "acute_mi_broad") {
+  xp <- xp |>
+    filter(drug != "Thrombolytics")
+} 
 ref <- tribble(
   ~variable_name, ~variable_level, ~rr, ~rr_lower, ~rr_upper,
   "Age group", "60 to 69", 1, NA, NA,
@@ -425,6 +407,10 @@ ref <- tribble(
       distinct(cdm_name, index_condition, drug, model, model_type, variable_name),
     by = "variable_name"
   )
+if (cohort != "acute_mi_narrow") {
+  ref <- ref |>
+    filter(variable_name != "MI type")
+}
 lab <- tribble(
   ~variable_name, ~variable_level,
   "Age group", "18 to 39",
@@ -454,6 +440,10 @@ lab <- tribble(
   "MI type", "None"
 ) |>
   mutate(id = row_number())
+if (cohort != "acute_mi_narrow") {
+  lab <- lab |>
+    filter(variable_name != "MI type")
+}
 xp <- xp |>
   union_all(ref) |>
   mutate(
@@ -543,46 +533,61 @@ ggplot(
 ```
 
 ```{r}
-data$summarise_procedures |>
-  updateCohortName("group_level") |>
-  filter(
-    group_level %in% c("Acute Myocardial Infarction"),
-    cdm_name %in% c("Barts", "LTHT")
-  ) |>
-  union_all(
-    data$summarise_procedures |>
-      updateCohortName("group_level") |>
-      filter(
-        group_level %in% c("Acute Myocardial Infarction ST-Elevation Myocardial Infarction"),
-        cdm_name %in% c("Barts", "LTHT"),
-        strata_level == "overall"
-      ) |>
-      mutate(
-        group_level = "Acute Myocardial Infarction",
-        strata_name = "strata",
-        strata_level = "STEMI"
-      )
-  ) |>
-  union_all(
-    data$summarise_procedures |>
-      updateCohortName("group_level") |>
-      filter(
-        group_level %in% c("Acute Myocardial Infarction Non-ST-elevation Myocardial Infarction"),
-        cdm_name %in% c("Barts", "LTHT"),
-        strata_level == "overall"
-      ) |>
-      mutate(
-        group_level = "Acute Myocardial Infarction",
-        strata_name = "strata",
-        strata_level = "NSTEMI"
-      )
-  ) |>
-  visOmopTable(
-    estimateName = c("N (%)" = "<count> (<percentage>%)"),
-    header = "cdm_name",
-    hide = c("cohort_name", "index_condition", "drug", "variable_name", "estimate_name"),
-    groupColumn = "variable_level"
-  )
+if (cohort == "acute_mi_narrow") {
+  data$summarise_procedures |>
+    updateCohortName("group_level") |>
+    filter(
+      group_level %in% c("Acute Myocardial Infarction"),
+      cdm_name %in% c("Barts", "LTHT")
+    ) |>
+    union_all(
+      data$summarise_procedures |>
+        updateCohortName("group_level") |>
+        filter(
+          group_level %in% c("Acute Myocardial Infarction ST-Elevation Myocardial Infarction"),
+          cdm_name %in% c("Barts", "LTHT"),
+          strata_level == "overall"
+        ) |>
+        mutate(
+          group_level = "Acute Myocardial Infarction",
+          strata_name = "strata",
+          strata_level = "STEMI"
+        )
+    ) |>
+    union_all(
+      data$summarise_procedures |>
+        updateCohortName("group_level") |>
+        filter(
+          group_level %in% c("Acute Myocardial Infarction Non-ST-elevation Myocardial Infarction"),
+          cdm_name %in% c("Barts", "LTHT"),
+          strata_level == "overall"
+        ) |>
+        mutate(
+          group_level = "Acute Myocardial Infarction",
+          strata_name = "strata",
+          strata_level = "NSTEMI"
+        )
+    ) |>
+    visOmopTable(
+      estimateName = c("N (%)" = "<count> (<percentage>%)"),
+      header = "cdm_name",
+      hide = c("cohort_name", "index_condition", "drug", "variable_name", "estimate_name"),
+      groupColumn = "variable_level"
+    )
+} else {
+  data$summarise_procedures |>
+    updateCohortName("group_level") |>
+    filter(
+      variable_level == "Stroke rx procedures",
+      cdm_name %in% c("Barts")
+    ) |>
+    visOmopTable(
+      estimateName = c("N (%)" = "<count> (<percentage>%)"),
+      header = "cdm_name",
+      hide = c("cohort_name", "index_condition", "drug", "variable_name", "estimate_name"),
+      groupColumn = "variable_level"
+    )
+}
 ```
 
 
