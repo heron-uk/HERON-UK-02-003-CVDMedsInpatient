@@ -57,11 +57,11 @@ resultChar <- result |>
       NA_character_
     ),
     ses = dplyr::case_when(
-      .data$ses == "1" ~ "Q1 (Least deprived)",
+      .data$ses == "1" ~ "Q1 (Most deprived)",
       .data$ses == "2" ~ "Q2",
       .data$ses == "3" ~ "Q3",
       .data$ses == "4" ~ "Q4",
-      .data$ses == "5" ~ "Q5 (Most deprived)",
+      .data$ses == "5" ~ "Q5 (Least deprived)",
       .data$ses == "NA" ~ "Missing",
       .default = .data$ses
     ),
@@ -73,11 +73,11 @@ resultChar <- result |>
       .default = "overall"
     ),
     variable_level = dplyr::case_when(
-      .data$variable_level == "1" ~ "Q1 (Least deprived)",
+      .data$variable_level == "1" ~ "Q1 (Most deprived)",
       .data$variable_level == "2" ~ "Q2",
       .data$variable_level == "3" ~ "Q3",
       .data$variable_level == "4" ~ "Q4",
-      .data$variable_level == "5" ~ "Q5 (Most deprived)",
+      .data$variable_level == "5" ~ "Q5 (Least deprived)",
       .data$variable_level == "NA" & .data$variable_name == "Ses" ~ "Missing",
       .data$variable_level == "NA" ~ NA_character_,
       .default = .data$variable_level

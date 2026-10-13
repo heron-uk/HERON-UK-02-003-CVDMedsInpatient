@@ -27,8 +27,8 @@ library(rlang)
 library(tidyr)
 library(scales)
 
-#cohort <- "acute_mi_narrow"
-cohort <- "stroke_broad"
+cohort <- "acute_mi_narrow"
+#cohort <- "stroke_broad"
 
 if (cohort == "acute_mi_narrow") {
   cohorts <- c("acute_mi_narrow", "acute_mi_narrow_stemi", "acute_mi_narrow_not_stemi")
@@ -208,9 +208,9 @@ characteristics <- data$summarise_demographics |>
         grepl("Stroke", variable_level) |
         grepl("docardit", variable_level) |
         grepl("arotid", variable_level)
-      ) | 
+    ) | 
       is.na(variable_level)
-      ,
+    ,
     !estimate_name %in% c("median", "q25", "q75", "min", "max"),
     strata_level == "overall"
   ) |>
@@ -340,6 +340,9 @@ x <- x |>
     variable_level = case_when(
       grepl("Q1", variable_level) ~ "Q1",
       grepl("Q5", variable_level) ~ "Q5",
+      variable_level == "90 or above" ~ "90+",
+      str_detect(variable_level, "^[0-9]+ to [0-9]+$") ~
+        str_replace(variable_level, " to ", "–"),
       .default = variable_level
     )
   )
@@ -354,19 +357,34 @@ ggplot(
   mapping = aes(x = y_new, y = value, fill = variable_name)
 ) +
   geom_col() +
-  facet_grid(cdm_name ~ drug) +
-  coord_polar() +
+  facet_grid(cdm_name ~ drug, switch = "y") +
+  coord_radial(clip = "off", r.axis.inside = TRUE) +
   scale_x_continuous(
     breaks = labs$y_new,
-    labels = labs$variable_level
+    labels = labs$variable_level,
+    guide = guide_axis_theta()
   ) +
-  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  scale_y_continuous(
+    breaks = c(0.25, 0.5, 0.75),
+    labels = percent_format(accuracy = 1)
+  ) +
   themeVisOmop(style = "_brand.yml") +
   theme(
     legend.position = "top",
-    strip.text.y.right = element_text(angle = 270)
+    strip.text.y.left = element_text(angle = 90),
+    text = element_text(size = 14),
+    axis.title.x = element_text(size = 18),
+    axis.text.x = element_text(size = 16, margin = margin(t = -10)),
+    axis.text.y = element_text(size = 14),
+    legend.title = element_text(size = 16),
+    legend.text  = element_text(size = 20),
+    plot.title   = element_text(size = 18),
+    strip.text   = element_text(size = 20),
+    panel.spacing.x = grid::unit(1.5, "cm"),
+    panel.spacing.y = grid::unit(0.6, "cm"),
+    plot.margin = margin(12, 28, 12, 24)
   ) +
-  labs(x = "", y = "Percentage (%)", fill = "")
+  labs(x = "", y = "", fill = "")
 ```
 
 :::{custom-style="Caption"}
@@ -379,7 +397,7 @@ x <- data$drug_initiate |>
   updateCohortName("group_level") |>
   mutate(strata_level = clean(strata_level))
 
-if (cohort == "acute_mi_broad") {
+if (cohort == "acute_mi_narrow") {
   x <- x |>
     filter(group_level %in% c("Acute Myocardial Infarction"))
 } 
@@ -390,7 +408,7 @@ x <- x |>
 xp <- x |> 
   tidy()
 
-if (cohort == "acute_mi_broad") {
+if (cohort == "acute_mi_narrow") {
   xp <- xp |>
     filter(drug != "Thrombolytics")
 } 
@@ -422,11 +440,11 @@ lab <- tribble(
   "Age group", "90 or above",
   "Sex", "Female",
   "Sex", "Male",
-  "Socio-economic Status", "Q1 (Least dep.)",
+  "Socio-economic Status", "Q1 (Most dep.)",
   "Socio-economic Status", "Q2",
   "Socio-economic Status", "Q3",
   "Socio-economic Status", "Q4",
-  "Socio-economic Status", "Q5 (Most dep.)",
+  "Socio-economic Status", "Q5 (Least dep.)",
   "Socio-economic Status", "Missing",
   "Ethnicity", "White",
   "Ethnicity", "Asian",
@@ -448,8 +466,8 @@ xp <- xp |>
   union_all(ref) |>
   mutate(
     variable_level = case_when(
-      variable_name == "Socio-economic Status" & variable_level == "1" ~ "Q1 (Least dep.)",
-      variable_name == "Socio-economic Status" & variable_level == "5" ~ "Q5 (Most dep.)",
+      variable_name == "Socio-economic Status" & variable_level == "1" ~ "Q1 (Most dep.)",
+      variable_name == "Socio-economic Status" & variable_level == "5" ~ "Q5 (Least dep.)",
       variable_name == "Socio-economic Status" & variable_level %in% c("2", "3", "4") ~ paste0("Q", variable_level),
       .default = variable_level
     ),
@@ -489,22 +507,42 @@ for (dr in drugsTidy) {
 **Figure 3:** Initiators OR.
 :::
 
-```{r, fig.width=2*20/2.54, fig.height=2*15/2.54}
+```{r, fig.width=2*20/2.54, fig.height=2.5*15/2.54}
 xp <-  xp |> 
-  filter(model_type == "Individual model")
+  filter(model_type == "Individual model", cdm_name != "LTHT" | drug != "Thrombolytics")
+
+figure3_labels <- lab |>
+  mutate(
+    variable_level = case_when(
+      variable_level == "90 or above" ~ "90+",
+      str_detect(variable_level, "^[0-9]+ to [0-9]+$") ~
+        str_replace(variable_level, " to ", "–"),
+      .default = variable_level
+    ),
+    group_index = match(variable_name, unique(variable_name)),
+    y_position = -(id + 0.5 * (group_index - 1))
+  )
+
+xp <- xp |>
+  left_join(
+    figure3_labels |>
+      select(id, y_position),
+    by = "id"
+  )
+
 ggplot(
   data = xp,
   mapping = aes(
     x = rr,
-    y = -id,
+    y = y_position,
     xmin = rr_lower,
     xmax = rr_upper,
     colour = variable_name
   )
 ) +
   geom_vline(xintercept = 1, colour = "black") +
-  geom_errorbar() +
-  geom_point(mapping = aes(shape = type)) +
+  geom_errorbar(linewidth = 0.55) +
+  geom_point(mapping = aes(shape = type), size = 2) +
   scale_shape_manual(
     values = c(
       reference = 15,  # square
@@ -512,7 +550,7 @@ ggplot(
     ),
     guide = "none"
   ) +
-  facet_grid(cdm_name ~ drug) +
+  facet_grid(cdm_name ~ drug, switch = "y") +
   scale_x_log10(
     name = "Odds Ratio",
     breaks = c(0.125, 0.25, 0.5, 1, 2, 4, 8),
@@ -520,21 +558,32 @@ ggplot(
   ) +
   coord_cartesian(xlim = c(0.1, 10)) +
   scale_y_continuous(
-    breaks = -lab$id,
-    labels = lab$variable_level,
+    breaks = figure3_labels$y_position,
+    labels = figure3_labels$variable_level,
     name = ""
   ) +
   themeVisOmop("_brand.yml") +
   theme(
-    strip.text.y.right = element_text(angle = 270),
-    legend.position = "top"
+    strip.text.y.left = element_text(angle = 90),
+    legend.position = "top",
+    text = element_text(size = 14),
+    axis.title.x = element_text(size = 22),
+    axis.text.x = element_text(size = 16),
+    axis.text.y = element_text(size = 13),
+    legend.title = element_text(size = 18),
+    legend.text = element_text(size = 22),
+    plot.title = element_text(size = 20),
+    strip.text = element_text(size = 22),
+    panel.spacing.x = grid::unit(0.45, "cm"),
+    panel.spacing.y = grid::unit(0.35, "cm"),
+    plot.margin = margin(12, 24, 12, 24)
   ) +
   labs(colour = "")
 ```
 
 ```{r}
 if (cohort == "acute_mi_narrow") {
-  data$summarise_procedures |>
+  xd <- data$summarise_procedures |>
     updateCohortName("group_level") |>
     filter(
       group_level %in% c("Acute Myocardial Infarction"),
@@ -567,27 +616,104 @@ if (cohort == "acute_mi_narrow") {
           strata_name = "strata",
           strata_level = "NSTEMI"
         )
-    ) |>
-    visOmopTable(
-      estimateName = c("N (%)" = "<count> (<percentage>%)"),
-      header = "cdm_name",
-      hide = c("cohort_name", "index_condition", "drug", "variable_name", "estimate_name"),
-      groupColumn = "variable_level"
     )
 } else {
-  data$summarise_procedures |>
+  xd <- data$summarise_procedures |>
     updateCohortName("group_level") |>
     filter(
       variable_level == "Stroke rx procedures",
       cdm_name %in% c("Barts")
-    ) |>
-    visOmopTable(
-      estimateName = c("N (%)" = "<count> (<percentage>%)"),
-      header = "cdm_name",
-      hide = c("cohort_name", "index_condition", "drug", "variable_name", "estimate_name"),
-      groupColumn = "variable_level"
     )
 }
 ```
 
+```{r}
+visOmopTable(
+  result = xd,
+  estimateName = c("N (%)" = "<count> (<percentage>%)"),
+  header = "cdm_name",
+  hide = c("cohort_name", "index_condition", "drug", "variable_name", "estimate_name"),
+  groupColumn = "variable_level"
+)
+```
 
+Figure New
+
+```{r, fig.width=10, fig.height=5}
+group_order <- c(
+  "Overall",
+  "Age group",
+  "Sex",
+  "Ethnicity",
+  "Socio-economic status"
+)
+
+xx <- xd |>
+  tidy() |>
+  separate(strata, into = c("variable", "value"), sep = ":\\s*") |>
+  mutate(
+    value = if_else(variable == "overall", "Overall", value),
+    variable = recode(
+      variable,
+      "overall" = "Overall",
+      "SES" = "Socio-economic status"
+    ),
+    variable = factor(variable, levels = group_order),
+    denominator = if_else(
+      !is.na(percentage) & percentage > 0,
+      round(count / (percentage / 100)),
+      NA_real_
+    ),
+    binomial_ci = map2(count, denominator, function(successes, trials) {
+      if (is.na(successes) || is.na(trials) || trials < successes) {
+        return(c(NA_real_, NA_real_))
+      }
+
+      binom.test(successes, trials)$conf.int
+    }),
+    percentage_lower = map_dbl(binomial_ci, 1)* 100,
+    percentage_upper = map_dbl(binomial_ci, 2)* 100
+  )
+
+value_positions <- xx |>
+  distinct(variable, value) |>
+  arrange(variable) |>
+  mutate(x_position = row_number() + as.integer(variable) - 1)
+
+xx <- xx |>
+  left_join(value_positions, by = c("variable", "value"))
+
+ggplot(data = xx, mapping = aes(x = x_position, y = percentage, fill = variable)) +
+  geom_col() +
+  # geom_errorbar(
+  #   mapping = aes(ymin = percentage_lower, ymax = percentage_upper),
+  #   colour = "#000000",
+  #   linewidth = 0.25,
+  #   width = 0.25
+  # ) +
+  facet_grid(~cdm_name) +
+  scale_x_continuous(
+    breaks = value_positions$x_position,
+    labels = value_positions$value
+  ) +
+  themeVisOmop("_brand.yml") +
+  theme(
+    legend.position = "top",
+    axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
+  ) +
+  labs(fill = "", x = "", y = "Percentage (%)")
+
+```
+
+```{r}
+data$summarise_cohort_attrition |>
+  filterGroup(cohort_name %in% cohort) |>
+  tableCohortAttrition(
+    hide = c(
+      "cohort_name", "variable_level", "reason_id", "estimate_name", "age_range",
+      "cdm_version", "cohort_definition_id", "original_cohort_id", 
+      "original_cohort_name", "table_name", "vocabulary_version"
+    ), 
+    groupColumn = "cdm_name"
+  )
+```
