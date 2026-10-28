@@ -6,7 +6,7 @@
 - **Study start date**: 1 February 2026
 - **Study leads**: @elinrow, @aballvemartin-art, @catalamarti
 - **Study end date**: Ongoing
-- **Shiny app**: https://dpa-pde-oxford.shinyapps.io/inpatient_shiny/
+- **Shiny app**: https://dpa-pde-oxford.shinyapps.io/HERON-UK-02-003-AcuteIschaemicStroke/; 
 - **Publications**: None yet
 
 This repository contains the diagnostics, analysis, Shiny app, and report code for the HERON inpatient cardiovascular medicines study using OMOP CDM data.
