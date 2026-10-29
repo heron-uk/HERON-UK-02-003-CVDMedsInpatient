@@ -320,7 +320,7 @@ stylePlot(p) +
 **Figure 2:** Radial plots.
 :::
 
-```{r, fig.width=2.2*20/2.54, fig.height=2.2*15/2.54}
+```{r, fig.width=2.5*20/2.54, fig.height=2.5*15/2.54}
 x <- data$radial |>
   updateCohortName("index_condition") |>
   filter(
@@ -507,7 +507,7 @@ for (dr in drugsTidy) {
 **Figure 3:** Initiators OR.
 :::
 
-```{r, fig.width=2*20/2.54, fig.height=2.5*15/2.54}
+```{r, fig.width=2.5*20/2.54, fig.height=3*15/2.54}
 xp <-  xp |> 
   filter(model_type == "Individual model", cdm_name != "LTHT" | drug != "Thrombolytics")
 
